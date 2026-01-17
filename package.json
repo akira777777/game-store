@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "npx prisma generate && next build",
+    "build:static": "set GITHUB_PAGES=true&& set REPO_NAME=game-store&& next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "npx prisma generate",
@@ -15,6 +16,8 @@
     "db:studio": "npx prisma studio",
     "db:seed": "npx tsx scripts/seed.ts",
     "deploy": "npm run build && wrangler pages deploy .next",
+    "deploy:github": "npm run build:static && npm run deploy:github:pages",
+    "deploy:github:pages": "gh-pages -d out",
     "preview": "wrangler pages dev .next"
   },
   "dependencies": {
@@ -48,8 +51,9 @@
     "@types/react": "^18.3.8",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.20",
-    "eslint": "^8.57.1",
+    "eslint": "^9.0.0",
     "eslint-config-next": "^16.1.3",
+    "gh-pages": "^6.3.0",
     "postcss": "^8.4.47",
     "prisma": "^5.22.0",
     "tailwindcss": "^3.4.13",

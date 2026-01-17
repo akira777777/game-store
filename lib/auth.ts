@@ -1,10 +1,6 @@
 // #region agent log
 // Logging utility - defined at module level for use throughout
-const logEndpoint = 'http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169';
 const logToFile = (location: string, message: string, data: any, hypothesisId?: string) => {
-  if (typeof fetch !== 'undefined') {
-    fetch(logEndpoint, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location,message,data,timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId})}).catch(()=>{});
-  }
   if (typeof console !== 'undefined' && console.log) {
     console.log(`[Auth] ${message}`, data);
   }
