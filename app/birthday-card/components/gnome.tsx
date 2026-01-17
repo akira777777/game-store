@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 
 interface GnomeProps {
   id: number
@@ -22,6 +22,7 @@ const gnomeColors = [
 export function Gnome({ id, x, y, onClick, isVisible, isMobile = false }: GnomeProps) {
   const [isBouncing, setIsBouncing] = useState(false)
   const [colorSet] = useState(gnomeColors[id % gnomeColors.length])
+  const bounceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Larger size on mobile for easier tapping
   const size = isMobile ? { width: 100, height: 130 } : { width: 120, height: 160 }
@@ -35,10 +36,23 @@ export function Gnome({ id, x, y, onClick, isVisible, isMobile = false }: GnomeP
     setIsBouncing(true)
     // Center of gnome for fireworks
     onClick(x + size.width / 2, y + size.height / 2, id)
-    setTimeout(() => setIsBouncing(false), 600)
+    if (bounceTimeoutRef.current) {
+      clearTimeout(bounceTimeoutRef.current)
+    }
+    bounceTimeoutRef.current = setTimeout(() => {
+      setIsBouncing(false)
+      bounceTimeoutRef.current = null
+    }, 600)
   }
 
-  if (!isVisible) return null
+  // Cleanup on unmount
+  if (!isVisible) {
+    if (bounceTimeoutRef.current) {
+      clearTimeout(bounceTimeoutRef.current)
+      bounceTimeoutRef.current = null
+    }
+    return null
+  }
 
   return (
     <button

@@ -1,10 +1,12 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
+import { Cake } from "./cake"
 
 interface BirthdayCardProps {
   isVisible: boolean
   isMobile?: boolean
+  onCakeComplete?: () => void
 }
 
 const greeting = "С Днем Рождения,"
@@ -12,11 +14,12 @@ const name = "Татьяна!"
 const message1 = "Пусть каждый день будет наполнен"
 const message2 = "радостью и счастьем!"
 
-export function BirthdayCard({ isVisible, isMobile = false }: BirthdayCardProps) {
+export function BirthdayCard({ isVisible, isMobile = false, onCakeComplete }: BirthdayCardProps) {
   const [displayedGreeting, setDisplayedGreeting] = useState("")
   const [displayedName, setDisplayedName] = useState("")
   const [displayedMessage1, setDisplayedMessage1] = useState("")
   const [displayedMessage2, setDisplayedMessage2] = useState("")
+  const [showCake, setShowCake] = useState(false)
 
   useEffect(() => {
     if (!isVisible) return
@@ -27,27 +30,41 @@ export function BirthdayCard({ isVisible, isMobile = false }: BirthdayCardProps)
 
     // Animate greeting letter by letter
     let currentIndex = 0
-    const greetingInterval = setInterval(() => {
+    const timersRef = {
+      greetingInterval: null as NodeJS.Timeout | null,
+      nameTimeout: null as NodeJS.Timeout | null,
+      nameInterval: null as NodeJS.Timeout | null,
+      messageTimeout1: null as NodeJS.Timeout | null,
+      messageTimeout2: null as NodeJS.Timeout | null,
+    }
+    timersRef.greetingInterval = setInterval(() => {
       if (currentIndex <= greeting.length) {
         setDisplayedGreeting(greeting.slice(0, currentIndex))
         currentIndex++
       } else {
-        clearInterval(greetingInterval)
+        if (timersRef.greetingInterval) {
+          clearInterval(timersRef.greetingInterval)
+          timersRef.greetingInterval = null
+        }
 
         // Start name animation after greeting
-        setTimeout(() => {
+        timersRef.nameTimeout = setTimeout(() => {
           let nameIndex = 0
-          const nameInterval = setInterval(() => {
+          timersRef.nameInterval = setInterval(() => {
             if (nameIndex <= name.length) {
               setDisplayedName(name.slice(0, nameIndex))
               nameIndex++
             } else {
-              clearInterval(nameInterval)
+              if (timersRef.nameInterval) {
+                clearInterval(timersRef.nameInterval)
+                timersRef.nameInterval = null
+              }
 
-              // Start message animations
-              setTimeout(() => {
+              // Show cake after name animation completes
+              timersRef.messageTimeout1 = setTimeout(() => {
+                setShowCake(true)
                 setDisplayedMessage1(message1)
-                setTimeout(() => {
+                timersRef.messageTimeout2 = setTimeout(() => {
                   setDisplayedMessage2(message2)
                 }, 300)
               }, 400)
@@ -58,7 +75,26 @@ export function BirthdayCard({ isVisible, isMobile = false }: BirthdayCardProps)
     }, greetingSpeed)
 
     return () => {
-      clearInterval(greetingInterval)
+      if (timersRef.greetingInterval) {
+        clearInterval(timersRef.greetingInterval)
+        timersRef.greetingInterval = null
+      }
+      if (timersRef.nameTimeout) {
+        clearTimeout(timersRef.nameTimeout)
+        timersRef.nameTimeout = null
+      }
+      if (timersRef.nameInterval) {
+        clearInterval(timersRef.nameInterval)
+        timersRef.nameInterval = null
+      }
+      if (timersRef.messageTimeout1) {
+        clearTimeout(timersRef.messageTimeout1)
+        timersRef.messageTimeout1 = null
+      }
+      if (timersRef.messageTimeout2) {
+        clearTimeout(timersRef.messageTimeout2)
+        timersRef.messageTimeout2 = null
+      }
     }
   }, [isVisible, isMobile])
 
@@ -68,21 +104,41 @@ export function BirthdayCard({ isVisible, isMobile = false }: BirthdayCardProps)
   const particleCount = isMobile ? 15 : 30
   const sparkleCount = isMobile ? 12 : 24
 
+  // Generate stable particle positions using useMemo to avoid hydration issues
+  const particles = useMemo(() => {
+    return Array.from({ length: particleCount }, (_, i) => {
+      // Use seeded random for consistent values
+      const seed = i * 7919 // Prime number for better distribution
+      const random = (seed: number) => {
+        const x = Math.sin(seed) * 10000
+        return x - Math.floor(x)
+      }
+      return {
+        left: random(seed) * 100,
+        top: random(seed + 1) * 100,
+        width: random(seed + 2) * 8 + 4,
+        height: random(seed + 3) * 8 + 4,
+        delay: random(seed + 4) * 3,
+        duration: 3 + random(seed + 5) * 2,
+      }
+    })
+  }, [particleCount])
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none overflow-hidden p-4">
       {/* Animated background particles - reduced on mobile */}
       <div className="absolute inset-0 overflow-hidden">
-        {[...Array(particleCount)].map((_, i) => (
+        {particles.map((particle, i) => (
           <div
             key={`particle-${i}`}
             className="absolute rounded-full bg-yellow-400/30 animate-float"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              width: `${Math.random() * 8 + 4}px`,
-              height: `${Math.random() * 8 + 4}px`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${3 + Math.random() * 2}s`,
+              left: `${particle.left}%`,
+              top: `${particle.top}%`,
+              width: `${particle.width}px`,
+              height: `${particle.height}px`,
+              animationDelay: `${particle.delay}s`,
+              animationDuration: `${particle.duration}s`,
             }}
           />
         ))}
@@ -208,6 +264,15 @@ export function BirthdayCard({ isVisible, isMobile = false }: BirthdayCardProps)
                 <span className="inline-block w-0.5 h-full bg-orange-400 animate-pulse ml-0.5">|</span>
               )}
             </h2>
+
+            {/* Interactive Cake */}
+            {showCake && (
+              <div className={`flex justify-center items-center ${isMobile ? "my-4" : "my-6 md:my-8"}`}>
+                <div className="pointer-events-auto">
+                  <Cake onAllCandlesBlown={onCakeComplete} isMobile={isMobile} />
+                </div>
+              </div>
+            )}
 
             {/* Messages */}
             <div className={isMobile ? "pt-2 space-y-1" : "pt-4 md:pt-6 space-y-2 md:space-y-3"}>

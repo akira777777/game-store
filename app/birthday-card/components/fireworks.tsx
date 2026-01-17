@@ -40,7 +40,7 @@ const colors = [
   "#5F27CD",
 ]
 
-export const Fireworks = forwardRef<FireworksHandle, { className?: string }>(({ className }, ref) => {
+export const Fireworks = forwardRef<FireworksHandle, { className?: string; isMobile?: boolean }>(({ className, isMobile = false }, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animationFrameRef = useRef<number>()
   const fireworksRef = useRef<Firework[]>([])
@@ -109,7 +109,8 @@ export const Fireworks = forwardRef<FireworksHandle, { className?: string }>(({ 
     if (!ctx) return
 
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2) // Cap DPR for performance
+      // Lower DPR on mobile for better performance
+      const dpr = isMobile ? Math.min(window.devicePixelRatio || 1, 1.5) : Math.min(window.devicePixelRatio || 1, 2)
       const rect = canvas.getBoundingClientRect()
       canvas.width = rect.width * dpr
       canvas.height = rect.height * dpr
@@ -129,8 +130,8 @@ export const Fireworks = forwardRef<FireworksHandle, { className?: string }>(({ 
     window.addEventListener("resize", handleResize)
 
     const animate = () => {
-      // Clear with fade effect for trail
-      ctx.fillStyle = "rgba(0, 0, 0, 0.12)"
+      // Clear with fade effect for trail - lighter on mobile for performance
+      ctx.fillStyle = isMobile ? "rgba(0, 0, 0, 0.15)" : "rgba(0, 0, 0, 0.12)"
       ctx.fillRect(0, 0, canvas.width, canvas.height)
 
       fireworksRef.current = fireworksRef.current.filter((firework) => {
@@ -166,55 +167,84 @@ export const Fireworks = forwardRef<FireworksHandle, { className?: string }>(({ 
             const glowSize = particle.size * alpha * 3
             const particleSize = particle.size * alpha
 
-            // Draw trail
-            if (particle.trail.length > 1) {
-              ctx.save()
-              ctx.globalAlpha = alpha * 0.3
-              ctx.strokeStyle = particle.color
-              ctx.lineWidth = particleSize * 0.5
-              ctx.lineCap = "round"
-              ctx.beginPath()
-              ctx.moveTo(particle.trail[0].x, particle.trail[0].y)
-              for (let i = 1; i < particle.trail.length; i++) {
-                ctx.lineTo(particle.trail[i].x, particle.trail[i].y)
+            // Simplified rendering on mobile for better performance
+            if (isMobile) {
+              // Draw trail (simplified)
+              if (particle.trail.length > 1) {
+                ctx.save()
+                ctx.globalAlpha = alpha * 0.2
+                ctx.strokeStyle = particle.color
+                ctx.lineWidth = particleSize * 0.3
+                ctx.lineCap = "round"
+                ctx.beginPath()
+                ctx.moveTo(particle.trail[0].x, particle.trail[0].y)
+                for (let i = 1; i < particle.trail.length; i++) {
+                  ctx.lineTo(particle.trail[i].x, particle.trail[i].y)
+                }
+                ctx.stroke()
+                ctx.restore()
               }
-              ctx.stroke()
+
+              // Main particle only (no glow effects on mobile)
+              ctx.save()
+              ctx.globalAlpha = alpha
+              ctx.fillStyle = particle.color
+              ctx.beginPath()
+              ctx.arc(particle.x, particle.y, particleSize, 0, Math.PI * 2)
+              ctx.fill()
               ctx.restore()
+            } else {
+              // Full rendering for desktop
+              // Draw trail
+              if (particle.trail.length > 1) {
+                ctx.save()
+                ctx.globalAlpha = alpha * 0.3
+                ctx.strokeStyle = particle.color
+                ctx.lineWidth = particleSize * 0.5
+                ctx.lineCap = "round"
+                ctx.beginPath()
+                ctx.moveTo(particle.trail[0].x, particle.trail[0].y)
+                for (let i = 1; i < particle.trail.length; i++) {
+                  ctx.lineTo(particle.trail[i].x, particle.trail[i].y)
+                }
+                ctx.stroke()
+                ctx.restore()
+              }
+
+              // Outer glow
+              ctx.save()
+              ctx.globalAlpha = alpha * 0.15
+              ctx.shadowBlur = 25
+              ctx.shadowColor = particle.color
+              ctx.fillStyle = particle.color
+              ctx.beginPath()
+              ctx.arc(particle.x, particle.y, glowSize * 1.5, 0, Math.PI * 2)
+              ctx.fill()
+
+              // Middle glow
+              ctx.globalAlpha = alpha * 0.4
+              ctx.shadowBlur = 15
+              ctx.beginPath()
+              ctx.arc(particle.x, particle.y, glowSize, 0, Math.PI * 2)
+              ctx.fill()
+
+              // Main particle
+              ctx.globalAlpha = alpha
+              ctx.shadowBlur = 10
+              ctx.fillStyle = particle.color
+              ctx.beginPath()
+              ctx.arc(particle.x, particle.y, particleSize, 0, Math.PI * 2)
+              ctx.fill()
+
+              // Inner bright white core
+              ctx.globalAlpha = alpha * 0.9
+              ctx.shadowBlur = 8
+              ctx.shadowColor = "white"
+              ctx.fillStyle = "white"
+              ctx.beginPath()
+              ctx.arc(particle.x, particle.y, particleSize * 0.4, 0, Math.PI * 2)
+              ctx.fill()
             }
-
-            // Outer glow
-            ctx.save()
-            ctx.globalAlpha = alpha * 0.15
-            ctx.shadowBlur = 25
-            ctx.shadowColor = particle.color
-            ctx.fillStyle = particle.color
-            ctx.beginPath()
-            ctx.arc(particle.x, particle.y, glowSize * 1.5, 0, Math.PI * 2)
-            ctx.fill()
-
-            // Middle glow
-            ctx.globalAlpha = alpha * 0.4
-            ctx.shadowBlur = 15
-            ctx.beginPath()
-            ctx.arc(particle.x, particle.y, glowSize, 0, Math.PI * 2)
-            ctx.fill()
-
-            // Main particle
-            ctx.globalAlpha = alpha
-            ctx.shadowBlur = 10
-            ctx.fillStyle = particle.color
-            ctx.beginPath()
-            ctx.arc(particle.x, particle.y, particleSize, 0, Math.PI * 2)
-            ctx.fill()
-
-            // Inner bright white core
-            ctx.globalAlpha = alpha * 0.9
-            ctx.shadowBlur = 8
-            ctx.shadowColor = "white"
-            ctx.fillStyle = "white"
-            ctx.beginPath()
-            ctx.arc(particle.x, particle.y, particleSize * 0.4, 0, Math.PI * 2)
-            ctx.fill()
 
             ctx.restore()
           }
@@ -224,23 +254,30 @@ export const Fireworks = forwardRef<FireworksHandle, { className?: string }>(({ 
         return hasActiveParticles
       })
 
-      animationFrameRef.current = requestAnimationFrame(animate)
+      const hasAnyActiveFireworks = fireworksRef.current.length > 0
+
+      if (hasAnyActiveFireworks) {
+        animationFrameRef.current = requestAnimationFrame(animate)
+      }
     }
 
     animate()
 
-    return () => {
-      window.removeEventListener("resize", handleResize)
-      if (resizeTimeout) {
-        clearTimeout(resizeTimeout)
-      }
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
-      }
-    }
-  }, [])
+    // Update resize when isMobile changes
+  }, [isMobile])
 
-  return <canvas ref={canvasRef} className={`fixed inset-0 pointer-events-none z-10 ${className || ""}`} />
+  return () => {
+    window.removeEventListener("resize", handleResize)
+    if (resizeTimeout) {
+      clearTimeout(resizeTimeout)
+    }
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current)
+    }
+  }
+}, [])
+
+return <canvas ref={canvasRef} className={`fixed inset-0 pointer-events-none z-10 ${className || ""}`} />
 })
 
 Fireworks.displayName = "Fireworks"
