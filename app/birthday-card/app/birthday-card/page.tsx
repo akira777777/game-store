@@ -132,6 +132,9 @@ export default function BirthdayCardPage() {
 
       // If reached target clicks, show card
       if (newCount >= clicksNeeded) {
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/9c660348-1fae-41cb-ac60-ee349900db14',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'page.tsx:137',message:'Target clicks reached',data:{newCount,clicksNeeded},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'H'})}).catch(()=>{});
+        // #endregion
         setGnomesVisible(false)
 
         // Launch spectacular fireworks show

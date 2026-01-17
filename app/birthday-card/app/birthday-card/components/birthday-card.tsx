@@ -65,6 +65,10 @@ export function BirthdayCard({ isVisible, isMobile = false, onReplay }: Birthday
   }, [])
 
   useEffect(() => {
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/9c660348-1fae-41cb-ac60-ee349900db14',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'birthday-card.tsx:67',message:'BirthdayCard useEffect triggered',data:{isVisible,hasOnReplay:!!onReplay,hasOnCakeComplete:!!onCakeComplete},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
+    
     if (!isVisible) {
       setShowCard(false)
       setShowConfetti(false)
@@ -79,14 +83,29 @@ export function BirthdayCard({ isVisible, isMobile = false, onReplay }: Birthday
     // Show card with slight delay for dramatic effect
     setTimeout(() => {
       setShowCard(true)
+      // #region agent log
+      fetch('http://127.0.0.1:7244/ingest/9c660348-1fae-41cb-ac60-ee349900db14',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'birthday-card.tsx:85',message:'Card shown',data:{showCard:true},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'B'})}).catch(()=>{});
+      // #endregion
     }, 200)
 
     // Show replay button after card animation
     setTimeout(() => {
       setShowReplayButton(true)
+      // #region agent log
+      fetch('http://127.0.0.1:7244/ingest/9c660348-1fae-41cb-ac60-ee349900db14',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'birthday-card.tsx:93',message:'Replay button shown',data:{showReplayButton:true},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'C'})}).catch(()=>{});
+      // #endregion
     }, 2500)
 
-  }, [isVisible, triggerHaptic])
+    // Call onCakeComplete if provided (for compatibility with Cake component version)
+    if (onCakeComplete) {
+      // #region agent log
+      fetch('http://127.0.0.1:7244/ingest/9c660348-1fae-41cb-ac60-ee349900db14',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'birthday-card.tsx:101',message:'onCakeComplete callback available',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'D'})}).catch(()=>{});
+      // #endregion
+      // Note: This component uses Image, not Cake, so this is for compatibility only
+      // The actual cake completion logic would be in the Cake component version
+    }
+
+  }, [isVisible, triggerHaptic, onReplay, onCakeComplete])
 
   if (!isVisible) return null
 

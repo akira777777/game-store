@@ -137,7 +137,7 @@ export default function BirthdayCardPage() {
                     particleCount
                   )
                 }
-              }, i * (isMobile ? 200 : 150))
+              }, i * (isMobile ? 200 : 150)))
             }
 
             // Additional random fireworks
@@ -149,7 +149,7 @@ export default function BirthdayCardPage() {
                   const randomY = centerY + (Math.random() - 0.5) * window.innerHeight * 0.6
                   fireworksRef.current.launch(randomX, randomY, extraParticles)
                 }
-              }, (isMobile ? 1200 : 1800) + i * 200)
+              }, (isMobile ? 1200 : 1800) + i * 200))
             }
 
             // Final center mega-firework
@@ -170,10 +170,10 @@ export default function BirthdayCardPage() {
                               isMobile ? 40 : 60
                             )
                           }
-                        }, j * 100)
+                        }, j * 100))
                       }
                     }
-                  }, 200)
+                  }, 200))
                 }
                 setShowCard(true)
                 // Activate confetti after card appears (with delay for fireworks to complete)
