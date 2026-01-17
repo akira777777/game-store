@@ -1,5 +1,7 @@
 import { GameGrid } from "@/components/game/game-grid"
+import { CtaSection } from "@/components/layout/cta-section"
 import { HeroSection } from "@/components/layout/hero-section"
+import { ValuePropsSection } from "@/components/layout/value-props-section"
 import { Button } from "@/components/ui/button"
 import { db } from "@/lib/db"
 import { ArrowRight, TrendingUp } from "lucide-react"
@@ -44,6 +46,8 @@ export default async function HomePage() {
         <HeroSection />
 
         <main className="container mx-auto px-4 py-12 space-y-16" role="main">
+          <ValuePropsSection />
+
           {/* Featured Games Section */}
           <section className="space-y-6" aria-labelledby="featured-heading">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -131,6 +135,8 @@ export default async function HomePage() {
               <GameGrid games={discountedGames.slice(0, 8)} />
             </section>
           )}
+
+          <CtaSection />
         </main>
       </div>
     )
