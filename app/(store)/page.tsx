@@ -20,12 +20,17 @@ export default async function HomePage() {
       orderBy: { createdAt: "desc" },
     })
 
-    // For SQLite compatibility, get all games and filter in memory
+    // Get discounted games using database query
     const discountedGamesPromise = db.game.findMany({
-      take: 20,
+      where: {
+        inStock: true,
+        discountPrice: {
+          not: null,
+          gt: 0,
+        },
+      },
+      take: 8,
       orderBy: { createdAt: "desc" },
-    }).then(games => {
-      return games.filter(game => game.discountPrice !== null && Number(game.discountPrice) > 0).slice(0, 8);
     })
 
     const [featuredGames, newGames, discountedGames] = await Promise.all([

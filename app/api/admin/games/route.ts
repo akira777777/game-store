@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
+import { logger } from "@/lib/logger"
 import { z } from "zod"
 
 const gameSchema = z.object({
@@ -49,8 +50,8 @@ export async function POST(request: NextRequest) {
     const game = await db.game.create({
       data: {
         ...validatedData,
-        images: Array.isArray(validatedData.images) 
-          ? JSON.stringify(validatedData.images) 
+        images: Array.isArray(validatedData.images)
+          ? JSON.stringify(validatedData.images)
           : (typeof validatedData.images === 'string' ? validatedData.images : '[]'),
         platforms: Array.isArray(validatedData.platforms)
           ? JSON.stringify(validatedData.platforms)
@@ -73,7 +74,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error("Error creating game:", error)
+    logger.error("Error creating game", error, {
+      userId: session?.user?.id,
+      slug: validatedData.slug,
+    })
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

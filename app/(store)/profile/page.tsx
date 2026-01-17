@@ -144,8 +144,8 @@ export default async function ProfilePage() {
                             <p className="text-xl font-bold">
                               ${Number(order.total).toFixed(2)}
                             </p>
-                            <Badge variant={statusColors[order.status] as any}>
-                              {statusLabels[order.status]}
+                            <Badge variant={statusColors[order.status] as "default" | "secondary" | "destructive"}>
+                              {statusLabels[order.status] || order.status}
                             </Badge>
                           </div>
                         </div>

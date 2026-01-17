@@ -8,7 +8,8 @@ import CredentialsProvider from "next-auth/providers/credentials"
 type Role = "CUSTOMER" | "ADMIN"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(db) as any,
+  // PrismaAdapter type compatibility issue - adapter is optional when using credentials
+  // adapter: PrismaAdapter(db) as any,
   session: {
     strategy: "jwt",
   },
@@ -27,7 +28,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           throw new Error("Invalid credentials")
         }
 
-        const email = credentials.email as string
+        // Normalize email to lowercase for case-insensitive comparison
+        const email = (credentials.email as string).toLowerCase().trim()
         const password = credentials.password as string
 
         const user = await db.user.findUnique({
@@ -62,7 +64,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
-        token.role = (user as any).role
+        // User interface extends with role property via module declaration
+        token.role = user.role
       }
       return token
     },

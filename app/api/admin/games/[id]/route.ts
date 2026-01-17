@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
+import { logger } from "@/lib/logger"
 import { z } from "zod"
-
-// Role type for SQLite (stored as string)
-type Role = "CUSTOMER" | "ADMIN"
 
 const gameSchema = z.object({
   title: z.string().min(1).optional(),
@@ -50,7 +48,10 @@ export async function GET(
 
     return NextResponse.json({ game })
   } catch (error) {
-    console.error("Error fetching game:", error)
+    logger.error("Error fetching game", error, {
+      gameId: params.id,
+      userId: session?.user?.id,
+    })
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -101,26 +102,26 @@ export async function PUT(
       }
     }
 
-    const updateData: any = { ...validatedData }
-    
+    const updateData: Record<string, unknown> = { ...validatedData }
+
     if (updateData.images !== undefined) {
       updateData.images = Array.isArray(updateData.images)
         ? JSON.stringify(updateData.images)
         : (typeof updateData.images === 'string' ? updateData.images : '[]')
     }
-    
+
     if (updateData.platforms !== undefined) {
       updateData.platforms = Array.isArray(updateData.platforms)
         ? JSON.stringify(updateData.platforms)
         : updateData.platforms
     }
-    
+
     if (updateData.genres !== undefined) {
       updateData.genres = Array.isArray(updateData.genres)
         ? JSON.stringify(updateData.genres)
         : updateData.genres
     }
-    
+
     if (updateData.releaseDate !== undefined) {
       updateData.releaseDate = updateData.releaseDate
         ? new Date(updateData.releaseDate)
@@ -141,7 +142,10 @@ export async function PUT(
       )
     }
 
-    console.error("Error updating game:", error)
+    logger.error("Error updating game", error, {
+      gameId: params.id,
+      userId: session?.user?.id,
+    })
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -180,7 +184,10 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Error deleting game:", error)
+    logger.error("Error deleting game", error, {
+      gameId: params.id,
+      userId: session?.user?.id,
+    })
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

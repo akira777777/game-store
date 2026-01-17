@@ -27,18 +27,37 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Calculate total
+    // Validate all cart items are in stock
+    const outOfStockItems = cartItems.filter(item => !item.game.inStock)
+    if (outOfStockItems.length > 0) {
+      return NextResponse.json(
+        { error: "Some items in your cart are out of stock" },
+        { status: 400 }
+      )
+    }
+
+    // Calculate total with validation
     const total = cartItems.reduce((sum, item) => {
       const price = Number(item.game.discountPrice || item.game.price)
+      if (!isFinite(price) || price < 0) {
+        throw new Error(`Invalid price for game: ${item.game.title}`)
+      }
       return sum + price * item.quantity
     }, 0)
+
+    if (!isFinite(total) || total <= 0) {
+      return NextResponse.json(
+        { error: "Invalid cart total" },
+        { status: 400 }
+      )
+    }
 
     // Create Stripe checkout session
     const stripeSession = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: cartItems.map((item) => {
-        const images = typeof item.game.images === 'string' 
-          ? JSON.parse(item.game.images || '[]') 
+        const images = typeof item.game.images === 'string'
+          ? JSON.parse(item.game.images || '[]')
           : (Array.isArray(item.game.images) ? item.game.images : [])
         return {
           price_data: {

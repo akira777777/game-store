@@ -21,59 +21,79 @@ export default async function GamesPage({
   searchParams: SearchParams
 }) {
   try {
-    const page = parseInt(searchParams.page || "1")
+    // Input validation with limits
+    const page = Math.max(1, parseInt(searchParams.page || "1", 10) || 1)
     const limit = 12
     const skip = (page - 1) * limit
 
-    // Get all games first (SQLite doesn't support array contains in where)
-    let allGames = await db.game.findMany({
-      where: {
-        inStock: true,
-      },
-    })
+    // Build where clause for PostgreSQL JSON queries
+    const whereConditions: any = {
+      inStock: true,
+    }
 
     // Filter by featured
     if (searchParams.featured === "true") {
-      allGames = allGames.filter(game => game.featured === true)
+      whereConditions.featured = true
     }
 
-    // Filter by genre/platform/search in memory
-    if (searchParams.genre) {
-      allGames = allGames.filter(game => {
-        const genres = typeof game.genres === 'string' ? JSON.parse(game.genres || '[]') : game.genres
-        return Array.isArray(genres) ? genres.includes(searchParams.genre) : false
-      })
+    // Filter by genre using PostgreSQL JSON contains
+    if (searchParams.genre?.trim()) {
+      whereConditions.genres = {
+        contains: `"${searchParams.genre.trim()}"`,
+      }
     }
 
-    if (searchParams.platform) {
-      allGames = allGames.filter(game => {
-        const platforms = typeof game.platforms === 'string' ? JSON.parse(game.platforms || '[]') : game.platforms
-        return Array.isArray(platforms) ? platforms.includes(searchParams.platform) : false
-      })
+    // Filter by platform using PostgreSQL JSON contains
+    if (searchParams.platform?.trim()) {
+      whereConditions.platforms = {
+        contains: `"${searchParams.platform.trim()}"`,
+      }
     }
 
-    if (searchParams.search) {
-      const searchLower = searchParams.search.toLowerCase()
-      allGames = allGames.filter(game => 
-        game.title.toLowerCase().includes(searchLower) ||
-        game.description.toLowerCase().includes(searchLower)
-      )
+    // Filter by search in title or description
+    if (searchParams.search?.trim()) {
+      whereConditions.OR = [
+        {
+          title: {
+            contains: searchParams.search.trim(),
+            mode: 'insensitive',
+          },
+        },
+        {
+          description: {
+            contains: searchParams.search.trim(),
+            mode: 'insensitive',
+          },
+        },
+      ]
     }
 
-    // Sort - support both 'sort' and 'sortBy' parameters
+    // Determine sort order
     const sortByParam = searchParams.sort || searchParams.sortBy || "newest"
-  if (sortByParam === "newest") {
-    allGames.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-  } else if (sortByParam === "oldest") {
-    allGames.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
-  } else if (sortByParam === "price_asc") {
-    allGames.sort((a, b) => Number(a.price) - Number(b.price))
-  } else if (sortByParam === "price_desc") {
-    allGames.sort((a, b) => Number(b.price) - Number(a.price))
-  }
+    let orderBy: any = { createdAt: "desc" }
 
-    const total = allGames.length
-    const games = allGames.slice(skip, skip + limit)
+    if (sortByParam === "newest") {
+      orderBy = { createdAt: "desc" }
+    } else if (sortByParam === "oldest") {
+      orderBy = { createdAt: "asc" }
+    } else if (sortByParam === "price_asc") {
+      orderBy = { price: "asc" }
+    } else if (sortByParam === "price_desc") {
+      orderBy = { price: "desc" }
+    }
+
+    // Execute query with filters and sorting at database level
+    const [games, total] = await Promise.all([
+      db.game.findMany({
+        where: whereConditions,
+        orderBy,
+        skip,
+        take: limit,
+      }),
+      db.game.count({
+        where: whereConditions,
+      }),
+    ])
 
     const totalPages = Math.ceil(total / limit)
 

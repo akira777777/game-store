@@ -1,58 +1,86 @@
 import { db } from "@/lib/db"
 import { NextRequest, NextResponse } from "next/server"
+import { Prisma } from "@prisma/client"
 
 export const dynamic = 'force-dynamic'
+
+// Constants for input validation
+const MAX_LIMIT = 100
+const DEFAULT_LIMIT = 12
+const MIN_PAGE = 1
+const VALID_SORT_FIELDS = ['createdAt', 'price', 'title', 'updatedAt'] as const
+const VALID_ORDER = ['asc', 'desc'] as const
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
-    const genre = searchParams.get("genre")
-    const platform = searchParams.get("platform")
-    const search = searchParams.get("search") || ""
-    const page = parseInt(searchParams.get("page") || "1")
-    const limit = parseInt(searchParams.get("limit") || "12")
-    const sortBy = searchParams.get("sortBy") || "createdAt"
-    const order = searchParams.get("order") || "desc"
+    const genre = searchParams.get("genre")?.trim() || null
+    const platform = searchParams.get("platform")?.trim() || null
+    const search = searchParams.get("search")?.trim() || ""
+    const page = Math.max(MIN_PAGE, parseInt(searchParams.get("page") || "1", 10) || MIN_PAGE)
+    const limit = Math.min(MAX_LIMIT, Math.max(1, parseInt(searchParams.get("limit") || String(DEFAULT_LIMIT), 10) || DEFAULT_LIMIT))
+    const sortByParam = searchParams.get("sortBy") || "createdAt"
+    const sortBy = VALID_SORT_FIELDS.includes(sortByParam as typeof VALID_SORT_FIELDS[number])
+      ? sortByParam as typeof VALID_SORT_FIELDS[number]
+      : "createdAt"
+    const orderParam = searchParams.get("order") || "desc"
+    const order = VALID_ORDER.includes(orderParam.toLowerCase() as typeof VALID_ORDER[number])
+      ? (orderParam.toLowerCase() as typeof VALID_ORDER[number])
+      : "desc"
 
     const skip = (page - 1) * limit
 
-    // Get all games first (SQLite doesn't support array contains in where)
-    let games = await db.game.findMany({
-      where: {
-        inStock: true,
-      },
-      orderBy: {
-        [sortBy]: order,
-      },
-    })
+    // Build where clause for PostgreSQL JSON queries
+    const whereConditions: Prisma.GameWhereInput = {
+      inStock: true,
+    }
 
-    // Filter by genre/platform/search in memory
+    // Filter by genre using PostgreSQL JSON contains
     if (genre) {
-      games = games.filter(game => {
-        const genres = typeof game.genres === 'string' ? JSON.parse(game.genres || '[]') : game.genres
-        return Array.isArray(genres) ? genres.includes(genre) : false
-      })
+      whereConditions.genres = {
+        contains: `"${genre}"`,
+      }
     }
 
+    // Filter by platform using PostgreSQL JSON contains
     if (platform) {
-      games = games.filter(game => {
-        const platforms = typeof game.platforms === 'string' ? JSON.parse(game.platforms || '[]') : game.platforms
-        return Array.isArray(platforms) ? platforms.includes(platform) : false
-      })
+      whereConditions.platforms = {
+        contains: `"${platform}"`,
+      }
     }
 
+    // Filter by search in title or description
     if (search) {
-      const searchLower = search.toLowerCase()
-      games = games.filter(game =>
-        game.title.toLowerCase().includes(searchLower) ||
-        game.description.toLowerCase().includes(searchLower)
-      )
+      whereConditions.OR = [
+        {
+          title: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          description: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+      ]
     }
 
-    const total = games.length
-
-    // Apply pagination
-    games = games.slice(skip, skip + limit)
+    // Execute query with filters applied at database level
+    const [games, total] = await Promise.all([
+      db.game.findMany({
+        where: whereConditions,
+        orderBy: {
+          [sortBy]: order,
+        },
+        skip,
+        take: limit,
+      }),
+      db.game.count({
+        where: whereConditions,
+      }),
+    ])
 
     return NextResponse.json({
       games,

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
+import { logger } from "@/lib/logger"
 
 export async function GET(
   request: NextRequest,
@@ -16,7 +17,9 @@ export async function GET(
 
     return NextResponse.json({ game })
   } catch (error) {
-    console.error("Error fetching game:", error)
+    logger.error("Error fetching game by slug", error, {
+      slug: params.slug,
+    })
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

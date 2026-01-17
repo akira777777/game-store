@@ -39,12 +39,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { gameId, quantity = 1 } = body
 
-    if (!gameId) {
+    if (!gameId || typeof gameId !== 'string') {
       return NextResponse.json(
         { error: "Game ID is required" },
         { status: 400 }
       )
     }
+
+    // Validate quantity
+    const validQuantity = Math.max(1, Math.min(99, Math.floor(Number(quantity)) || 1))
 
     // Check if game exists and is in stock
     const game = await db.game.findUnique({
@@ -67,12 +70,12 @@ export async function POST(request: NextRequest) {
         },
       },
       update: {
-        quantity: { increment: quantity },
+        quantity: { increment: validQuantity },
       },
       create: {
         userId: session.user.id,
         gameId: gameId,
-        quantity: quantity,
+        quantity: validQuantity,
       },
       include: { game: true },
     })
@@ -141,14 +144,24 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json()
     const { gameId, quantity } = body
 
-    if (!gameId || quantity === undefined) {
+    if (!gameId || typeof gameId !== 'string') {
       return NextResponse.json(
-        { error: "Game ID and quantity are required" },
+        { error: "Game ID is required" },
         { status: 400 }
       )
     }
 
-    if (quantity <= 0) {
+    if (quantity === undefined || typeof quantity !== 'number') {
+      return NextResponse.json(
+        { error: "Quantity is required" },
+        { status: 400 }
+      )
+    }
+
+    // Validate quantity range (0-99)
+    const validQuantity = Math.max(0, Math.min(99, Math.floor(Number(quantity))))
+
+    if (validQuantity <= 0) {
       // Delete item if quantity is 0 or less
       await db.cartItem.delete({
         where: {
@@ -168,7 +181,7 @@ export async function PATCH(request: NextRequest) {
           gameId: gameId,
         },
       },
-      data: { quantity },
+      data: { quantity: validQuantity },
       include: { game: true },
     })
 
