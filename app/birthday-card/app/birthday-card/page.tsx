@@ -5,7 +5,7 @@ import { BirthdayCard } from "./components/birthday-card"
 import { Fireworks, FireworksHandle } from "./components/fireworks"
 import { Gnome } from "./components/gnome"
 
-const GNOME_COUNT = 4
+const GNOME_COUNT = 3  // We have 3 gnome images
 const REDUCED_MOTION_FACTOR = 0.6
 const MIN_STARS_COUNT = 20
 const MIN_TWINKLE_COUNT = 6
@@ -363,7 +363,7 @@ export default function BirthdayCardPage() {
       ))}
 
       {/* Birthday card */}
-      <BirthdayCard isVisible={showCard} isMobile={isMobile} />
+      <BirthdayCard isVisible={showCard} isMobile={isMobile} onReplay={handleReset} />
 
       {showCard && (
         <div
