@@ -264,20 +264,19 @@ export const Fireworks = forwardRef<FireworksHandle, { className?: string; isMob
     animate()
 
     // Update resize when isMobile changes
+    return () => {
+      window.removeEventListener("resize", handleResize)
+      if (resizeTimeout) {
+        clearTimeout(resizeTimeout)
+      }
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current)
+      }
+    }
   }, [isMobile])
-
-  return () => {
-    window.removeEventListener("resize", handleResize)
-    if (resizeTimeout) {
-      clearTimeout(resizeTimeout)
-    }
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current)
-    }
-  }
-}, [])
 
 return <canvas ref={canvasRef} className={`fixed inset-0 pointer-events-none z-10 ${className || ""}`} />
 })
 
 Fireworks.displayName = "Fireworks"
+
