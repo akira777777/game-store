@@ -10,6 +10,7 @@ type Role = "CUSTOMER" | "ADMIN"
 export const { handlers, auth, signIn, signOut } = NextAuth({
   // PrismaAdapter type compatibility issue - adapter is optional when using credentials
   // adapter: PrismaAdapter(db) as any,
+  trustHost: true, // Required for middleware to work in production (Vercel, etc.)
   session: {
     strategy: "jwt",
   },

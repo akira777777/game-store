@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth"
 import { NextResponse } from "next/server"
 
 export default auth((req) => {
-  const session = (req as any).auth
+  const session = req.auth
   const isAdmin = session?.user?.role === "ADMIN"
   const pathname = req.nextUrl.pathname
 
