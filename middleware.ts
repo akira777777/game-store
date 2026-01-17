@@ -1,9 +1,7 @@
 import { auth } from "@/lib/auth"
 import { NextResponse } from "next/server"
 
-// #region agent log
-// Wrap auth middleware to catch initialization errors
-const authMiddleware = auth((req) => {
+export default auth((req) => {
   // #region agent log
   fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'middleware.ts:5',message:'Middleware entry',data:{pathname:req.nextUrl.pathname,url:req.url,hasAuth:!!req.auth,envSecret:!!process.env.NEXTAUTH_SECRET},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'A'})}).catch(()=>{});
   // #endregion
@@ -63,27 +61,11 @@ const authMiddleware = auth((req) => {
     )
   }
 
+  // #region agent log
+  fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'middleware.ts:49',message:'Middleware completion - returning response',data:{pathname},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'A'})}).catch(()=>{});
+  // #endregion
   return response
-});
-
-// Wrap with error handling
-export default async function middleware(req: Parameters<Parameters<typeof auth>[0]>[0]) {
-  try {
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'middleware.ts:70',message:'Auth middleware wrapper entry',data:{pathname:req.nextUrl.pathname,hasNEXTAUTH_SECRET:!!process.env.NEXTAUTH_SECRET,hasNEXTAUTH_URL:!!process.env.NEXTAUTH_URL},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
-    return await authMiddleware(req);
-  } catch (error) {
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'middleware.ts:76',message:'Auth middleware error caught',data:{error:error instanceof Error?error.message:String(error),errorName:error instanceof Error?error.name:undefined,errorStack:error instanceof Error?error.stack:undefined},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
-    // Return error response instead of crashing
-    return NextResponse.json(
-      { error: 'Middleware error', details: error instanceof Error ? error.message : String(error) },
-      { status: 500 }
-    );
-  }
-}
+})
 
 export const config = {
   matcher: [
