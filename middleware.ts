@@ -1,26 +1,36 @@
 import { auth } from "@/lib/auth"
 import { NextResponse } from "next/server"
 
+// #region agent log
+// Check if secret is available before middleware initialization
+const hasSecret = !!(process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET);
+if (!hasSecret && typeof console !== 'undefined' && console.error) {
+  console.error('[Middleware] AUTH_SECRET or NEXTAUTH_SECRET is missing. Middleware may fail.');
+}
+// #endregion
+
 export default auth((req) => {
   // #region agent log
-  fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'middleware.ts:5',message:'Middleware entry',data:{pathname:req.nextUrl.pathname,url:req.url,hasAuth:!!req.auth,envSecret:!!process.env.NEXTAUTH_SECRET},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'A'})}).catch(()=>{});
+  // Log to console for Vercel Edge Runtime (fetch to localhost doesn't work in Edge)
+  if (typeof console !== 'undefined' && console.log) {
+    console.log('[Middleware] Entry:', {
+      pathname: req.nextUrl.pathname,
+      hasAuth: !!req.auth,
+      hasSecret: !!(process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET)
+    });
+  }
   // #endregion
   
-  let session;
-  try {
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'middleware.ts:12',message:'Before req.auth access',data:{reqAuthType:typeof req.auth},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'B'})}).catch(()=>{});
-    // #endregion
-    session = req.auth;
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'middleware.ts:16',message:'After req.auth access',data:{sessionExists:!!session,hasUser:!!session?.user,userRole:session?.user?.role},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'B'})}).catch(()=>{});
-    // #endregion
-  } catch (error) {
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'middleware.ts:20',message:'Error accessing req.auth',data:{error:error instanceof Error?error.message:String(error),errorStack:error instanceof Error?error.stack:undefined},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'B'})}).catch(()=>{});
-    // #endregion
-    throw error;
+  const session = req.auth;
+  // #region agent log
+  if (typeof console !== 'undefined' && console.log) {
+    console.log('[Middleware] Session:', {
+      exists: !!session,
+      hasUser: !!session?.user,
+      role: session?.user?.role
+    });
   }
+  // #endregion
   
   const isAdmin = session?.user?.role === "ADMIN"
   const pathname = req.nextUrl.pathname
@@ -28,20 +38,11 @@ export default auth((req) => {
   // Protect admin routes
   if (pathname.startsWith("/admin") && !isAdmin) {
     // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'middleware.ts:30',message:'Admin route protection - redirecting',data:{pathname,isAdmin,url:req.url},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'C'})}).catch(()=>{});
-    // #endregion
-    try {
-      const redirectUrl = new URL("/", req.url);
-      // #region agent log
-      fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'middleware.ts:34',message:'URL created successfully',data:{redirectUrl:redirectUrl.toString()},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'C'})}).catch(()=>{});
-      // #endregion
-      return NextResponse.redirect(redirectUrl);
-    } catch (error) {
-      // #region agent log
-      fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'middleware.ts:38',message:'Error creating redirect URL',data:{error:error instanceof Error?error.message:String(error),reqUrl:req.url},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'C'})}).catch(()=>{});
-      // #endregion
-      throw error;
+    if (typeof console !== 'undefined' && console.log) {
+      console.log('[Middleware] Admin route protection:', { pathname, isAdmin });
     }
+    // #endregion
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
   // Add security headers
@@ -62,7 +63,9 @@ export default auth((req) => {
   }
 
   // #region agent log
-  fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'middleware.ts:49',message:'Middleware completion - returning response',data:{pathname},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'A'})}).catch(()=>{});
+  if (typeof console !== 'undefined' && console.log) {
+    console.log('[Middleware] Completion:', { pathname });
+  }
   // #endregion
   return response
 })

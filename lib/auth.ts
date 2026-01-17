@@ -80,5 +80,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  // Support both AUTH_SECRET (preferred in v5) and NEXTAUTH_SECRET (legacy)
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
 })
