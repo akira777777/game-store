@@ -39,8 +39,6 @@ const nextConfig = {
   // Enable React strict mode for better error detection
   reactStrictMode: false, // Disable in production to reduce bundle size
 
-  // Cloudflare compatibility
-  unoptimized: true,
 
   // Reduce bundle size for Cloudflare Pages
   modularizeImports: {

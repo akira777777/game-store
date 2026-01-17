@@ -65,14 +65,14 @@ export function GameCard({ game }: GameCardProps) {
             {hasDiscount ? (
               <div>
                 <span className="text-2xl font-bold text-destructive">
-                  ${finalPrice.toString()}
+                  ${finalPrice !== null && finalPrice !== undefined ? finalPrice.toString() : '0'}
                 </span>
                 <span className="ml-2 text-sm line-through text-muted-foreground">
-                  ${game.price.toString()}
+                  ${game.price !== null && game.price !== undefined ? game.price.toString() : '0'}
                 </span>
               </div>
             ) : (
-              <span className="text-2xl font-bold">${finalPrice.toString()}</span>
+              <span className="text-2xl font-bold">${finalPrice !== null && finalPrice !== undefined ? finalPrice.toString() : '0'}</span>
             )}
           </div>
         </div>
