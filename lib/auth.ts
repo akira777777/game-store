@@ -31,16 +31,16 @@ if (!authSecret && process.env.NODE_ENV === 'production') {
 // #endregion
 
 // #region agent log
-// Wrap NextAuth initialization in try-catch for better error reporting
-let authConfig: any;
-try {
-  authConfig = {
+// Log auth config initialization attempt
+if (typeof console !== 'undefined' && console.log) {
+  console.log('[Auth] Starting NextAuth initialization');
+}
+// #endregion
+
+export const { handlers, auth, signIn, signOut } = NextAuth({
   // PrismaAdapter type compatibility issue - adapter is optional when using credentials
   // adapter: PrismaAdapter(db) as any,
   trustHost: true, // Required for middleware to work in production (Vercel, etc.)
-  // #region agent log
-  // Log auth config initialization
-  // #endregion
   session: {
     strategy: "jwt",
   },
@@ -110,29 +110,11 @@ try {
   },
   // Support both AUTH_SECRET (preferred in v5) and NEXTAUTH_SECRET (legacy)
   secret: authSecret,
-  };
-  if (typeof console !== 'undefined' && console.log) {
-    console.log('[Auth] Config created successfully');
-  }
-} catch (error) {
-  if (typeof console !== 'undefined' && console.error) {
-    console.error('[Auth] Config creation error:', error);
-  }
-  throw error;
-}
+})
 
-let nextAuthResult;
-try {
-  nextAuthResult = NextAuth(authConfig);
-  if (typeof console !== 'undefined' && console.log) {
-    console.log('[Auth] NextAuth initialized successfully');
-  }
-} catch (error) {
-  if (typeof console !== 'undefined' && console.error) {
-    console.error('[Auth] NextAuth initialization error:', error);
-  }
-  throw error;
+// #region agent log
+// Log successful initialization
+if (typeof console !== 'undefined' && console.log) {
+  console.log('[Auth] NextAuth initialized successfully');
 }
-
-export const { handlers, auth, signIn, signOut } = nextAuthResult;
 // #endregion
