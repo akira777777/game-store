@@ -98,13 +98,12 @@ export function BirthdayCard({ isVisible, isMobile = false, onCakeComplete }: Bi
     }
   }, [isVisible, isMobile])
 
-  if (!isVisible) return null
-
   // Reduced particles for mobile performance
   const particleCount = isMobile ? 15 : 30
   const sparkleCount = isMobile ? 12 : 24
 
   // Generate stable particle positions using useMemo to avoid hydration issues
+  // Must be called before any early returns (React Hooks rules)
   const particles = useMemo(() => {
     return Array.from({ length: particleCount }, (_, i) => {
       // Use seeded random for consistent values
@@ -123,6 +122,8 @@ export function BirthdayCard({ isVisible, isMobile = false, onCakeComplete }: Bi
       }
     })
   }, [particleCount])
+
+  if (!isVisible) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none overflow-hidden p-4">

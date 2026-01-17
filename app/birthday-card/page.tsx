@@ -33,10 +33,12 @@ export default function BirthdayCardPage() {
 
   // Cleanup timeouts on unmount
   useEffect(() => {
+    // Capture current ref value to avoid stale closure issues
+    const timeouts = timeoutsRef.current
     return () => {
       // Clear all tracked timeouts
-      timeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId))
-      timeoutsRef.current.clear()
+      timeouts.forEach((timeoutId) => clearTimeout(timeoutId))
+      timeouts.clear()
     }
   }, [])
 

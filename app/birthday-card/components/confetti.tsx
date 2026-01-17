@@ -81,7 +81,7 @@ export function Confetti({ active, onComplete, isMobile = false }: ConfettiProps
         fadeTimeoutRef.current = null
       }
     }
-  }, [active, shouldRender, onComplete])
+  }, [active, shouldRender, onComplete, isMobile])
 
   useEffect(() => {
     if (!shouldRender) return
@@ -183,7 +183,7 @@ export function Confetti({ active, onComplete, isMobile = false }: ConfettiProps
         cancelAnimationFrame(animationFrameRef.current)
       }
     }
-  }, [shouldRender, onComplete])
+  }, [shouldRender, onComplete, isMobile])
 
   if (!shouldRender) return null
 

@@ -96,16 +96,7 @@ export function BirthdayCard({ isVisible, isMobile = false, onReplay }: Birthday
       // #endregion
     }, 2500)
 
-    // Call onCakeComplete if provided (for compatibility with Cake component version)
-    if (onCakeComplete) {
-      // #region agent log
-      fetch('http://127.0.0.1:7244/ingest/9c660348-1fae-41cb-ac60-ee349900db14',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'birthday-card.tsx:101',message:'onCakeComplete callback available',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'D'})}).catch(()=>{});
-      // #endregion
-      // Note: This component uses Image, not Cake, so this is for compatibility only
-      // The actual cake completion logic would be in the Cake component version
-    }
-
-  }, [isVisible, triggerHaptic, onReplay, onCakeComplete])
+  }, [isVisible, triggerHaptic, onReplay])
 
   if (!isVisible) return null
 
