@@ -1,6 +1,6 @@
 # Настройка переменных окружения в Vercel
 
-## Критически важно перед деплоем:
+## Критически важно перед деплоем
 
 ### Шаг 1: Создайте PostgreSQL базу данных
 
@@ -35,6 +35,7 @@ npm run db:migrate:deploy
 ### Шаг 4: Перезапустите деплой
 
 После добавления переменных окружения:
+
 1. Перейдите в **Deployments**
 2. Нажмите **Redeploy** на последнем деплое
 3. Или сделайте новый коммит и push
@@ -48,6 +49,7 @@ postgresql://user:password@host:port/database?schema=public
 ```
 
 Пример от Vercel Postgres:
+
 ```
 postgres://default:xxx@xxx.postgres.vercel-storage.com:5432/verceldb
 ```

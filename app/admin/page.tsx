@@ -1,5 +1,5 @@
-import { db } from "@/lib/db"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { db } from "@/lib/db"
 
 export const dynamic = 'force-dynamic'
 
