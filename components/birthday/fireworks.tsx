@@ -38,8 +38,8 @@ export const Fireworks = forwardRef<FireworksHandle, { className?: string }>(
         const color = colors[Math.floor(Math.random() * colors.length)]
 
         for (let i = 0; i < count; i++) {
-          const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.5
-          const speed = 2 + Math.random() * 4
+          const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.3
+          const speed = 2.5 + Math.random() * 5
           particles.push({
             x,
             y,
@@ -47,8 +47,8 @@ export const Fireworks = forwardRef<FireworksHandle, { className?: string }>(
             vy: Math.sin(angle) * speed,
             color: colors[Math.floor(Math.random() * colors.length)],
             life: 1,
-            maxLife: 60 + Math.random() * 40,
-            size: 2 + Math.random() * 3,
+            maxLife: 80 + Math.random() * 60,
+            size: 2.5 + Math.random() * 4,
           })
         }
 
@@ -74,15 +74,28 @@ export const Fireworks = forwardRef<FireworksHandle, { className?: string }>(
       if (!ctx) return
 
       const resize = () => {
-        canvas.width = window.innerWidth
-        canvas.height = window.innerHeight
+        const dpr = window.devicePixelRatio || 1
+        const rect = canvas.getBoundingClientRect()
+        canvas.width = rect.width * dpr
+        canvas.height = rect.height * dpr
+        ctx.scale(dpr, dpr)
+        canvas.style.width = `${rect.width}px`
+        canvas.style.height = `${rect.height}px`
       }
 
       resize()
-      window.addEventListener("resize", resize)
+      
+      let resizeTimeout: NodeJS.Timeout
+      const handleResize = () => {
+        clearTimeout(resizeTimeout)
+        resizeTimeout = setTimeout(resize, 250)
+      }
+      
+      window.addEventListener("resize", handleResize)
 
       const animate = () => {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.1)"
+        // Clear with fade effect for trail
+        ctx.fillStyle = "rgba(0, 0, 0, 0.15)"
         ctx.fillRect(0, 0, canvas.width, canvas.height)
 
         fireworksRef.current = fireworksRef.current.filter((firework) => {
@@ -106,19 +119,35 @@ export const Fireworks = forwardRef<FireworksHandle, { className?: string }>(
               // Update life
               particle.life -= 1 / particle.maxLife
 
-              // Draw particle
+              // Draw particle with glow effect
               const alpha = particle.life
+              
+              // Outer glow
+              ctx.save()
+              ctx.globalAlpha = alpha * 0.3
+              ctx.shadowBlur = 20
+              ctx.shadowColor = particle.color
+              ctx.fillStyle = particle.color
+              ctx.beginPath()
+              ctx.arc(particle.x, particle.y, particle.size * alpha * 2, 0, Math.PI * 2)
+              ctx.fill()
+              ctx.restore()
+
+              // Main particle
+              ctx.save()
               ctx.globalAlpha = alpha
               ctx.fillStyle = particle.color
               ctx.beginPath()
               ctx.arc(particle.x, particle.y, particle.size * alpha, 0, Math.PI * 2)
               ctx.fill()
-
-              // Add glow effect
-              ctx.shadowBlur = 10
-              ctx.shadowColor = particle.color
+              
+              // Inner bright core
+              ctx.globalAlpha = alpha * 0.8
+              ctx.fillStyle = "white"
+              ctx.beginPath()
+              ctx.arc(particle.x, particle.y, particle.size * alpha * 0.3, 0, Math.PI * 2)
               ctx.fill()
-              ctx.shadowBlur = 0
+              ctx.restore()
             }
           })
 
@@ -132,7 +161,10 @@ export const Fireworks = forwardRef<FireworksHandle, { className?: string }>(
       animate()
 
       return () => {
-        window.removeEventListener("resize", resize)
+        window.removeEventListener("resize", handleResize)
+        if (resizeTimeout) {
+          clearTimeout(resizeTimeout)
+        }
         if (animationFrameRef.current) {
           cancelAnimationFrame(animationFrameRef.current)
         }

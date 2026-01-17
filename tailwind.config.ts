@@ -109,7 +109,7 @@ const config = {
         },
         "pulse-gnome": {
           "0%, 100%": { transform: "scale(1)", opacity: "1" },
-          "50%": { transform: "scale(1.05)", opacity: "0.9" },
+          "50%": { transform: "scale(1.03)", opacity: "0.95" },
         },
         "card-reveal": {
           "0%": {
@@ -127,12 +127,20 @@ const config = {
         },
         sparkle: {
           "0%, 100%": {
-            transform: "scale(0) rotate(0deg)",
+            transform: "scale(0) rotate(0deg) translateY(0)",
             opacity: "0",
           },
           "50%": {
-            transform: "scale(1.5) rotate(180deg)",
+            transform: "scale(1.8) rotate(180deg) translateY(-10px)",
             opacity: "1",
+          },
+        },
+        "progress-pulse": {
+          "0%, 100%": {
+            opacity: "1",
+          },
+          "50%": {
+            opacity: "0.7",
           },
         },
       },
@@ -147,6 +155,7 @@ const config = {
         "pulse-gnome": "pulse-gnome 2s ease-in-out infinite",
         "card-reveal": "card-reveal 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
         sparkle: "sparkle 2s ease-in-out infinite",
+        "progress-pulse": "progress-pulse 2s ease-in-out infinite",
       },
     },
   },

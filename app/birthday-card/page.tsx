@@ -1,8 +1,8 @@
 "use client"
 
-import { BirthdayCard } from "@/components/birthday/birthday-card"
-import { Fireworks, FireworksHandle } from "@/components/birthday/fireworks"
-import { Gnome } from "@/components/birthday/gnome"
+import { BirthdayCard } from "./components/birthday-card"
+import { Fireworks, FireworksHandle } from "./components/fireworks"
+import { Gnome } from "./components/gnome"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 const GNOME_COUNT = 4
@@ -14,7 +14,7 @@ interface GnomePosition {
   y: number
 }
 
-export default function BirthdayPage() {
+export default function BirthdayCardPage() {
   const [clickCount, setClickCount] = useState(0)
   const [gnomes, setGnomes] = useState<GnomePosition[]>([])
   const [showCard, setShowCard] = useState(false)
