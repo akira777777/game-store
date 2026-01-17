@@ -66,7 +66,7 @@ export function BirthdayCard({ isVisible, isMobile = false, onReplay }: Birthday
 
   useEffect(() => {
     // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/9c660348-1fae-41cb-ac60-ee349900db14',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'birthday-card.tsx:67',message:'BirthdayCard useEffect triggered',data:{isVisible,hasOnReplay:!!onReplay,hasOnCakeComplete:!!onCakeComplete},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'A'})}).catch(()=>{});
+    fetch('http://127.0.0.1:7244/ingest/9c660348-1fae-41cb-ac60-ee349900db14',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'birthday-card.tsx:67',message:'BirthdayCard useEffect triggered',data:{isVisible,hasOnReplay:!!onReplay},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'A'})}).catch(()=>{});
     // #endregion
     
     if (!isVisible) {
