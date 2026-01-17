@@ -2,8 +2,15 @@ import { auth } from "@/lib/auth"
 import { NextResponse } from "next/server"
 
 // #region agent log
+// Log middleware module loading - if this executes, module loaded successfully
+if (typeof console !== 'undefined' && console.log) {
+  console.log('[Middleware] Module loaded successfully');
+}
 // Check if secret is available before middleware initialization
 const hasSecret = !!(process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET);
+if (typeof console !== 'undefined' && console.log) {
+  console.log('[Middleware] Secret check:', { hasSecret });
+}
 if (!hasSecret && typeof console !== 'undefined' && console.error) {
   console.error('[Middleware] AUTH_SECRET or NEXTAUTH_SECRET is missing. Middleware may fail.');
 }

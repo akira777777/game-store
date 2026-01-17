@@ -1,7 +1,21 @@
-import { db } from "@/lib/db"
+// #region agent log
+// Log module import to track initialization order
+if (typeof console !== 'undefined' && console.log) {
+  console.log('[Auth] Module loading started');
+}
+// #endregion
+
+// Lazy import db to avoid Prisma Client initialization in Edge Runtime (middleware)
+// db will only be imported when authorize() is called, which doesn't run in middleware
 import bcrypt from "bcryptjs"
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
+
+// #region agent log
+if (typeof console !== 'undefined' && console.log) {
+  console.log('[Auth] Core dependencies loaded (bcrypt, NextAuth, CredentialsProvider)');
+}
+// #endregion
 
 // Role type for SQLite (stored as string)
 type Role = "CUSTOMER" | "ADMIN"
@@ -55,6 +69,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        // #region agent log
+        if (typeof console !== 'undefined' && console.log) {
+          console.log('[Auth] authorize() called - lazy loading db');
+        }
+        // #endregion
+        
+        // Lazy import db only when authorize() is called (not in middleware/Edge Runtime)
+        const { db } = await import("@/lib/db");
+        
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Invalid credentials")
         }
