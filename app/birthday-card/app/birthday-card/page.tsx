@@ -365,21 +365,6 @@ export default function BirthdayCardPage() {
       {/* Birthday card */}
       <BirthdayCard isVisible={showCard} isMobile={isMobile} onReplay={handleReset} />
 
-      {showCard && (
-        <div
-          className={`absolute left-1/2 transform -translate-x-1/2 z-50 pointer-events-auto ${isMobile ? "bottom-4" : "bottom-8"
-            }`}
-          style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
-        >
-          <button
-            type="button"
-            onClick={handleReset}
-            className="bg-black/70 text-white border border-yellow-400/70 shadow-lg shadow-yellow-400/40 backdrop-blur-md px-6 py-3 rounded-full font-semibold transition-transform duration-200 hover:scale-105 active:scale-95"
-          >
-            Сыграть еще раз
-          </button>
-        </div>
-      )}
 
       {/* Instructions - mobile optimized */}
       {clickCount === 0 && !showCard && (

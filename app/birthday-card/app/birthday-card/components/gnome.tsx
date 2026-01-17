@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useCallback, useEffect, useRef } from "react"
 import Image from "next/image"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 interface GnomeProps {
   id: number
@@ -15,7 +15,7 @@ interface GnomeProps {
 // Gnome images mapping
 const gnomeImages = [
   "/birthday-card/Слой 2.png",  // Red-green gnome
-  "/birthday-card/Слой 3.png",  // Blue-red gnome  
+  "/birthday-card/Слой 3.png",  // Blue-red gnome
   "/birthday-card/Слой 4.png",  // Golden gnome
 ]
 
@@ -30,8 +30,8 @@ export function Gnome({ id, x, y, onClick, isVisible, isMobile = false }: GnomeP
   const gnomeImage = gnomeImages[id % gnomeImages.length]
 
   // Size based on device
-  const size = isMobile 
-    ? { width: 100, height: 140 } 
+  const size = isMobile
+    ? { width: 100, height: 140 }
     : { width: 130, height: 180 }
 
   // Haptic feedback
@@ -58,10 +58,10 @@ export function Gnome({ id, x, y, onClick, isVisible, isMobile = false }: GnomeP
 
     setIsBouncing(true)
     triggerHaptic()
-    
+
     // Center of gnome for fireworks
     onClick(x + size.width / 2, y + size.height / 2, id)
-    
+
     setTimeout(() => setIsBouncing(false), 600)
   }, [isBouncing, onClick, x, y, size.width, size.height, id, triggerHaptic])
 
@@ -96,9 +96,8 @@ export function Gnome({ id, x, y, onClick, isVisible, isMobile = false }: GnomeP
       onTouchEnd={handleClick}
       onPointerEnter={handlePointerEnter}
       onPointerLeave={handlePointerLeave}
-      className={`absolute cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 rounded-full gpu-accelerated no-select ${
-        isBouncing ? "animate-bounce-gnome" : "animate-pulse-gnome"
-      }`}
+      className={`absolute cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 rounded-full gpu-accelerated no-select ${isBouncing ? "animate-bounce-gnome" : "animate-pulse-gnome"
+        }`}
       style={{
         left: `${x}px`,
         top: `${y}px`,
@@ -106,14 +105,14 @@ export function Gnome({ id, x, y, onClick, isVisible, isMobile = false }: GnomeP
         height: `${size.height}px`,
         transform: `scale(${scale}) translateY(${translateY}px) rotate(${rotation}deg)`,
         pointerEvents: isBouncing ? "none" : "auto",
-        transition: isBouncing 
-          ? "none" 
+        transition: isBouncing
+          ? "none"
           : "left 0.5s ease-out, top 0.5s ease-out, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
         filter: isBouncing
           ? "drop-shadow(0 0 30px rgba(255, 215, 0, 1)) drop-shadow(0 0 60px rgba(255, 215, 0, 0.6))"
           : isHovered
-          ? "drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 20px rgba(255, 215, 0, 0.3))"
-          : "drop-shadow(0 15px 30px rgba(0, 0, 0, 0.4))",
+            ? "drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 20px rgba(255, 215, 0, 0.3))"
+            : "drop-shadow(0 15px 30px rgba(0, 0, 0, 0.4))",
         touchAction: "manipulation",
         WebkitTapHighlightColor: "transparent",
         zIndex: isBouncing ? 100 : 10,
@@ -122,25 +121,23 @@ export function Gnome({ id, x, y, onClick, isVisible, isMobile = false }: GnomeP
       disabled={isBouncing}
     >
       {/* Glow effect behind gnome */}
-      <div 
-        className={`absolute inset-0 rounded-full transition-opacity duration-300 ${
-          isBouncing ? 'opacity-100' : isHovered ? 'opacity-50' : 'opacity-0'
-        }`}
+      <div
+        className={`absolute inset-0 rounded-full transition-opacity duration-300 ${isBouncing ? 'opacity-100' : isHovered ? 'opacity-50' : 'opacity-0'
+          }`}
         style={{
           background: 'radial-gradient(circle, rgba(255, 215, 0, 0.4) 0%, transparent 70%)',
           transform: 'scale(1.5)',
         }}
       />
-      
+
       {/* Gnome image */}
       <Image
         src={gnomeImage}
         alt={`Гномик ${id + 1}`}
         width={size.width}
         height={size.height}
-        className={`object-contain transition-opacity duration-300 ${
-          imageLoaded ? 'opacity-100' : 'opacity-0'
-        }`}
+        className={`object-contain transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
         style={{
           touchAction: "manipulation",
         }}
@@ -173,7 +170,7 @@ export function Gnome({ id, x, y, onClick, isVisible, isMobile = false }: GnomeP
 
       {/* Touch feedback ripple on mobile */}
       {isMobile && isBouncing && (
-        <div 
+        <div
           className="absolute inset-0 rounded-full bg-yellow-400/40 animate-ping"
           style={{ animationDuration: '0.6s' }}
         />

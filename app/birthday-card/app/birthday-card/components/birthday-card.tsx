@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useState, useMemo, useCallback } from "react"
 import Image from "next/image"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 interface BirthdayCardProps {
   isVisible: boolean
@@ -103,14 +103,14 @@ export function BirthdayCard({ isVisible, isMobile = false, onReplay }: Birthday
               }}
             >
               {piece.shape === 'star' ? (
-                <svg 
-                  width={piece.size} 
-                  height={piece.size} 
+                <svg
+                  width={piece.size}
+                  height={piece.size}
                   viewBox="0 0 24 24"
                   style={{ transform: `rotate(${piece.rotation}deg)` }}
                 >
-                  <path 
-                    d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" 
+                  <path
+                    d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
                     fill={piece.color}
                   />
                 </svg>
@@ -132,7 +132,7 @@ export function BirthdayCard({ isVisible, isMobile = false, onReplay }: Birthday
       )}
 
       {/* Glowing background effect */}
-      <div 
+      <div
         className={`absolute inset-0 transition-opacity duration-1000 ${showCard ? 'opacity-100' : 'opacity-0'}`}
         style={{
           background: 'radial-gradient(ellipse at center, rgba(255, 215, 0, 0.15) 0%, transparent 70%)',
@@ -140,18 +140,16 @@ export function BirthdayCard({ isVisible, isMobile = false, onReplay }: Birthday
       />
 
       {/* Main card container */}
-      <div 
-        className={`relative transition-all duration-1000 ease-out ${
-          showCard 
-            ? 'opacity-100 scale-100 translate-y-0' 
+      <div
+        className={`relative transition-all duration-1000 ease-out ${showCard
+            ? 'opacity-100 scale-100 translate-y-0'
             : 'opacity-0 scale-75 translate-y-12'
-        } ${isMobile ? 'w-[95vw] max-w-[400px]' : 'w-[90vw] max-w-[700px]'}`}
+          } ${isMobile ? 'w-[95vw] max-w-[400px]' : 'w-[90vw] max-w-[700px]'}`}
       >
         {/* Outer glow */}
-        <div 
-          className={`absolute -inset-4 bg-gradient-to-r from-yellow-400/50 via-amber-300/50 to-yellow-400/50 rounded-3xl blur-2xl animate-glow-pulse transition-opacity duration-500 ${
-            showCard ? 'opacity-100' : 'opacity-0'
-          }`}
+        <div
+          className={`absolute -inset-4 bg-gradient-to-r from-yellow-400/50 via-amber-300/50 to-yellow-400/50 rounded-3xl blur-2xl animate-glow-pulse transition-opacity duration-500 ${showCard ? 'opacity-100' : 'opacity-0'
+            }`}
         />
 
         {/* Sparkle decorations around card */}
@@ -168,7 +166,7 @@ export function BirthdayCard({ isVisible, isMobile = false, onReplay }: Birthday
                 }}
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="#FFD700">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                 </svg>
               </div>
             ))}
@@ -176,12 +174,11 @@ export function BirthdayCard({ isVisible, isMobile = false, onReplay }: Birthday
         )}
 
         {/* Card with image */}
-        <div 
-          className={`relative rounded-2xl overflow-hidden shadow-2xl border-4 border-amber-200/60 ${
-            isMobile ? 'rounded-xl border-2' : 'rounded-3xl'
-          }`}
+        <div
+          className={`relative rounded-2xl overflow-hidden shadow-2xl border-4 border-amber-200/60 ${isMobile ? 'rounded-xl border-2' : 'rounded-3xl'
+            }`}
           style={{
-            boxShadow: showCard 
+            boxShadow: showCard
               ? '0 25px 80px rgba(218, 165, 32, 0.4), 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 0 60px rgba(255, 215, 0, 0.1)'
               : 'none',
           }}
@@ -192,16 +189,15 @@ export function BirthdayCard({ isVisible, isMobile = false, onReplay }: Birthday
             alt="С Днём Рождения, Татьяна!"
             width={isMobile ? 400 : 700}
             height={isMobile ? 300 : 525}
-            className={`w-full h-auto transition-all duration-700 ${
-              imageLoaded ? 'opacity-100 blur-0' : 'opacity-0 blur-sm'
-            }`}
+            className={`w-full h-auto transition-all duration-700 ${imageLoaded ? 'opacity-100 blur-0' : 'opacity-0 blur-sm'
+              }`}
             onLoad={() => setImageLoaded(true)}
             priority
             draggable={false}
           />
 
           {/* Shimmer overlay */}
-          <div 
+          <div
             className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer pointer-events-none"
             style={{ backgroundSize: '200% 100%' }}
           />
@@ -223,18 +219,16 @@ export function BirthdayCard({ isVisible, isMobile = false, onReplay }: Birthday
 
         {/* Replay button */}
         {showReplayButton && onReplay && (
-          <div 
-            className={`flex justify-center pointer-events-auto animate-slide-up ${
-              isMobile ? 'mt-4' : 'mt-8'
-            }`}
+          <div
+            className={`flex justify-center pointer-events-auto animate-slide-up ${isMobile ? 'mt-4' : 'mt-8'
+              }`}
           >
             <button
               onClick={onReplay}
-              className={`group relative overflow-hidden bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500 text-white font-bold rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 border-2 border-amber-300/50 ${
-                isMobile 
-                  ? "px-6 py-3 text-base" 
+              className={`group relative overflow-hidden bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500 text-white font-bold rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 border-2 border-amber-300/50 ${isMobile
+                  ? "px-6 py-3 text-base"
                   : "px-10 py-4 text-xl"
-              }`}
+                }`}
               style={{
                 boxShadow: '0 10px 40px rgba(218, 165, 32, 0.4)',
               }}
