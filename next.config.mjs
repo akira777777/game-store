@@ -37,18 +37,29 @@ const nextConfig = {
   compress: true,
 
   // Enable React strict mode for better error detection
-  reactStrictMode: true,
+  reactStrictMode: false, // Disable in production to reduce bundle size
+
+  // Reduce bundle size for Cloudflare Pages
+  modularizeImports: {
+    'lucide-react': {
+      transform: 'lucide-react/{{member}}',
+    },
+    '@radix-ui/react-icons': {
+      transform: '@radix-ui/react-icons/{{member}}',
+    },
+  },
+
+
 
   // Trailing slash for GitHub Pages compatibility
   trailingSlash: isGithubPages,
 
   // Performance optimizations
   poweredByHeader: false,
-  
-  // Experimental features for better performance
-  experimental: {
-    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
-  },
+
+
+
+
 
   // Disable ESLint during build to avoid circular reference issues
   eslint: {
