@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -78,7 +78,7 @@ model OrderItem {
   game     Game    @relation(fields: [gameId], references: [id])
 }
 
-// Enums are stored as strings in SQLite
+// Enums stored as strings (compatible with both SQLite and PostgreSQL)
 // Role: "CUSTOMER" | "ADMIN"
 // OrderStatus: "PENDING" | "PAID" | "PROCESSING" | "COMPLETED" | "CANCELLED"
 // Platform: "PC" | "PLAYSTATION" | "XBOX" | "NINTENDO_SWITCH" | "MOBILE"
