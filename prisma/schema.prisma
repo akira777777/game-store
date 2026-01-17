@@ -6,7 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  // ИЗМЕНЕНО: sqlite заменен на postgresql для работы в облаке (Neon, Supabase и т.д.)
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -64,11 +65,11 @@ model CartItem {
 }
 
 model Order {
-  id              String      @id @default(cuid())
+  id              String  @id @default(cuid())
   userId          String
   status          String @default("PENDING")
   total           Float
-  stripeSessionId String?     @unique
+  stripeSessionId String? @unique
   items           OrderItem[]
   user            User        @relation(fields: [userId], references: [id])
   createdAt       DateTime    @default(now())
@@ -89,9 +90,3 @@ model OrderItem {
   order    Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   game     Game    @relation(fields: [gameId], references: [id])
 }
-
-// Enums stored as strings (SQLite for local development, PostgreSQL for production)
-// Role: "CUSTOMER" | "ADMIN"
-// OrderStatus: "PENDING" | "PAID" | "PROCESSING" | "COMPLETED" | "CANCELLED"
-// Platform: "PC" | "PLAYSTATION" | "XBOX" | "NINTENDO_SWITCH" | "MOBILE"
-// Genre: "ACTION" | "ADVENTURE" | "RPG" | "STRATEGY" | "SPORTS" | "RACING" | "SHOOTER" | "SIMULATION" | "INDIE" | "PUZZLE"
