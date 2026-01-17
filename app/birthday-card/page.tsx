@@ -1,12 +1,11 @@
 "use client"
 
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { BirthdayCard } from "./components/birthday-card"
 import { Fireworks, FireworksHandle } from "./components/fireworks"
 import { Gnome } from "./components/gnome"
-import { useCallback, useEffect, useRef, useState } from "react"
 
 const GNOME_COUNT = 4
-const CLICKS_NEEDED = 10
 
 interface GnomePosition {
   id: number
@@ -19,24 +18,45 @@ export default function BirthdayCardPage() {
   const [gnomes, setGnomes] = useState<GnomePosition[]>([])
   const [showCard, setShowCard] = useState(false)
   const [gnomesVisible, setGnomesVisible] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
   const fireworksRef = useRef<FireworksHandle>(null)
 
-  // Generate random position for gnomes
-  const generateRandomPosition = useCallback((index: number): GnomePosition => {
-    if (typeof window === "undefined") {
-      return { id: index, x: 200, y: 200 }
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || "ontouchstart" in window)
     }
-
-    const padding = Math.max(150, window.innerWidth * 0.1)
-    const maxX = window.innerWidth - padding * 2
-    const maxY = window.innerHeight - padding * 2
-
-    return {
-      id: index,
-      x: padding + Math.random() * Math.max(maxX, 100),
-      y: padding + Math.random() * Math.max(maxY, 100),
-    }
+    checkMobile()
+    window.addEventListener("resize", checkMobile)
+    return () => window.removeEventListener("resize", checkMobile)
   }, [])
+
+  // Fewer clicks needed on mobile for better UX
+  const clicksNeeded = useMemo(() => (isMobile ? 6 : 10), [isMobile])
+
+  // Generate random position for gnomes - optimized for mobile
+  const generateRandomPosition = useCallback(
+    (index: number): GnomePosition => {
+      if (typeof window === "undefined") {
+        return { id: index, x: 100, y: 100 }
+      }
+
+      const gnomeSize = isMobile ? 100 : 120
+      const padding = isMobile ? 60 : Math.max(150, window.innerWidth * 0.1)
+      const topPadding = isMobile ? 120 : padding // Extra space for progress bar
+      const bottomPadding = isMobile ? 100 : padding // Extra space for instructions
+
+      const maxX = window.innerWidth - padding - gnomeSize
+      const maxY = window.innerHeight - bottomPadding - gnomeSize
+
+      return {
+        id: index,
+        x: padding + Math.random() * Math.max(maxX - padding, 50),
+        y: topPadding + Math.random() * Math.max(maxY - topPadding, 50),
+      }
+    },
+    [isMobile]
+  )
 
   // Initialize gnomes
   useEffect(() => {
@@ -46,11 +66,8 @@ export default function BirthdayCardPage() {
     }
     setGnomes(initialGnomes)
 
-    // Handle window resize
     const handleResize = () => {
-      setGnomes((prev) => {
-        return prev.map((gnome) => generateRandomPosition(gnome.id))
-      })
+      setGnomes((prev) => prev.map((gnome) => generateRandomPosition(gnome.id)))
     }
 
     window.addEventListener("resize", handleResize)
@@ -64,88 +81,128 @@ export default function BirthdayCardPage() {
       const newCount = clickCount + 1
       setClickCount(newCount)
 
-      // Launch fireworks at click position
+      // Launch fireworks at click position (fewer particles on mobile)
       if (fireworksRef.current) {
-        fireworksRef.current.launch(clickX, clickY, 50)
+        fireworksRef.current.launch(clickX, clickY, isMobile ? 30 : 50)
       }
 
       // If reached target clicks, show card
-      if (newCount >= CLICKS_NEEDED) {
+      if (newCount >= clicksNeeded) {
         setGnomesVisible(false)
 
-        // Launch big fireworks show
+        // Launch spectacular fireworks show
         setTimeout(() => {
           if (fireworksRef.current) {
             const centerX = window.innerWidth / 2
             const centerY = window.innerHeight / 2
+            const particleCount = isMobile ? 60 : 100
+            const extraParticles = isMobile ? 40 : 80
 
-            // Launch multiple fireworks in sequence
-            for (let i = 0; i < 8; i++) {
+            // First wave: ring fireworks
+            const ringCount = isMobile ? 6 : 12
+            for (let i = 0; i < ringCount; i++) {
               setTimeout(() => {
                 if (fireworksRef.current) {
-                  const angle = (Math.PI * 2 * i) / 8
-                  const distance = 150
+                  const angle = (Math.PI * 2 * i) / ringCount
+                  const distance = isMobile ? 100 : 200
                   fireworksRef.current.launch(
                     centerX + Math.cos(angle) * distance,
                     centerY + Math.sin(angle) * distance,
-                    80
+                    particleCount
                   )
                 }
-              }, i * 200)
+              }, i * (isMobile ? 200 : 150))
             }
 
-            // Launch center firework
-            setTimeout(() => {
-              if (fireworksRef.current) {
-                fireworksRef.current.launch(centerX, centerY, 120)
-              }
-              setShowCard(true)
-            }, 1600)
+            // Additional random fireworks
+            const additionalCount = isMobile ? 3 : 6
+            for (let i = 0; i < additionalCount; i++) {
+              setTimeout(() => {
+                if (fireworksRef.current) {
+                  const randomX = centerX + (Math.random() - 0.5) * window.innerWidth * 0.6
+                  const randomY = centerY + (Math.random() - 0.5) * window.innerHeight * 0.6
+                  fireworksRef.current.launch(randomX, randomY, extraParticles)
+                }
+              }, (isMobile ? 1200 : 1800) + i * 200)
+            }
+
+            // Final center mega-firework
+            setTimeout(
+              () => {
+                if (fireworksRef.current) {
+                  fireworksRef.current.launch(centerX, centerY, isMobile ? 100 : 150)
+                  setTimeout(() => {
+                    if (fireworksRef.current) {
+                      const burstCount = isMobile ? 3 : 5
+                      for (let j = 0; j < burstCount; j++) {
+                        setTimeout(() => {
+                          if (fireworksRef.current) {
+                            const offset = isMobile ? 50 : 80
+                            fireworksRef.current.launch(
+                              centerX + (Math.random() - 0.5) * offset,
+                              centerY + (Math.random() - 0.5) * offset,
+                              isMobile ? 40 : 60
+                            )
+                          }
+                        }, j * 100)
+                      }
+                    }
+                  }, 200)
+                }
+                setShowCard(true)
+              },
+              isMobile ? 1500 : 2000
+            )
           }
         }, 300)
       } else {
-        // Move clicked gnome to new position after animation
+        // Move clicked gnome to new position
         setTimeout(() => {
           setGnomes((prev) => {
             const newGnomes = [...prev]
-            // Find gnome closest to click position, or use provided ID
             let gnomeToMove = prev[0]
             if (gnomeId !== undefined) {
               gnomeToMove = prev.find((g) => g.id === gnomeId) || prev[0]
             } else {
-              // Find closest gnome to click position
               let minDistance = Infinity
               for (const gnome of prev) {
-                const distance = Math.sqrt(
-                  Math.pow(gnome.x - clickX, 2) + Math.pow(gnome.y - clickY, 2)
-                )
+                const distance = Math.sqrt(Math.pow(gnome.x - clickX, 2) + Math.pow(gnome.y - clickY, 2))
                 if (distance < minDistance) {
                   minDistance = distance
                   gnomeToMove = gnome
                 }
               }
             }
-
-            // Update the gnome position
             const index = newGnomes.findIndex((g) => g.id === gnomeToMove.id)
             if (index !== -1) {
               newGnomes[index] = generateRandomPosition(gnomeToMove.id)
             }
             return newGnomes
           })
-        }, 700) // Wait for bounce animation to complete
+        }, 700)
       }
     },
-    [clickCount, showCard, gnomesVisible, generateRandomPosition]
+    [clickCount, showCard, gnomesVisible, generateRandomPosition, isMobile, clicksNeeded]
   )
 
+  // Stars count based on device
+  const starsCount = isMobile ? 40 : 80
+  const twinkleCount = isMobile ? 10 : 20
+
   return (
-    <div className="fixed inset-0 overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900">
-      {/* Background stars */}
+    <div className="fixed inset-0 overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 via-blue-900 to-purple-950 touch-none select-none">
+      {/* Safe area padding for mobile notch/home indicator */}
+      <div className="absolute inset-0 safe-area-inset" />
+
+      {/* Animated gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 via-purple-500/10 to-blue-500/10 animate-pulse" />
+
+      {/* Background stars - reduced for mobile performance */}
       <div className="absolute inset-0 overflow-hidden">
-        {[...Array(50)].map((_, i) => {
-          const delay = Math.random() * 2
-          const duration = 2 + Math.random() * 3
+        {[...Array(starsCount)].map((_, i) => {
+          const delay = Math.random() * 3
+          const duration = 2 + Math.random() * 4
+          const size = Math.random() * 3 + 1
           return (
             <div
               key={`star-${i}`}
@@ -153,11 +210,33 @@ export default function BirthdayCardPage() {
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
-                width: `${Math.random() * 3 + 1}px`,
-                height: `${Math.random() * 3 + 1}px`,
-                opacity: Math.random() * 0.5 + 0.2,
+                width: `${size}px`,
+                height: `${size}px`,
+                opacity: Math.random() * 0.6 + 0.3,
                 animationDelay: `${delay}s`,
                 animationDuration: `${duration}s`,
+                boxShadow: `0 0 ${size * 2}px rgba(255, 255, 255, 0.8)`,
+              }}
+            />
+          )
+        })}
+
+        {/* Twinkling stars */}
+        {[...Array(twinkleCount)].map((_, i) => {
+          const delay = Math.random() * 2
+          return (
+            <div
+              key={`twinkle-${i}`}
+              className="absolute rounded-full bg-yellow-200 animate-pulse"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                width: `${Math.random() * 2 + 1}px`,
+                height: `${Math.random() * 2 + 1}px`,
+                opacity: 0,
+                animationDelay: `${delay}s`,
+                animationDuration: "1.5s",
+                boxShadow: "0 0 6px rgba(255, 255, 200, 1)",
               }}
             />
           )
@@ -167,18 +246,31 @@ export default function BirthdayCardPage() {
       {/* Fireworks canvas */}
       <Fireworks ref={fireworksRef} />
 
-      {/* Progress indicator */}
+      {/* Progress indicator - mobile optimized */}
       {!showCard && gnomesVisible && (
-        <div className="absolute top-8 left-1/2 transform -translate-x-1/2 z-20 bg-black/50 backdrop-blur-md rounded-full px-6 py-3 border-2 border-yellow-400 shadow-lg shadow-yellow-400/30">
-          <p className="text-white text-lg font-semibold">
-            Найдено гномиков: <span className="text-yellow-400">{clickCount}</span> / {CLICKS_NEEDED}
-          </p>
-          {/* Progress bar */}
-          <div className="mt-2 w-full bg-black/30 rounded-full h-1.5 overflow-hidden">
+        <div
+          className={`absolute left-1/2 transform -translate-x-1/2 z-20 bg-black/60 backdrop-blur-xl border-2 border-yellow-400/80 shadow-2xl shadow-yellow-400/50 animate-scale-in ${isMobile ? "top-4 rounded-2xl px-4 py-3" : "top-8 rounded-full px-8 py-4"
+            }`}
+        >
+          <div className={`flex ${isMobile ? "flex-col gap-2" : "flex-row items-center gap-4"}`}>
+            <p className={`text-white font-bold whitespace-nowrap text-center ${isMobile ? "text-base" : "text-lg"}`}>
+              Найдено гномиков: <span className="text-yellow-400 animate-pulse">{clickCount}</span> / {clicksNeeded}
+            </p>
+            {/* Progress bar */}
             <div
-              className="h-full bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full transition-all duration-500 ease-out"
-              style={{ width: `${(clickCount / CLICKS_NEEDED) * 100}%` }}
-            />
+              className={`bg-black/40 rounded-full overflow-hidden border border-yellow-400/30 ${isMobile ? "w-full h-2" : "w-48 h-3"
+                }`}
+            >
+              <div
+                className="h-full bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-500 rounded-full transition-all duration-700 ease-out relative overflow-hidden"
+                style={{ width: `${(clickCount / clicksNeeded) * 100}%` }}
+              >
+                <div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"
+                  style={{ backgroundSize: "200% 100%" }}
+                />
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -192,17 +284,31 @@ export default function BirthdayCardPage() {
           y={gnome.y}
           onClick={handleGnomeClick}
           isVisible={gnomesVisible}
+          isMobile={isMobile}
         />
       ))}
 
       {/* Birthday card */}
-      <BirthdayCard isVisible={showCard} />
+      <BirthdayCard isVisible={showCard} isMobile={isMobile} />
 
-      {/* Instructions (only shown initially) */}
+      {/* Instructions - mobile optimized */}
       {clickCount === 0 && !showCard && (
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 bg-black/50 backdrop-blur-md rounded-2xl px-8 py-4 border-2 border-yellow-400 shadow-lg shadow-yellow-400/30 animate-fade-in">
-          <p className="text-white text-xl font-semibold text-center">
-            🎯 Найди и кликни на всех гномиков!
+        <div
+          className={`absolute left-1/2 transform -translate-x-1/2 z-20 bg-black/60 backdrop-blur-xl border-2 border-yellow-400/80 shadow-2xl shadow-yellow-400/50 animate-fade-in ${isMobile ? "bottom-6 rounded-2xl px-5 py-3 mx-4 max-w-[calc(100%-2rem)]" : "bottom-8 rounded-2xl px-10 py-5"
+            }`}
+        >
+          <p
+            className={`text-white font-bold text-center flex items-center justify-center gap-2 ${isMobile ? "text-base" : "text-xl md:text-2xl gap-3"
+              }`}
+          >
+            <span className={`animate-bounce ${isMobile ? "text-xl" : "text-2xl md:text-3xl"}`}>🎯</span>
+            <span>{isMobile ? "Нажми на гномиков!" : "Найди и кликни на всех гномиков!"}</span>
+            <span
+              className={`animate-bounce ${isMobile ? "text-xl" : "text-2xl md:text-3xl"}`}
+              style={{ animationDelay: "0.2s" }}
+            >
+              ✨
+            </span>
           </p>
         </div>
       )}

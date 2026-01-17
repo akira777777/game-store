@@ -143,6 +143,77 @@ const config = {
             opacity: "0.7",
           },
         },
+        "text-reveal": {
+          "0%": {
+            opacity: "0",
+            transform: "translateY(30px) scale(0.8)",
+            filter: "blur(10px)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateY(0) scale(1)",
+            filter: "blur(0)",
+          },
+        },
+        "glow-pulse": {
+          "0%, 100%": {
+            boxShadow: "0 0 20px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.3)",
+          },
+          "50%": {
+            boxShadow: "0 0 40px rgba(255, 215, 0, 0.8), 0 0 80px rgba(255, 215, 0, 0.5)",
+          },
+        },
+        "float": {
+          "0%, 100%": {
+            transform: "translateY(0px)",
+          },
+          "50%": {
+            transform: "translateY(-20px)",
+          },
+        },
+        "shimmer": {
+          "0%": {
+            backgroundPosition: "-200% 0",
+          },
+          "100%": {
+            backgroundPosition: "200% 0",
+          },
+        },
+        "letter-bounce": {
+          "0%, 100%": {
+            transform: "translateY(0) scale(1)",
+          },
+          "50%": {
+            transform: "translateY(-15px) scale(1.1)",
+          },
+        },
+        "card-entrance": {
+          "0%": {
+            opacity: "0",
+            transform: "scale(0.5) rotateY(180deg)",
+            filter: "blur(20px)",
+          },
+          "60%": {
+            opacity: "1",
+            transform: "scale(1.05) rotateY(-10deg)",
+            filter: "blur(5px)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "scale(1) rotateY(0deg)",
+            filter: "blur(0)",
+          },
+        },
+        "confetti-fall": {
+          "0%": {
+            transform: "translateY(-100vh) rotate(0deg)",
+            opacity: "1",
+          },
+          "100%": {
+            transform: "translateY(100vh) rotate(720deg)",
+            opacity: "0",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -156,6 +227,13 @@ const config = {
         "card-reveal": "card-reveal 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
         sparkle: "sparkle 2s ease-in-out infinite",
         "progress-pulse": "progress-pulse 2s ease-in-out infinite",
+        "text-reveal": "text-reveal 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+        "glow-pulse": "glow-pulse 2s ease-in-out infinite",
+        float: "float 3s ease-in-out infinite",
+        shimmer: "shimmer 3s linear infinite",
+        "letter-bounce": "letter-bounce 0.6s ease-out",
+        "card-entrance": "card-entrance 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+        "confetti-fall": "confetti-fall 3s linear infinite",
       },
     },
   },

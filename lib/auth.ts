@@ -1,8 +1,16 @@
 // #region agent log
+// Logging utility - defined at module level for use throughout
+const logEndpoint = 'http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169';
+const logToFile = (location: string, message: string, data: any, hypothesisId?: string) => {
+  if (typeof fetch !== 'undefined') {
+    fetch(logEndpoint, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location,message,data,timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId})}).catch(()=>{});
+  }
+  if (typeof console !== 'undefined' && console.log) {
+    console.log(`[Auth] ${message}`, data);
+  }
+};
 // Log module import to track initialization order
-if (typeof console !== 'undefined' && console.log) {
-  console.log('[Auth] Module loading started');
-}
+logToFile('lib/auth.ts:3', 'Module loading started', {}, 'H4');
 // #endregion
 
 // Lazy import db to avoid Prisma Client initialization in Edge Runtime (middleware)
@@ -12,9 +20,7 @@ import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 
 // #region agent log
-if (typeof console !== 'undefined' && console.log) {
-  console.log('[Auth] Core dependencies loaded (bcrypt, NextAuth, CredentialsProvider)');
-}
+logToFile('lib/auth.ts:16', 'Core dependencies loaded', {deps:['bcrypt','NextAuth','CredentialsProvider']}, 'H4');
 // #endregion
 
 // Role type for SQLite (stored as string)
@@ -23,35 +29,32 @@ type Role = "CUSTOMER" | "ADMIN"
 // #region agent log
 // Validate secret before NextAuth initialization
 const authSecret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET;
-if (typeof console !== 'undefined' && console.log) {
-  console.log('[Auth] Initialization check:', {
-    hasAuthSecret: !!process.env.AUTH_SECRET,
-    hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
-    hasSecret: !!authSecret,
-    nodeEnv: process.env.NODE_ENV,
-    trustHost: true
-  });
-}
+const secretCheck = {
+  hasAuthSecret: !!process.env.AUTH_SECRET,
+  hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
+  hasSecret: !!authSecret,
+  nodeEnv: process.env.NODE_ENV,
+  trustHost: true
+};
+logToFile('lib/auth.ts:25', 'Initialization check - BEFORE validation', secretCheck, 'H5');
 if (!authSecret && process.env.NODE_ENV === 'production') {
   const error = new Error(
     'Missing AUTH_SECRET or NEXTAUTH_SECRET environment variable. ' +
     'Please set one of these variables in Vercel Environment Variables (Settings → Environment Variables).'
   );
-  if (typeof console !== 'undefined' && console.error) {
-    console.error('[Auth] Fatal error:', error.message);
-  }
+  logToFile('lib/auth.ts:35', 'Fatal error - missing secret', {error:error.message}, 'H5');
   throw error;
 }
+logToFile('lib/auth.ts:44', 'Initialization check - AFTER validation', {hasSecret:!!authSecret}, 'H5');
 // #endregion
 
 // #region agent log
 // Log auth config initialization attempt
-if (typeof console !== 'undefined' && console.log) {
-  console.log('[Auth] Starting NextAuth initialization');
-}
+logToFile('lib/auth.ts:50', 'Starting NextAuth initialization - BEFORE config creation', {}, 'H1');
 
 let authConfig: any;
 try {
+  logToFile('lib/auth.ts:54', 'BEFORE authConfig creation', {authSecret:!!authSecret}, 'H1');
   authConfig = {
     // PrismaAdapter type compatibility issue - adapter is optional when using credentials
     // adapter: PrismaAdapter(db) as any,
@@ -135,30 +138,23 @@ try {
     // Support both AUTH_SECRET (preferred in v5) and NEXTAUTH_SECRET (legacy)
     secret: authSecret,
   };
-
-  if (typeof console !== 'undefined' && console.log) {
-    console.log('[Auth] Config created successfully');
-  }
-} catch (error) {
-  if (typeof console !== 'undefined' && console.error) {
-    console.error('[Auth] Config creation error:', error);
-  }
+  logToFile('lib/auth.ts:137', 'AFTER authConfig creation - config object created', {hasProviders:!!authConfig.providers,hasCallbacks:!!authConfig.callbacks,hasSecret:!!authConfig.secret}, 'H1');
+} catch (error: any) {
+  logToFile('lib/auth.ts:142', 'Config creation error', {error:error?.message,stack:error?.stack}, 'H1');
   throw error;
 }
 
 let nextAuthResult: any;
 try {
+  logToFile('lib/auth.ts:150', 'BEFORE NextAuth() call', {hasAuthConfig:!!authConfig}, 'H2');
   nextAuthResult = NextAuth(authConfig);
-
-  if (typeof console !== 'undefined' && console.log) {
-    console.log('[Auth] NextAuth initialized successfully');
-  }
-} catch (error) {
-  if (typeof console !== 'undefined' && console.error) {
-    console.error('[Auth] NextAuth initialization error:', error);
-  }
+  logToFile('lib/auth.ts:151', 'AFTER NextAuth() call - success', {hasHandlers:!!nextAuthResult?.handlers,hasAuth:!!nextAuthResult?.auth}, 'H2');
+} catch (error: any) {
+  logToFile('lib/auth.ts:156', 'NextAuth initialization error', {error:error?.message,stack:error?.stack}, 'H2');
   throw error;
 }
 
+logToFile('lib/auth.ts:163', 'BEFORE export destructuring', {hasNextAuthResult:!!nextAuthResult}, 'H3');
 export const { handlers, auth, signIn, signOut } = nextAuthResult;
+logToFile('lib/auth.ts:163', 'AFTER export destructuring', {hasAuth:!!auth,hasHandlers:!!handlers}, 'H3');
 // #endregion
