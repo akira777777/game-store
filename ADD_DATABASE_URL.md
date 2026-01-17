@@ -1,9 +1,10 @@
 # Добавление DATABASE_URL в Vercel
 
 ## Проблема
+
 `DATABASE_URL` отсутствует в Environment Variables, но нужен для работы приложения.
 
-## Решение через Dashboard (1 минута):
+## Решение через Dashboard (1 минута)
 
 ### Вариант 1: Скопировать из POSTGRES_PRISMA_URL_DATABASE_URL
 
@@ -27,7 +28,7 @@
 5. Settings → Environment Variables → Add New
 6. Добавьте как `DATABASE_URL`
 
-## После добавления:
+## После добавления
 
 1. **Deployments** → последний деплой → **Redeploy**
 2. Подождите завершения деплоя
@@ -35,9 +36,10 @@
 
 ---
 
-## Через CLI (если нужно):
+## Через CLI (если нужно)
 
 Значение для DATABASE_URL (найдено в проекте):
+
 ```
 postgres://cc1877edde5df4a41d40648da3a325534533d73f539081e69aeac4d79cb0a27a:sk_mNxGLlo7QhjOuktEjD6pL@db.prisma.io:5432/postgres?sslmode=require
 ```
