@@ -9,15 +9,32 @@ type Role = "CUSTOMER" | "ADMIN"
 // #region agent log
 // Validate secret before NextAuth initialization
 const authSecret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET;
+if (typeof console !== 'undefined' && console.log) {
+  console.log('[Auth] Initialization check:', {
+    hasAuthSecret: !!process.env.AUTH_SECRET,
+    hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
+    hasSecret: !!authSecret,
+    nodeEnv: process.env.NODE_ENV,
+    trustHost: true
+  });
+}
 if (!authSecret && process.env.NODE_ENV === 'production') {
-  throw new Error(
+  const error = new Error(
     'Missing AUTH_SECRET or NEXTAUTH_SECRET environment variable. ' +
     'Please set one of these variables in Vercel Environment Variables (Settings → Environment Variables).'
   );
+  if (typeof console !== 'undefined' && console.error) {
+    console.error('[Auth] Fatal error:', error.message);
+  }
+  throw error;
 }
 // #endregion
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+// #region agent log
+// Wrap NextAuth initialization in try-catch for better error reporting
+let authConfig: any;
+try {
+  authConfig = {
   // PrismaAdapter type compatibility issue - adapter is optional when using credentials
   // adapter: PrismaAdapter(db) as any,
   trustHost: true, // Required for middleware to work in production (Vercel, etc.)
@@ -93,4 +110,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   // Support both AUTH_SECRET (preferred in v5) and NEXTAUTH_SECRET (legacy)
   secret: authSecret,
-})
+  };
+  if (typeof console !== 'undefined' && console.log) {
+    console.log('[Auth] Config created successfully');
+  }
+} catch (error) {
+  if (typeof console !== 'undefined' && console.error) {
+    console.error('[Auth] Config creation error:', error);
+  }
+  throw error;
+}
+
+let nextAuthResult;
+try {
+  nextAuthResult = NextAuth(authConfig);
+  if (typeof console !== 'undefined' && console.log) {
+    console.log('[Auth] NextAuth initialized successfully');
+  }
+} catch (error) {
+  if (typeof console !== 'undefined' && console.error) {
+    console.error('[Auth] NextAuth initialization error:', error);
+  }
+  throw error;
+}
+
+export const { handlers, auth, signIn, signOut } = nextAuthResult;
+// #endregion
