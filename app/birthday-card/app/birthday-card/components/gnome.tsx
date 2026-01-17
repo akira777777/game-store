@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState, useMemo } from "react"
 
 interface GnomeProps {
   id: number
@@ -12,8 +12,11 @@ interface GnomeProps {
   isMobile?: boolean
 }
 
+// Get base path for GitHub Pages compatibility
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
+
 // Gnome images mapping
-const gnomeImages = [
+const gnomeImagePaths = [
   "/birthday-card/Слой 2.png",  // Red-green gnome
   "/birthday-card/Слой 3.png",  // Blue-red gnome
   "/birthday-card/Слой 4.png",  // Golden gnome
@@ -26,8 +29,11 @@ export function Gnome({ id, x, y, onClick, isVisible, isMobile = false }: GnomeP
   const buttonRef = useRef<HTMLButtonElement>(null)
   const lastTapRef = useRef<number>(0)
 
-  // Get gnome image based on ID
-  const gnomeImage = gnomeImages[id % gnomeImages.length]
+  // Get gnome image based on ID with base path
+  const gnomeImage = useMemo(() => {
+    const path = gnomeImagePaths[id % gnomeImagePaths.length]
+    return `${basePath}${path}`
+  }, [id])
 
   // Size based on device
   const size = isMobile

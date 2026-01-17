@@ -9,6 +9,10 @@ interface BirthdayCardProps {
   onReplay?: () => void
 }
 
+// Get base path for GitHub Pages compatibility
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
+const cardImagePath = `${basePath}/birthday-card/Слоwdй 2.png`
+
 // Confetti colors matching the card's gold/green theme
 const confettiColors = [
   "#FFD700", "#DAA520", "#B8860B", "#F0E68C", "#FAFAD2",
@@ -185,7 +189,7 @@ export function BirthdayCard({ isVisible, isMobile = false, onReplay }: Birthday
         >
           {/* Birthday card image */}
           <Image
-            src="/birthday-card/Слоwdй 2.png"
+            src={cardImagePath}
             alt="С Днём Рождения, Татьяна!"
             width={isMobile ? 400 : 700}
             height={isMobile ? 300 : 525}
