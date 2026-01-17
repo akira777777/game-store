@@ -25,8 +25,9 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  let session = null
   try {
-    const session = await auth()
+    session = await auth()
 
     if (!session || session.user.role !== "ADMIN") {
       return NextResponse.json(
@@ -63,8 +64,9 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  let session = null
   try {
-    const session = await auth()
+    session = await auth()
 
     if (!session || session.user.role !== "ADMIN") {
       return NextResponse.json(
@@ -124,7 +126,7 @@ export async function PUT(
 
     if (updateData.releaseDate !== undefined) {
       updateData.releaseDate = updateData.releaseDate
-        ? new Date(updateData.releaseDate)
+        ? new Date(updateData.releaseDate as string)
         : null
     }
 
@@ -157,8 +159,9 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  let session = null
   try {
-    const session = await auth()
+    session = await auth()
 
     if (!session || session.user.role !== "ADMIN") {
       return NextResponse.json(

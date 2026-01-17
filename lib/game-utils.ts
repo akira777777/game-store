@@ -14,6 +14,12 @@ export function parseJsonArray<T = string>(value: string | null | undefined): T[
   }
 }
 
+/**
+ * Alias for parseJsonArray for backward compatibility
+ * @deprecated Use parseJsonArray or normalizeJsonArray instead
+ */
+export const parseJsonArrayOrString = parseJsonArray
+
 export function stringifyJsonArray<T>(value: T[] | null | undefined): string {
   if (!value || !Array.isArray(value)) return '[]'
   try {

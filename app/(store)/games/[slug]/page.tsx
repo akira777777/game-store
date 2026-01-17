@@ -120,7 +120,7 @@ export default async function GamePage({
             </div>
           )}
         </div>
-      </div>
+      </article>
 
       <div className="mt-8">
         <Card>

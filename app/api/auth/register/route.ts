@@ -12,9 +12,10 @@ const registerSchema = z.object({
 })
 
 export async function POST(request: NextRequest) {
+  let validatedData: z.infer<typeof registerSchema> | null = null
   try {
     const body = await request.json()
-    const validatedData = registerSchema.parse(body)
+    validatedData = registerSchema.parse(body)
 
     // Normalize email to lowercase for case-insensitive comparison
     const normalizedEmail = validatedData.email.toLowerCase().trim()
@@ -56,7 +57,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-<<<<<<< Current (Your changes)
     if (error instanceof ConflictError || error instanceof ValidationError) {
       return NextResponse.json(formatErrorResponse(error), { status: error.statusCode })
     }
@@ -69,10 +69,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error("Registration error:", error)
-=======
-    logger.error("Registration error", error, { email: validatedData.email })
->>>>>>> Incoming (Background Agent changes)
+    logger.error("Registration error", error, { email: validatedData?.email })
     return NextResponse.json(
       formatErrorResponse(new DatabaseError("Failed to create user", error)),
       { status: 500 }

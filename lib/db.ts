@@ -8,15 +8,7 @@ export const db =
   globalForPrisma.prisma ??
   new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-<<<<<<< Current (Your changes)
     errorFormat: 'pretty',
-=======
-    datasources: {
-      db: {
-        url: process.env.DATABASE_URL,
-      },
-    },
->>>>>>> Incoming (Background Agent changes)
   })
 
 if (process.env.NODE_ENV !== 'production') {

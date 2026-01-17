@@ -22,8 +22,10 @@ const gameSchema = z.object({
 })
 
 export async function POST(request: NextRequest) {
+  let session = null
+  let validatedData: z.infer<typeof gameSchema> | null = null
   try {
-    const session = await auth()
+    session = await auth()
 
     if (!session || session.user.role !== "ADMIN") {
       return NextResponse.json(
@@ -33,7 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const validatedData = gameSchema.parse(body)
+    validatedData = gameSchema.parse(body)
 
     // Check if slug already exists
     const existingGame = await db.game.findUnique({
@@ -76,7 +78,7 @@ export async function POST(request: NextRequest) {
 
     logger.error("Error creating game", error, {
       userId: session?.user?.id,
-      slug: validatedData.slug,
+      slug: validatedData?.slug,
     })
     return NextResponse.json(
       { error: "Internal server error" },
