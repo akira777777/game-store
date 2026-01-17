@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import { formatCurrency } from "@/lib/utils"
 import { ArrowRight, ShoppingBag } from "lucide-react"
 import Link from "next/link"
 
@@ -15,9 +16,9 @@ interface CartSummaryProps {
 }
 
 export function CartSummary({ subtotal, total, itemCount, discount = 0 }: CartSummaryProps) {
-  const formattedSubtotal = subtotal.toFixed(2)
-  const formattedDiscount = discount.toFixed(2)
-  const formattedTotal = total.toFixed(2)
+  const formattedSubtotal = formatCurrency(subtotal)
+  const formattedDiscount = formatCurrency(discount)
+  const formattedTotal = formatCurrency(total)
 
   return (
     <Card>
@@ -35,33 +36,33 @@ export function CartSummary({ subtotal, total, itemCount, discount = 0 }: CartSu
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Подытог:</span>
-            <span>${formattedSubtotal}</span>
+            <span>{formattedSubtotal}</span>
           </div>
           {discount > 0 && (
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Скидка:</span>
-              <Badge variant="destructive">-${formattedDiscount}</Badge>
+              <Badge variant="destructive">-{formattedDiscount}</Badge>
             </div>
           )}
         </div>
         <Separator />
         <div className="flex justify-between text-lg font-semibold">
           <span>Итого:</span>
-          <span className="text-primary">${formattedTotal}</span>
+          <span className="text-primary">{formattedTotal}</span>
         </div>
       </CardContent>
       <CardFooter className="flex flex-col gap-2">
-        <Link href="/checkout" className="w-full" aria-label="Перейти к оформлению заказа">
-          <Button className="w-full" size="lg" aria-label="Оформить заказ">
+        <Button asChild className="w-full" size="lg">
+          <Link href="/checkout" aria-label="Перейти к оформлению заказа">
             Оформить заказ
             <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
-          </Button>
-        </Link>
-        <Link href="/games" className="w-full" aria-label="Вернуться к каталогу игр">
-          <Button variant="outline" className="w-full">
+          </Link>
+        </Button>
+        <Button asChild variant="outline" className="w-full">
+          <Link href="/games" aria-label="Вернуться к каталогу игр">
             Продолжить покупки
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </CardFooter>
     </Card>
   )

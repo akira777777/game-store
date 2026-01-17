@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { Prisma } from "@prisma/client"
 
 export const dynamic = 'force-dynamic'
+export const revalidate = 3600 // Revalidate every hour
 
 // Constants for input validation
 const MAX_LIMIT = 100
@@ -17,6 +18,8 @@ export async function GET(request: NextRequest) {
     const genre = searchParams.get("genre")?.trim() || null
     const platform = searchParams.get("platform")?.trim() || null
     const search = searchParams.get("search")?.trim() || ""
+    const minPrice = searchParams.get("minPrice")
+    const maxPrice = searchParams.get("maxPrice")
     const page = Math.max(MIN_PAGE, parseInt(searchParams.get("page") || "1", 10) || MIN_PAGE)
     const limit = Math.min(MAX_LIMIT, Math.max(1, parseInt(searchParams.get("limit") || String(DEFAULT_LIMIT), 10) || DEFAULT_LIMIT))
     const sortByParam = searchParams.get("sortBy") || "createdAt"
@@ -55,16 +58,46 @@ export async function GET(request: NextRequest) {
         {
           title: {
             contains: search,
-            mode: 'insensitive',
           },
         },
         {
           description: {
             contains: search,
-            mode: 'insensitive',
           },
         },
       ]
+    }
+
+    // Filter by price range (considering both price and discountPrice)
+    if (minPrice || maxPrice) {
+      const priceFilter: Prisma.FloatFilter = {}
+      if (minPrice) {
+        const min = parseFloat(minPrice)
+        if (!isNaN(min) && min >= 0) {
+          priceFilter.gte = min
+        }
+      }
+      if (maxPrice) {
+        const max = parseFloat(maxPrice)
+        if (!isNaN(max) && max >= 0) {
+          priceFilter.lte = max
+        }
+      }
+      
+      // Apply price filter to either price or discountPrice (whichever is applicable)
+      if (Object.keys(priceFilter).length > 0) {
+        const existingAnd = whereConditions.AND
+        const andArray = Array.isArray(existingAnd) ? existingAnd : existingAnd ? [existingAnd] : []
+        whereConditions.AND = [
+          ...andArray,
+          {
+            OR: [
+              { price: priceFilter },
+              { discountPrice: priceFilter },
+            ],
+          },
+        ]
+      }
     }
 
     // Execute query with filters applied at database level
@@ -82,7 +115,7 @@ export async function GET(request: NextRequest) {
       }),
     ])
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       games,
       pagination: {
         page,
@@ -91,6 +124,11 @@ export async function GET(request: NextRequest) {
         totalPages: Math.ceil(total / limit),
       },
     })
+
+    // Add caching headers
+    response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400')
+    
+    return response
   } catch (error) {
     console.error("Error fetching games:", error)
     return NextResponse.json(

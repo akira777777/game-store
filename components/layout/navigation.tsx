@@ -10,14 +10,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Gamepad2, LogOut, Menu, Shield, ShoppingCart, User, X } from "lucide-react"
+import { Flame, Gamepad2, LogOut, Menu, Shield, ShoppingCart, Sparkles, User, X } from "lucide-react"
 import { signOut, useSession } from "next-auth/react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { useState } from "react"
 
 export function Navigation() {
   const { data: session } = useSession()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const pathname = usePathname()
+  const isGamesActive = pathname.startsWith("/games")
+  const isCartActive = pathname.startsWith("/cart")
   const userInitials = session?.user?.name
     ?.split(" ")
     .map((n) => n[0])
@@ -39,18 +43,28 @@ export function Navigation() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-2" role="navigation" aria-label="Основные разделы">
-            <Link href="/games">
-              <Button variant="ghost" className="gap-2" aria-label="Каталог игр">
+            <Button
+              asChild
+              variant={isGamesActive ? "secondary" : "ghost"}
+              className="gap-2"
+              aria-current={isGamesActive ? "page" : undefined}
+            >
+              <Link href="/games" aria-label="Каталог игр">
                 <Menu className="h-4 w-4" aria-hidden="true" />
                 Каталог
-              </Button>
-            </Link>
-            <Link href="/cart">
-              <Button variant="ghost" className="gap-2 relative" aria-label="Корзина">
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant={isCartActive ? "secondary" : "ghost"}
+              className="gap-2 relative"
+              aria-current={isCartActive ? "page" : undefined}
+            >
+              <Link href="/cart" aria-label="Корзина">
                 <ShoppingCart className="h-4 w-4" aria-hidden="true" />
                 <span className="hidden lg:inline">Корзина</span>
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
 
           <div className="flex items-center gap-2 md:gap-4">
@@ -63,7 +77,7 @@ export function Navigation() {
                     aria-label="Меню пользователя"
                   >
                     <Avatar className="h-10 w-10">
-                      <AvatarImage src={undefined} alt={session.user?.name || session.user?.email || "Пользователь"} />
+                      <AvatarImage src={session.user?.image ?? undefined} alt={session.user?.name || session.user?.email || "Пользователь"} />
                       <AvatarFallback className="bg-primary text-primary-foreground">
                         {userInitials}
                       </AvatarFallback>
@@ -109,14 +123,12 @@ export function Navigation() {
               </DropdownMenu>
             ) : (
               <>
-                <Link href="/login">
-                  <Button variant="ghost" className="hidden sm:flex">
-                    Войти
-                  </Button>
-                </Link>
-                <Link href="/register">
-                  <Button className="hidden sm:flex">Регистрация</Button>
-                </Link>
+                <Button asChild variant="ghost" className="hidden sm:flex">
+                  <Link href="/login">Войти</Link>
+                </Button>
+                <Button asChild className="hidden sm:flex">
+                  <Link href="/register">Регистрация</Link>
+                </Button>
               </>
             )}
 
@@ -150,16 +162,34 @@ export function Navigation() {
             <div className="container mx-auto px-4 py-4 space-y-2">
               <Link
                 href="/games"
-                className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-accent transition-colors"
+                className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${isGamesActive ? "bg-accent text-accent-foreground" : "hover:bg-accent"}`}
                 onClick={() => setMobileMenuOpen(false)}
+                aria-current={isGamesActive ? "page" : undefined}
               >
                 <Menu className="h-4 w-4" aria-hidden="true" />
                 Каталог
               </Link>
               <Link
-                href="/cart"
+                href="/games?sort=newest"
                 className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-accent transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
+              >
+                <Sparkles className="h-4 w-4" aria-hidden="true" />
+                Новинки
+              </Link>
+              <Link
+                href="/games?sort=price_asc"
+                className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-accent transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Flame className="h-4 w-4" aria-hidden="true" />
+                Скидки
+              </Link>
+              <Link
+                href="/cart"
+                className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${isCartActive ? "bg-accent text-accent-foreground" : "hover:bg-accent"}`}
+                onClick={() => setMobileMenuOpen(false)}
+                aria-current={isCartActive ? "page" : undefined}
               >
                 <ShoppingCart className="h-4 w-4" aria-hidden="true" />
                 Корзина

@@ -6,8 +6,48 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin", "cyrillic"] })
 
 export const metadata: Metadata = {
-  title: "Game Store - Интернет-магазин видеоигр",
-  description: "Современный интернет-магазин видеоигр для всех платформ",
+  title: {
+    default: "Game Store - Интернет-магазин видеоигр",
+    template: "%s | Game Store",
+  },
+  description: "Современный интернет-магазин видеоигр для всех платформ. Эксклюзивные скидки и мгновенная доставка цифровых копий.",
+  keywords: ["игры", "видеоигры", "игровой магазин", "цифровые игры", "steam", "epic games", "playstation", "xbox", "nintendo"],
+  authors: [{ name: "Game Store" }],
+  creator: "Game Store",
+  publisher: "Game Store",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "ru_RU",
+    url: "/",
+    siteName: "Game Store",
+    title: "Game Store - Интернет-магазин видеоигр",
+    description: "Современный интернет-магазин видеоигр для всех платформ",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Game Store - Интернет-магазин видеоигр",
+    description: "Современный интернет-магазин видеоигр для всех платформ",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 }
 
 export default function RootLayout({

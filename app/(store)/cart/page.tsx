@@ -3,6 +3,8 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { normalizeJsonArray } from "@/lib/game-utils"
+import { formatCurrency } from "@/lib/utils"
 import { useSession } from "next-auth/react"
 import Image from "next/image"
 import Link from "next/link"
@@ -18,7 +20,7 @@ interface CartItem {
     slug: string
     price: number
     discountPrice: number | null
-    images: string[]
+    images: string[] | string
   }
 }
 
@@ -107,8 +109,12 @@ export default function CartPage() {
   }
 
   const total = items.reduce((sum, item) => {
-    const price = Number(item.game.discountPrice || item.game.price)
-    return sum + price * item.quantity
+    const basePrice = Number.isFinite(Number(item.game.price)) ? Number(item.game.price) : 0
+    const discountValue = item.game.discountPrice !== null && Number.isFinite(Number(item.game.discountPrice))
+      ? Number(item.game.discountPrice)
+      : null
+    const finalPrice = discountValue && discountValue > 0 ? discountValue : basePrice
+    return sum + finalPrice * item.quantity
   }, 0)
 
   return (
@@ -132,8 +138,13 @@ export default function CartPage() {
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
           <div className="xl:col-span-2 space-y-4">
             {items.map((item) => {
-              const price = Number(item.game.discountPrice || item.game.price)
-              const hasDiscount = !!item.game.discountPrice
+              const basePrice = Number.isFinite(Number(item.game.price)) ? Number(item.game.price) : 0
+              const discountValue = item.game.discountPrice !== null && Number.isFinite(Number(item.game.discountPrice))
+                ? Number(item.game.discountPrice)
+                : null
+              const finalPrice = discountValue && discountValue > 0 ? discountValue : basePrice
+              const hasDiscount = discountValue !== null && discountValue > 0 && basePrice > finalPrice
+              const images = normalizeJsonArray(item.game.images)
 
               return (
                 <Card key={item.id}>
@@ -141,25 +152,20 @@ export default function CartPage() {
                     <div className="flex gap-4">
                       <Link href={`/games/${item.game.slug}`} aria-label={`Перейти к игре ${item.game.title}`}>
                         <div className="relative w-24 h-24 bg-muted rounded-md overflow-hidden flex-shrink-0">
-                          {(() => {
-                            const images = typeof item.game.images === 'string'
-                              ? JSON.parse(item.game.images || '[]')
-                              : (Array.isArray(item.game.images) ? item.game.images : [])
-                            return images.length > 0 ? (
-                              <Image
-                                src={images[0]}
-                                alt={`Обложка игры ${item.game.title}`}
-                                fill
-                                className="object-cover"
-                                sizes="96px"
-                                loading="lazy"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground" role="img" aria-label="Изображение недоступно">
-                                Нет изображения
-                              </div>
-                            )
-                          })()}
+                          {images.length > 0 ? (
+                            <Image
+                              src={images[0]}
+                              alt={`Обложка игры ${item.game.title}`}
+                              fill
+                              className="object-cover"
+                              sizes="96px"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground" role="img" aria-label="Изображение недоступно">
+                              Нет изображения
+                            </div>
+                          )}
                         </div>
                       </Link>
 
@@ -173,15 +179,15 @@ export default function CartPage() {
                           {hasDiscount ? (
                             <div>
                               <span className="text-lg font-bold text-destructive">
-                                ${price.toFixed(2)}
+                                {formatCurrency(finalPrice)}
                               </span>
                               <span className="ml-2 text-sm line-through text-muted-foreground">
-                                ${Number(item.game.price).toFixed(2)}
+                                {formatCurrency(basePrice)}
                               </span>
                             </div>
                           ) : (
                             <span className="text-lg font-bold">
-                              ${price.toFixed(2)}
+                              {formatCurrency(finalPrice)}
                             </span>
                           )}
                         </div>
@@ -215,7 +221,7 @@ export default function CartPage() {
 
                       <div className="text-right">
                         <p className="text-lg font-bold">
-                          ${(price * item.quantity).toFixed(2)}
+                          {formatCurrency(finalPrice * item.quantity)}
                         </p>
                       </div>
                     </div>
@@ -233,12 +239,12 @@ export default function CartPage() {
               <CardContent className="space-y-4">
                 <div className="flex justify-between">
                   <span>Товаров ({items.reduce((sum, item) => sum + item.quantity, 0)})</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>{formatCurrency(total)}</span>
                 </div>
                 <div className="border-t pt-4">
                   <div className="flex justify-between text-xl font-bold">
                     <span>Всего</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>{formatCurrency(total)}</span>
                   </div>
                 </div>
                 <Button

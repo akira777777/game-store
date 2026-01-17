@@ -11,9 +11,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { RangeSlider } from "@/components/ui/slider"
 import { Filter, X } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 
 // String arrays for SQLite compatibility (enums stored as strings)
 const GENRES = ["ACTION", "ADVENTURE", "RPG", "STRATEGY", "SPORTS", "RACING", "SHOOTER", "SIMULATION", "INDIE", "PUZZLE"] as const
@@ -52,12 +53,24 @@ export function GameFilters({ genres = [], platforms = [] }: GameFiltersProps) {
     platform: searchParams.get("platform") || "all",
     sortBy: getSortByValue(),
     search: searchParams.get("search") || undefined,
+    minPrice: searchParams.get("minPrice") ? Number(searchParams.get("minPrice")) : undefined,
+    maxPrice: searchParams.get("maxPrice") ? Number(searchParams.get("maxPrice")) : undefined,
   })
+  const [searchInput, setSearchInput] = useState(searchParams.get("search") || "")
   const [isInitialMount, setIsInitialMount] = useState(true)
 
   useEffect(() => {
     setIsInitialMount(false)
   }, [])
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setFilters((prev) => ({ ...prev, search: searchInput || undefined }))
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [searchInput])
 
   useEffect(() => {
     // Skip on initial mount to prevent redirect on page load
@@ -78,7 +91,7 @@ export function GameFilters({ genres = [], platforms = [] }: GameFiltersProps) {
     }
 
     if (filters.sortBy && filters.sortBy !== "newest") {
-      params.set("sortBy", filters.sortBy)
+      params.set("sort", filters.sortBy)
     }
 
     if (filters.minPrice) {
@@ -149,8 +162,8 @@ export function GameFilters({ genres = [], platforms = [] }: GameFiltersProps) {
           <Input
             id="search"
             placeholder="Название игры..."
-            value={filters.search || ""}
-            onChange={(e) => updateFilter("search", e.target.value || undefined)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
           />
         </div>
 
@@ -214,32 +227,59 @@ export function GameFilters({ genres = [], platforms = [] }: GameFiltersProps) {
           </Select>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="minPrice">Мин. цена ($)</Label>
-            <Input
-              id="minPrice"
-              type="number"
-              placeholder="0"
-              min="0"
-              value={filters.minPrice || ""}
-              onChange={(e) =>
-                updateFilter("minPrice", e.target.value ? Number(e.target.value) : undefined)
-              }
-            />
+            <Label>Диапазон цен</Label>
+            <div className="px-2">
+              <RangeSlider
+                min={0}
+                max={1000}
+                step={1}
+                value={[
+                  filters.minPrice || 0,
+                  filters.maxPrice || 1000,
+                ]}
+                onValueChange={([min, max]) => {
+                  setFilters((prev) => ({
+                    ...prev,
+                    minPrice: min > 0 ? min : undefined,
+                    maxPrice: max < 1000 ? max : undefined,
+                  }))
+                }}
+              />
+            </div>
+            <div className="flex items-center justify-between text-sm text-muted-foreground">
+              <span>${filters.minPrice || 0}</span>
+              <span>${filters.maxPrice || 1000}</span>
+            </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="maxPrice">Макс. цена ($)</Label>
-            <Input
-              id="maxPrice"
-              type="number"
-              placeholder="1000"
-              min="0"
-              value={filters.maxPrice || ""}
-              onChange={(e) =>
-                updateFilter("maxPrice", e.target.value ? Number(e.target.value) : undefined)
-              }
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="minPrice">Мин. цена ($)</Label>
+              <Input
+                id="minPrice"
+                type="number"
+                placeholder="0"
+                min="0"
+                value={filters.minPrice || ""}
+                onChange={(e) =>
+                  updateFilter("minPrice", e.target.value ? Number(e.target.value) : undefined)
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="maxPrice">Макс. цена ($)</Label>
+              <Input
+                id="maxPrice"
+                type="number"
+                placeholder="1000"
+                min="0"
+                value={filters.maxPrice || ""}
+                onChange={(e) =>
+                  updateFilter("maxPrice", e.target.value ? Number(e.target.value) : undefined)
+                }
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -277,6 +317,30 @@ export function GameFilters({ genres = [], platforms = [] }: GameFiltersProps) {
                 onClick={() => updateFilter("search", undefined)}
                 className="ml-1 hover:text-destructive"
                 aria-label={`Убрать поисковый запрос: ${filters.search}`}
+              >
+                <X className="h-3 w-3" aria-hidden="true" />
+              </button>
+            </Badge>
+          )}
+          {filters.minPrice && (
+            <Badge variant="secondary" className="gap-1">
+              От: ${filters.minPrice}
+              <button
+                onClick={() => updateFilter("minPrice", undefined)}
+                className="ml-1 hover:text-destructive"
+                aria-label={`Убрать фильтр минимальной цены: ${filters.minPrice}`}
+              >
+                <X className="h-3 w-3" aria-hidden="true" />
+              </button>
+            </Badge>
+          )}
+          {filters.maxPrice && (
+            <Badge variant="secondary" className="gap-1">
+              До: ${filters.maxPrice}
+              <button
+                onClick={() => updateFilter("maxPrice", undefined)}
+                className="ml-1 hover:text-destructive"
+                aria-label={`Убрать фильтр максимальной цены: ${filters.maxPrice}`}
               >
                 <X className="h-3 w-3" aria-hidden="true" />
               </button>

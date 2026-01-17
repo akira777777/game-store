@@ -2,7 +2,7 @@
 
 // Get repo name from environment for GitHub Pages base path
 const isGithubPages = process.env.GITHUB_PAGES === 'true'
-const repoName = process.env.REPO_NAME || 'birthday-card'
+const repoName = process.env.REPO_NAME || 'game-store'
 const basePath = isGithubPages ? `/${repoName}` : ''
 
 const nextConfig = {
@@ -41,6 +41,19 @@ const nextConfig = {
 
   // Trailing slash for GitHub Pages compatibility
   trailingSlash: isGithubPages,
+
+  // Performance optimizations
+  poweredByHeader: false,
+  
+  // Experimental features for better performance
+  experimental: {
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+  },
+
+  // Disable ESLint during build to avoid circular reference issues
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;

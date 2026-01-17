@@ -103,35 +103,17 @@ const config = {
           from: { transform: "scale(0.95)", opacity: "0" },
           to: { transform: "scale(1)", opacity: "1" },
         },
-        "bounce-gnome": {
-          "0%, 100%": { transform: "translateY(0) scale(1)" },
-          "50%": { transform: "translateY(-30px) scale(1.2)" },
-        },
-        "pulse-gnome": {
-          "0%, 100%": { transform: "scale(1)", opacity: "1" },
-          "50%": { transform: "scale(1.03)", opacity: "0.95" },
-        },
-        "card-reveal": {
-          "0%": {
-            transform: "scale(0) rotate(-180deg)",
-            opacity: "0",
-          },
-          "50%": {
-            transform: "scale(1.1) rotate(10deg)",
-            opacity: "0.8",
-          },
-          "100%": {
-            transform: "scale(1) rotate(0deg)",
-            opacity: "1",
-          },
+        "card-hover": {
+          "0%": { transform: "translateY(0) scale(1)" },
+          "100%": { transform: "translateY(-4px) scale(1.02)" },
         },
         sparkle: {
           "0%, 100%": {
-            transform: "scale(0) rotate(0deg) translateY(0)",
+            transform: "scale(0) rotate(0deg)",
             opacity: "0",
           },
           "50%": {
-            transform: "scale(1.8) rotate(180deg) translateY(-10px)",
+            transform: "scale(1.5) rotate(180deg)",
             opacity: "1",
           },
         },
@@ -146,32 +128,32 @@ const config = {
         "text-reveal": {
           "0%": {
             opacity: "0",
-            transform: "translateY(30px) scale(0.8)",
-            filter: "blur(10px)",
+            transform: "translateY(20px)",
+            filter: "blur(5px)",
           },
           "100%": {
             opacity: "1",
-            transform: "translateY(0) scale(1)",
+            transform: "translateY(0)",
             filter: "blur(0)",
           },
         },
         "glow-pulse": {
           "0%, 100%": {
-            boxShadow: "0 0 20px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.3)",
+            boxShadow: "0 0 20px rgba(var(--primary), 0.5)",
           },
           "50%": {
-            boxShadow: "0 0 40px rgba(255, 215, 0, 0.8), 0 0 80px rgba(255, 215, 0, 0.5)",
+            boxShadow: "0 0 40px rgba(var(--primary), 0.8)",
           },
         },
-        "float": {
+        float: {
           "0%, 100%": {
             transform: "translateY(0px)",
           },
           "50%": {
-            transform: "translateY(-20px)",
+            transform: "translateY(-10px)",
           },
         },
-        "shimmer": {
+        shimmer: {
           "0%": {
             backgroundPosition: "-200% 0",
           },
@@ -179,39 +161,14 @@ const config = {
             backgroundPosition: "200% 0",
           },
         },
-        "letter-bounce": {
-          "0%, 100%": {
-            transform: "translateY(0) scale(1)",
-          },
-          "50%": {
-            transform: "translateY(-15px) scale(1.1)",
-          },
-        },
         "card-entrance": {
           "0%": {
             opacity: "0",
-            transform: "scale(0.5) rotateY(180deg)",
-            filter: "blur(20px)",
-          },
-          "60%": {
-            opacity: "1",
-            transform: "scale(1.05) rotateY(-10deg)",
-            filter: "blur(5px)",
+            transform: "scale(0.9) translateY(20px)",
           },
           "100%": {
             opacity: "1",
-            transform: "scale(1) rotateY(0deg)",
-            filter: "blur(0)",
-          },
-        },
-        "confetti-fall": {
-          "0%": {
-            transform: "translateY(-100vh) rotate(0deg)",
-            opacity: "1",
-          },
-          "100%": {
-            transform: "translateY(100vh) rotate(720deg)",
-            opacity: "0",
+            transform: "scale(1) translateY(0)",
           },
         },
       },
@@ -222,18 +179,14 @@ const config = {
         "slide-up": "slide-up 0.3s ease-out",
         "slide-down": "slide-down 0.3s ease-out",
         "scale-in": "scale-in 0.2s ease-out",
-        "bounce-gnome": "bounce-gnome 0.6s ease-out",
-        "pulse-gnome": "pulse-gnome 2s ease-in-out infinite",
-        "card-reveal": "card-reveal 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+        "card-hover": "card-hover 0.2s ease-out",
         sparkle: "sparkle 2s ease-in-out infinite",
         "progress-pulse": "progress-pulse 2s ease-in-out infinite",
-        "text-reveal": "text-reveal 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+        "text-reveal": "text-reveal 0.8s ease-out forwards",
         "glow-pulse": "glow-pulse 2s ease-in-out infinite",
         float: "float 3s ease-in-out infinite",
         shimmer: "shimmer 3s linear infinite",
-        "letter-bounce": "letter-bounce 0.6s ease-out",
-        "card-entrance": "card-entrance 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
-        "confetti-fall": "confetti-fall 3s linear infinite",
+        "card-entrance": "card-entrance 0.5s ease-out forwards",
       },
     },
   },

@@ -2,6 +2,8 @@ import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
 import { NextRequest, NextResponse } from "next/server"
 
+export const revalidate = 3600 // Revalidate every hour
+
 export async function GET(
   _request: NextRequest,
   { params }: { params: { slug: string } }
@@ -15,7 +17,12 @@ export async function GET(
       return NextResponse.json({ error: "Game not found" }, { status: 404 })
     }
 
-    return NextResponse.json({ game })
+    const response = NextResponse.json({ game })
+    
+    // Add caching headers
+    response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400')
+    
+    return response
   } catch (error) {
     logger.error("Error fetching game by slug", error, {
       slug: params.slug,

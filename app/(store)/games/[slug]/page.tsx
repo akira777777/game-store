@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AddToCartButton } from "@/components/game/add-to-cart-button"
+import { GameGrid } from "@/components/game/game-grid"
 import { parseJsonArrayOrString } from "@/lib/game-utils"
 
 export const dynamic = "force-dynamic"
@@ -28,6 +29,22 @@ export default async function GamePage({
   const images = parseJsonArrayOrString(game.images)
   const genres = parseJsonArrayOrString(game.genres)
   const platforms = parseJsonArrayOrString(game.platforms)
+
+  // Find related games (same genre, exclude current game)
+  // Use the first genre to find related games
+  const relatedGames = genres.length > 0
+    ? await db.game.findMany({
+        where: {
+          id: { not: game.id },
+          inStock: true,
+          genres: {
+            contains: `"${genres[0]}"`,
+          },
+        },
+        take: 6,
+        orderBy: { createdAt: "desc" },
+      })
+    : []
 
   return (
     <main className="container mx-auto px-4 py-8" role="main">
@@ -132,6 +149,20 @@ export default async function GamePage({
           </CardContent>
         </Card>
       </div>
+
+      {relatedGames.length > 0 && (
+        <section className="mt-12 space-y-6" aria-labelledby="related-games-heading">
+          <div>
+            <h2 id="related-games-heading" className="text-2xl font-bold mb-2">
+              Похожие игры
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Игры в том же жанре, которые могут вас заинтересовать
+            </p>
+          </div>
+          <GameGrid games={relatedGames} />
+        </section>
+      )}
 
       <nav className="mt-8" aria-label="Навигация">
         <Link href="/games">

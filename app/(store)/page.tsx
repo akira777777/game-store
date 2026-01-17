@@ -1,11 +1,25 @@
 import { GameGrid } from "@/components/game/game-grid"
+import { CtaSection } from "@/components/layout/cta-section"
 import { HeroSection } from "@/components/layout/hero-section"
+import { ValuePropsSection } from "@/components/layout/value-props-section"
 import { Button } from "@/components/ui/button"
+import { ErrorBoundary } from "@/components/ui/error-boundary"
 import { db } from "@/lib/db"
 import { ArrowRight, TrendingUp } from "lucide-react"
 import Link from "next/link"
+import type { Metadata } from "next"
 
 export const dynamic = 'force-dynamic'
+export const revalidate = 3600 // Revalidate every hour
+
+export const metadata: Metadata = {
+  title: "Главная",
+  description: "Откройте мир видеоигр. Современный интернет-магазин с лучшими играми для всех платформ. Эксклюзивные скидки и мгновенная доставка цифровых копий.",
+  openGraph: {
+    title: "Game Store - Главная",
+    description: "Откройте мир видеоигр. Современный интернет-магазин с лучшими играми для всех платформ.",
+  },
+}
 
 export default async function HomePage() {
   try {
@@ -40,99 +54,111 @@ export default async function HomePage() {
     ])
 
     return (
-      <div className="flex flex-col">
-        <HeroSection />
+      <ErrorBoundary>
+        <div className="flex flex-col">
+          <HeroSection />
 
-        <main className="container mx-auto px-4 py-12 space-y-16" role="main">
-          {/* Featured Games Section */}
-          <section className="space-y-6" aria-labelledby="featured-heading">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                  <TrendingUp className="h-5 w-5 text-primary" aria-hidden="true" />
-                </div>
-                <div>
-                  <h2 id="featured-heading" className="text-2xl sm:text-3xl font-bold tracking-tight">Рекомендуемые игры</h2>
-                  <p className="text-sm text-muted-foreground">
-                    Самые популярные и востребованные игры
-                  </p>
-                </div>
-              </div>
-              <Link href="/games?featured=true">
-                <Button variant="outline" className="gap-2 w-full sm:w-auto">
-                  Все игры
-                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                </Button>
-              </Link>
-            </div>
+          <main className="container mx-auto px-4 py-12 space-y-16" role="main">
+            <ValuePropsSection />
 
-            {featuredGames.length === 0 ? (
-              <div className="rounded-lg border border-dashed p-12 text-center">
-                <p className="text-lg font-medium text-muted-foreground mb-2">
-                  Пока нет рекомендуемых игр
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Рекомендуемые игры появятся здесь, когда администратор их добавит
-                </p>
-              </div>
-            ) : (
-              <GameGrid games={featuredGames} />
-            )}
-          </section>
-
-          {/* New Games Section */}
-          {newGames.length > 0 && (
-            <section className="space-y-6" aria-labelledby="new-games-heading">
+            {/* Featured Games Section */}
+            <section className="space-y-6" aria-labelledby="featured-heading">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                    <span className="text-lg" aria-hidden="true">🆕</span>
+                    <TrendingUp className="h-5 w-5 text-primary" aria-hidden="true" />
                   </div>
                   <div>
-                    <h2 id="new-games-heading" className="text-2xl sm:text-3xl font-bold tracking-tight">Новинки</h2>
+                    <h2 id="featured-heading" className="text-2xl sm:text-3xl font-bold tracking-tight">Рекомендуемые игры</h2>
                     <p className="text-sm text-muted-foreground">
-                      Только что добавленные игры в наш каталог
+                      Самые популярные и востребованные игры
                     </p>
                   </div>
                 </div>
-                <Link href="/games?sort=newest">
-                  <Button variant="outline" className="gap-2 w-full sm:w-auto">
-                    Все новинки
+                <Button asChild variant="outline" className="gap-2 w-full sm:w-auto" aria-label="Перейти к рекомендуемым играм">
+                  <Link href="/games?featured=true">
+                    Все игры
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </div>
-              <GameGrid games={newGames.slice(0, 8)} />
-            </section>
-          )}
 
-          {/* Discounted Games Section */}
-          {discountedGames.length > 0 && (
-            <section className="space-y-6" aria-labelledby="discounts-heading">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-destructive/10">
-                    <span className="text-lg" aria-hidden="true">🔥</span>
-                  </div>
-                  <div>
-                    <h2 id="discounts-heading" className="text-2xl sm:text-3xl font-bold tracking-tight">Скидки</h2>
-                    <p className="text-sm text-muted-foreground">
-                      Игры со специальными ценами
-                    </p>
-                  </div>
+              {featuredGames.length > 0 && (
+                <p className="text-sm text-muted-foreground -mt-2">
+                  Показано {featuredGames.length} {featuredGames.length === 1 ? 'игра' : featuredGames.length < 5 ? 'игры' : 'игр'}
+                </p>
+              )}
+
+              {featuredGames.length === 0 ? (
+                <div className="rounded-lg border border-dashed p-12 text-center">
+                  <p className="text-lg font-medium text-muted-foreground mb-2">
+                    Пока нет рекомендуемых игр
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Рекомендуемые игры появятся здесь, когда администратор их добавит
+                  </p>
                 </div>
-                <Link href="/games?sort=price_asc">
-                  <Button variant="outline" className="gap-2 w-full sm:w-auto">
-                    Все скидки
-                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                  </Button>
-                </Link>
-              </div>
-              <GameGrid games={discountedGames.slice(0, 8)} />
+              ) : (
+                <GameGrid games={featuredGames} />
+              )}
             </section>
-          )}
-        </main>
-      </div>
+
+            {/* New Games Section */}
+            {newGames.length > 0 && (
+              <section className="space-y-6" aria-labelledby="new-games-heading">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                      <span className="text-lg" aria-hidden="true">🆕</span>
+                    </div>
+                    <div>
+                      <h2 id="new-games-heading" className="text-2xl sm:text-3xl font-bold tracking-tight">Новинки</h2>
+                      <p className="text-sm text-muted-foreground">
+                        Только что добавленные игры в наш каталог
+                      </p>
+                    </div>
+                  </div>
+                  <Button asChild variant="outline" className="gap-2 w-full sm:w-auto" aria-label="Перейти к новинкам">
+                    <Link href="/games?sort=newest">
+                      Все новинки
+                      <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                    </Link>
+                  </Button>
+                </div>
+                <GameGrid games={newGames.slice(0, 8)} />
+              </section>
+            )}
+
+            {/* Discounted Games Section */}
+            {discountedGames.length > 0 && (
+              <section className="space-y-6" aria-labelledby="discounts-heading">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-destructive/10">
+                      <span className="text-lg" aria-hidden="true">🔥</span>
+                    </div>
+                    <div>
+                      <h2 id="discounts-heading" className="text-2xl sm:text-3xl font-bold tracking-tight">Скидки</h2>
+                      <p className="text-sm text-muted-foreground">
+                        Игры со специальными ценами
+                      </p>
+                    </div>
+                  </div>
+                  <Button asChild variant="outline" className="gap-2 w-full sm:w-auto" aria-label="Перейти к скидкам">
+                    <Link href="/games?sort=price_asc">
+                      Все скидки
+                      <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                    </Link>
+                  </Button>
+                </div>
+                <GameGrid games={discountedGames.slice(0, 8)} />
+              </section>
+            )}
+
+            <CtaSection />
+          </main>
+        </div>
+      </ErrorBoundary>
     )
   } catch (error) {
     throw error

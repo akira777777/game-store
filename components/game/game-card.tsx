@@ -13,11 +13,14 @@ interface GameCardProps {
 export function GameCard({ game }: GameCardProps) {
   const finalPrice = game.discountPrice || game.price
   const hasDiscount = !!game.discountPrice
+  const discountPercent = hasDiscount && game.price > 0
+    ? Math.round(((game.price - (game.discountPrice || 0)) / game.price) * 100)
+    : 0
   const images = parseJsonArrayOrString(game.images)
   const genres = parseJsonArrayOrString(game.genres)
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 group">
       <Link href={`/games/${game.slug}`} aria-label={`Подробнее о игре ${game.title}`}>
         <div className="relative aspect-video w-full bg-muted">
           {images.length > 0 ? (
@@ -34,9 +37,9 @@ export function GameCard({ game }: GameCardProps) {
               Нет изображения
             </div>
           )}
-          {hasDiscount && (
-            <Badge className="absolute top-2 right-2" variant="destructive" aria-label="Игра со скидкой">
-              Скидка
+          {hasDiscount && discountPercent > 0 && (
+            <Badge className="absolute top-2 right-2" variant="destructive" aria-label={`Скидка ${discountPercent}%`}>
+              -{discountPercent}%
             </Badge>
           )}
         </div>

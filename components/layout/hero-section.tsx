@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Gamepad2, Sparkles } from "lucide-react"
+import { ArrowRight, Gamepad2, Headset, ShieldCheck, Sparkles, Zap } from "lucide-react"
 import Link from "next/link"
 
 export function HeroSection() {
@@ -28,19 +28,60 @@ export function HeroSection() {
           </p>
 
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link href="/games">
-              <Button size="lg" className="group text-base sm:text-lg px-6 sm:px-8 py-6 w-full sm:w-auto">
+            <Button
+              asChild
+              size="lg"
+              className="group text-base sm:text-lg px-6 sm:px-8 py-6 w-full sm:w-auto"
+              aria-label="Перейти в каталог игр"
+            >
+              <Link href="/games">
                 Перейти в каталог
                 <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 transition-transform group-hover:translate-x-1" aria-hidden="true" />
-              </Button>
-            </Link>
-            <Link href="/games?featured=true">
-              <Button size="lg" variant="outline" className="text-base sm:text-lg px-6 sm:px-8 py-6 w-full sm:w-auto">
+              </Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="text-base sm:text-lg px-6 sm:px-8 py-6 w-full sm:w-auto"
+              aria-label="Открыть популярные игры"
+            >
+              <Link href="/games?featured=true">
                 <Gamepad2 className="mr-2 h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
                 Популярные игры
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
+
+          <ul className="mt-8 grid gap-4 sm:grid-cols-3 text-left" aria-label="Преимущества магазина">
+            <li className="rounded-2xl border bg-background/80 p-4 shadow-sm">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <Zap className="h-4 w-4 text-primary" aria-hidden="true" />
+                Мгновенная доставка
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Ключи приходят на почту сразу после оплаты.
+              </p>
+            </li>
+            <li className="rounded-2xl border bg-background/80 p-4 shadow-sm">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <ShieldCheck className="h-4 w-4 text-primary" aria-hidden="true" />
+                Безопасная оплата
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Современные методы защиты и прозрачные чеки.
+              </p>
+            </li>
+            <li className="rounded-2xl border bg-background/80 p-4 shadow-sm">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <Headset className="h-4 w-4 text-primary" aria-hidden="true" />
+                Поддержка 24/7
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Ответим на любые вопросы в чате или по почте.
+              </p>
+            </li>
+          </ul>
 
           <dl className="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 text-center">
             <div>

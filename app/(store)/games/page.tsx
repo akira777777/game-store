@@ -1,7 +1,9 @@
 import { GameCard } from "@/components/game/game-card"
 import { GameFilters } from "@/components/game/game-filters"
 import { db } from "@/lib/db"
+import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
 export const dynamic = "force-dynamic"
 
@@ -14,6 +16,8 @@ interface SearchParams {
   sort?: string
   order?: string
   featured?: string
+  minPrice?: string
+  maxPrice?: string
 }
 
 export default async function GamesPage({
@@ -69,6 +73,49 @@ export default async function GamesPage({
       ]
     }
 
+    // Filter by price range (considering discountPrice when available)
+    // Uses finalPrice logic: discountPrice if exists, otherwise price
+    const minPrice = searchParams.minPrice ? parseFloat(searchParams.minPrice) : null
+    const maxPrice = searchParams.maxPrice ? parseFloat(searchParams.maxPrice) : null
+
+    if (minPrice !== null || maxPrice !== null) {
+      // Price filtering: (discountPrice IS NOT NULL AND discountPrice >= min) OR (discountPrice IS NULL AND price >= min)
+      const priceFilters: any[] = []
+      
+      if (minPrice !== null) {
+        priceFilters.push({
+          OR: [
+            { discountPrice: { gte: minPrice } },
+            { 
+              AND: [
+                { discountPrice: null },
+                { price: { gte: minPrice } }
+              ]
+            }
+          ]
+        })
+      }
+      
+      if (maxPrice !== null) {
+        priceFilters.push({
+          OR: [
+            { discountPrice: { lte: maxPrice } },
+            { 
+              AND: [
+                { discountPrice: null },
+                { price: { lte: maxPrice } }
+              ]
+            }
+          ]
+        })
+      }
+
+      // Add price filters to AND array (Prisma will AND these with any existing OR conditions)
+      if (priceFilters.length > 0) {
+        whereConditions.AND = [...(whereConditions.AND || []), ...priceFilters]
+      }
+    }
+
     // Determine sort order
     const sortByParam = searchParams.sort || searchParams.sortBy || "newest"
     let orderBy: any = { createdAt: "desc" }
@@ -83,7 +130,7 @@ export default async function GamesPage({
       orderBy = { price: "desc" }
     }
 
-    // Execute query with filters and sorting at database level
+    // Execute query with filters at database level
     const [games, total] = await Promise.all([
       db.game.findMany({
         where: whereConditions,
@@ -95,6 +142,18 @@ export default async function GamesPage({
         where: whereConditions,
       }),
     ])
+
+    // Post-process sorting for price (when sorting by price, need to consider discountPrice)
+    // Note: For better performance with large datasets, consider using raw SQL with COALESCE
+    if (sortByParam === "price_asc" || sortByParam === "price_desc") {
+      games.sort((a, b) => {
+        const finalPriceA = a.discountPrice ?? a.price
+        const finalPriceB = b.discountPrice ?? b.price
+        return sortByParam === "price_asc" 
+          ? finalPriceA - finalPriceB 
+          : finalPriceB - finalPriceA
+      })
+    }
 
     const totalPages = Math.ceil(total / limit)
 
@@ -121,6 +180,16 @@ export default async function GamesPage({
               </div>
             ) : (
               <>
+                <div className="flex items-center justify-between mb-6">
+                  <p className="text-sm text-muted-foreground">
+                    Найдено игр: <span className="font-semibold text-foreground">{total}</span>
+                  </p>
+                  {totalPages > 1 && (
+                    <p className="text-sm text-muted-foreground">
+                      Страница <span className="font-semibold text-foreground">{page}</span> из <span className="font-semibold text-foreground">{totalPages}</span>
+                    </p>
+                  )}
+                </div>
                 <div
                   className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
                   role="list"
@@ -134,30 +203,79 @@ export default async function GamesPage({
                 </div>
 
                 {totalPages > 1 && (
-                  <nav aria-label="Пагинация страниц" className="flex justify-center gap-2">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                      (pageNum) => {
-                        const searchParamsString = new URLSearchParams()
-                        if (searchParams.genre) searchParamsString.set("genre", searchParams.genre)
-                        if (searchParams.platform) searchParamsString.set("platform", searchParams.platform)
-                        if (searchParams.search) searchParamsString.set("search", searchParams.search)
-                        searchParamsString.set("page", pageNum.toString())
+                  <nav aria-label="Пагинация страниц" className="flex items-center justify-center gap-2">
+                    {page > 1 && (
+                      <Link
+                        href={(() => {
+                          const params = new URLSearchParams()
+                          Object.entries(searchParams).forEach(([key, value]) => {
+                            if (key !== "page" && value) params.set(key, value)
+                          })
+                          params.set("page", (page - 1).toString())
+                          return `/games?${params.toString()}`
+                        })()}
+                      >
+                        <Button variant="outline" size="sm" aria-label="Предыдущая страница">
+                          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                          Назад
+                        </Button>
+                      </Link>
+                    )}
+                    
+                    <div className="flex gap-2">
+                      {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                        let pageNum: number
+                        if (totalPages <= 7) {
+                          pageNum = i + 1
+                        } else if (page <= 4) {
+                          pageNum = i + 1
+                        } else if (page >= totalPages - 3) {
+                          pageNum = totalPages - 6 + i
+                        } else {
+                          pageNum = page - 3 + i
+                        }
+
+                        const params = new URLSearchParams()
+                        Object.entries(searchParams).forEach(([key, value]) => {
+                          if (key !== "page" && value) params.set(key, value)
+                        })
+                        params.set("page", pageNum.toString())
 
                         return (
                           <Link
                             key={pageNum}
-                            href={`/games?${searchParamsString.toString()}`}
-                            className={`px-4 py-2 rounded-md transition-colors ${page === pageNum
-                                ? "bg-primary text-primary-foreground font-semibold"
-                                : "bg-muted hover:bg-muted/80"
-                              }`}
-                            aria-label={`Страница ${pageNum}`}
-                            aria-current={page === pageNum ? "page" : undefined}
+                            href={`/games?${params.toString()}`}
                           >
-                            {pageNum}
+                            <Button
+                              variant={page === pageNum ? "default" : "outline"}
+                              size="sm"
+                              className={page === pageNum ? "font-semibold" : ""}
+                              aria-label={`Страница ${pageNum}`}
+                              aria-current={page === pageNum ? "page" : undefined}
+                            >
+                              {pageNum}
+                            </Button>
                           </Link>
                         )
-                      }
+                      })}
+                    </div>
+
+                    {page < totalPages && (
+                      <Link
+                        href={(() => {
+                          const params = new URLSearchParams()
+                          Object.entries(searchParams).forEach(([key, value]) => {
+                            if (key !== "page" && value) params.set(key, value)
+                          })
+                          params.set("page", (page + 1).toString())
+                          return `/games?${params.toString()}`
+                        })()}
+                      >
+                        <Button variant="outline" size="sm" aria-label="Следующая страница">
+                          Вперед
+                          <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                        </Button>
+                      </Link>
                     )}
                   </nav>
                 )}
