@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { useCallback, useEffect, useRef, useState, useMemo } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 interface GnomeProps {
   id: number

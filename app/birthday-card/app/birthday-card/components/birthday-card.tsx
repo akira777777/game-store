@@ -146,8 +146,8 @@ export function BirthdayCard({ isVisible, isMobile = false, onReplay }: Birthday
       {/* Main card container */}
       <div
         className={`relative transition-all duration-1000 ease-out ${showCard
-            ? 'opacity-100 scale-100 translate-y-0'
-            : 'opacity-0 scale-75 translate-y-12'
+          ? 'opacity-100 scale-100 translate-y-0'
+          : 'opacity-0 scale-75 translate-y-12'
           } ${isMobile ? 'w-[95vw] max-w-[400px]' : 'w-[90vw] max-w-[700px]'}`}
       >
         {/* Outer glow */}
@@ -230,8 +230,8 @@ export function BirthdayCard({ isVisible, isMobile = false, onReplay }: Birthday
             <button
               onClick={onReplay}
               className={`group relative overflow-hidden bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500 text-white font-bold rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 border-2 border-amber-300/50 ${isMobile
-                  ? "px-6 py-3 text-base"
-                  : "px-10 py-4 text-xl"
+                ? "px-6 py-3 text-base"
+                : "px-10 py-4 text-xl"
                 }`}
               style={{
                 boxShadow: '0 10px 40px rgba(218, 165, 32, 0.4)',
