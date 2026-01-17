@@ -44,9 +44,8 @@ export function Gnome({ id, x, y, onClick, isVisible, isMobile = false }: GnomeP
     <button
       onClick={handleClick}
       onTouchEnd={handleClick}
-      className={`absolute cursor-pointer transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 rounded-full will-change-transform active:scale-125 ${
-        isBouncing ? "animate-bounce-gnome" : "animate-pulse-gnome"
-      } ${isMobile ? "hover:scale-105" : "hover:scale-110"}`}
+      className={`absolute cursor-pointer transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 rounded-full will-change-transform active:scale-125 ${isBouncing ? "animate-bounce-gnome" : "animate-pulse-gnome"
+        } ${isMobile ? "hover:scale-105" : "hover:scale-110"}`}
       style={{
         left: `${x}px`,
         top: `${y}px`,

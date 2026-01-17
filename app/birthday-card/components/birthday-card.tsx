@@ -111,46 +111,40 @@ export function BirthdayCard({ isVisible, isMobile = false }: BirthdayCardProps)
 
         {/* Main card with glassmorphism */}
         <div
-          className={`relative bg-gradient-to-br from-white/95 via-pink-50/95 to-purple-50/95 shadow-2xl border-4 border-yellow-300/80 backdrop-blur-xl animate-card-entrance ${
-            isMobile ? "rounded-2xl p-5 mx-2" : "rounded-3xl md:rounded-[2.5rem] p-8 sm:p-12 md:p-16 lg:p-20"
-          }`}
+          className={`relative bg-gradient-to-br from-white/95 via-pink-50/95 to-purple-50/95 shadow-2xl border-4 border-yellow-300/80 backdrop-blur-xl animate-card-entrance ${isMobile ? "rounded-2xl p-5 mx-2" : "rounded-3xl md:rounded-[2.5rem] p-8 sm:p-12 md:p-16 lg:p-20"
+            }`}
         >
           {/* Animated border glow */}
           <div
-            className={`absolute -inset-1 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 opacity-75 blur-xl animate-glow-pulse -z-10 ${
-              isMobile ? "rounded-2xl" : "rounded-3xl md:rounded-[2.5rem]"
-            }`}
+            className={`absolute -inset-1 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 opacity-75 blur-xl animate-glow-pulse -z-10 ${isMobile ? "rounded-2xl" : "rounded-3xl md:rounded-[2.5rem]"
+              }`}
           />
 
           {/* Decorative corner emojis */}
           <div
-            className={`absolute animate-float ${
-              isMobile ? "top-2 left-2 text-2xl" : "top-4 left-4 text-5xl md:text-6xl"
-            }`}
+            className={`absolute animate-float ${isMobile ? "top-2 left-2 text-2xl" : "top-4 left-4 text-5xl md:text-6xl"
+              }`}
             style={{ animationDelay: "0s" }}
           >
             🎉
           </div>
           <div
-            className={`absolute animate-float ${
-              isMobile ? "top-2 right-2 text-2xl" : "top-4 right-4 text-5xl md:text-6xl"
-            }`}
+            className={`absolute animate-float ${isMobile ? "top-2 right-2 text-2xl" : "top-4 right-4 text-5xl md:text-6xl"
+              }`}
             style={{ animationDelay: "0.5s" }}
           >
             🎈
           </div>
           <div
-            className={`absolute animate-float ${
-              isMobile ? "bottom-2 left-2 text-2xl" : "bottom-4 left-4 text-5xl md:text-6xl"
-            }`}
+            className={`absolute animate-float ${isMobile ? "bottom-2 left-2 text-2xl" : "bottom-4 left-4 text-5xl md:text-6xl"
+              }`}
             style={{ animationDelay: "1s" }}
           >
             🎁
           </div>
           <div
-            className={`absolute animate-float ${
-              isMobile ? "bottom-2 right-2 text-2xl" : "bottom-4 right-4 text-5xl md:text-6xl"
-            }`}
+            className={`absolute animate-float ${isMobile ? "bottom-2 right-2 text-2xl" : "bottom-4 right-4 text-5xl md:text-6xl"
+              }`}
             style={{ animationDelay: "1.5s" }}
           >
             🎊
@@ -174,9 +168,8 @@ export function BirthdayCard({ isVisible, isMobile = false }: BirthdayCardProps)
           >
             {/* Greeting */}
             <h1
-              className={`font-bold leading-tight ${
-                isMobile ? "text-2xl min-h-[1.5em]" : "text-5xl sm:text-6xl md:text-8xl min-h-[1.2em]"
-              }`}
+              className={`font-bold leading-tight ${isMobile ? "text-2xl min-h-[1.5em]" : "text-5xl sm:text-6xl md:text-8xl min-h-[1.2em]"
+                }`}
             >
               {displayedGreeting.split("").map((char, index) => (
                 <span
@@ -196,9 +189,8 @@ export function BirthdayCard({ isVisible, isMobile = false }: BirthdayCardProps)
 
             {/* Name with shimmer effect */}
             <h2
-              className={`font-extrabold leading-tight ${
-                isMobile ? "text-4xl min-h-[1.3em]" : "text-6xl sm:text-7xl md:text-9xl min-h-[1.2em]"
-              }`}
+              className={`font-extrabold leading-tight ${isMobile ? "text-4xl min-h-[1.3em]" : "text-6xl sm:text-7xl md:text-9xl min-h-[1.2em]"
+                }`}
             >
               {displayedName.split("").map((char, index) => (
                 <span
@@ -221,9 +213,8 @@ export function BirthdayCard({ isVisible, isMobile = false }: BirthdayCardProps)
             <div className={isMobile ? "pt-2 space-y-1" : "pt-4 md:pt-6 space-y-2 md:space-y-3"}>
               {displayedMessage1 && (
                 <p
-                  className={`text-gray-700 font-medium animate-text-reveal ${
-                    isMobile ? "text-sm" : "text-xl sm:text-2xl md:text-3xl"
-                  }`}
+                  className={`text-gray-700 font-medium animate-text-reveal ${isMobile ? "text-sm" : "text-xl sm:text-2xl md:text-3xl"
+                    }`}
                   style={{ animationDelay: "0.2s" }}
                 >
                   {displayedMessage1}
@@ -231,9 +222,8 @@ export function BirthdayCard({ isVisible, isMobile = false }: BirthdayCardProps)
               )}
               {displayedMessage2 && (
                 <p
-                  className={`text-gray-700 font-medium animate-text-reveal flex items-center justify-center gap-1 ${
-                    isMobile ? "text-sm" : "text-xl sm:text-2xl md:text-3xl gap-2"
-                  }`}
+                  className={`text-gray-700 font-medium animate-text-reveal flex items-center justify-center gap-1 ${isMobile ? "text-sm" : "text-xl sm:text-2xl md:text-3xl gap-2"
+                    }`}
                   style={{ animationDelay: "0.4s" }}
                 >
                   {displayedMessage2}{" "}
@@ -247,9 +237,8 @@ export function BirthdayCard({ isVisible, isMobile = false }: BirthdayCardProps)
 
           {/* Bottom decoration */}
           <div
-            className={`absolute bottom-0 left-0 right-0 bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 animate-shimmer ${
-              isMobile ? "h-2 rounded-b-2xl" : "h-3 rounded-b-3xl md:rounded-b-[2.5rem]"
-            }`}
+            className={`absolute bottom-0 left-0 right-0 bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 animate-shimmer ${isMobile ? "h-2 rounded-b-2xl" : "h-3 rounded-b-3xl md:rounded-b-[2.5rem]"
+              }`}
             style={{ backgroundSize: "200% 100%" }}
           />
         </div>
