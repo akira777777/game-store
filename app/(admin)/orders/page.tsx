@@ -5,6 +5,8 @@ import { db } from "@/lib/db"
 // OrderStatus is stored as string in SQLite, not as enum
 type OrderStatus = "PENDING" | "PAID" | "PROCESSING" | "COMPLETED" | "CANCELLED"
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminOrdersPage() {
   const orders = await db.order.findMany({
     include: {

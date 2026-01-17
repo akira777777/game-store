@@ -2,6 +2,8 @@ import { db } from "@/lib/db"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminOrdersPage() {
   const orders = await db.order.findMany({
     include: {

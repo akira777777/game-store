@@ -5,6 +5,8 @@ import { db } from "@/lib/db"
 import { ArrowRight, TrendingUp } from "lucide-react"
 import Link from "next/link"
 
+export const dynamic = 'force-dynamic'
+
 export default async function HomePage() {
   try {
     const featuredGamesPromise = db.game.findMany({

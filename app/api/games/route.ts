@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
+import { NextRequest, NextResponse } from "next/server"
 
 export const dynamic = 'force-dynamic'
 
@@ -43,14 +43,14 @@ export async function GET(request: NextRequest) {
 
     if (search) {
       const searchLower = search.toLowerCase()
-      games = games.filter(game => 
+      games = games.filter(game =>
         game.title.toLowerCase().includes(searchLower) ||
         game.description.toLowerCase().includes(searchLower)
       )
     }
 
     const total = games.length
-    
+
     // Apply pagination
     games = games.slice(skip, skip + limit)
 
