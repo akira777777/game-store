@@ -21,5 +21,5 @@ if ($provider -eq "sqlite") {
 }
 
 Set-Content -Path $schemaFile -Value $content -NoNewline
-Write-Host "📝 Updated $schemaFile" -ForegroundColor Cyan
-Write-Host "⚠️  Run 'npm run db:generate' after switching" -ForegroundColor Yellow
+Write-Host "[OK] Updated $schemaFile" -ForegroundColor Cyan
+Write-Host "[!] Run 'npm run db:generate' after switching" -ForegroundColor Yellow
