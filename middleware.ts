@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth"
-import { NextResponse } from "next/server"
+import { NextResponse, type NextRequest } from "next/server"
 
 // #region agent log
 // Log middleware module loading - if this executes, module loaded successfully
@@ -16,7 +16,7 @@ if (!hasSecret && typeof console !== 'undefined' && console.error) {
 }
 // #endregion
 
-export default auth((req) => {
+export default auth((req: NextRequest & { auth?: any }) => {
   // #region agent log
   // Log to console for Vercel Edge Runtime (fetch to localhost doesn't work in Edge)
   if (typeof console !== 'undefined' && console.log) {

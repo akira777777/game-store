@@ -49,95 +49,116 @@ if (!authSecret && process.env.NODE_ENV === 'production') {
 if (typeof console !== 'undefined' && console.log) {
   console.log('[Auth] Starting NextAuth initialization');
 }
-// #endregion
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
-  // PrismaAdapter type compatibility issue - adapter is optional when using credentials
-  // adapter: PrismaAdapter(db) as any,
-  trustHost: true, // Required for middleware to work in production (Vercel, etc.)
-  session: {
-    strategy: "jwt",
-  },
-  pages: {
-    signIn: "/login",
-  },
-  providers: [
-    CredentialsProvider({
-      name: "credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        // #region agent log
-        if (typeof console !== 'undefined' && console.log) {
-          console.log('[Auth] authorize() called - lazy loading db');
-        }
-        // #endregion
-        
-        // Lazy import db only when authorize() is called (not in middleware/Edge Runtime)
-        const { db } = await import("@/lib/db");
-        
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error("Invalid credentials")
-        }
-
-        // Normalize email to lowercase for case-insensitive comparison
-        const email = (credentials.email as string).toLowerCase().trim()
-        const password = credentials.password as string
-
-        const user = await db.user.findUnique({
-          where: {
-            email: email,
-          },
-        })
-
-        if (!user || !user.password) {
-          throw new Error("Invalid credentials")
-        }
-
-        const isPasswordValid = await bcrypt.compare(
-          password,
-          user.password
-        )
-
-        if (!isPasswordValid) {
-          throw new Error("Invalid credentials")
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role as Role,
-        }
-      },
-    }),
-  ],
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id
-        // User interface extends with role property via module declaration
-        token.role = user.role
-      }
-      return token
+let authConfig: any;
+try {
+  authConfig = {
+    // PrismaAdapter type compatibility issue - adapter is optional when using credentials
+    // adapter: PrismaAdapter(db) as any,
+    trustHost: true, // Required for middleware to work in production (Vercel, etc.)
+    session: {
+      strategy: "jwt",
     },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string
-        session.user.role = (token.role as Role) || "CUSTOMER"
-      }
-      return session
+    pages: {
+      signIn: "/login",
     },
-  },
-  // Support both AUTH_SECRET (preferred in v5) and NEXTAUTH_SECRET (legacy)
-  secret: authSecret,
-})
+    providers: [
+      CredentialsProvider({
+        name: "credentials",
+        credentials: {
+          email: { label: "Email", type: "email" },
+          password: { label: "Password", type: "password" },
+        },
+        async authorize(credentials) {
+          // #region agent log
+          if (typeof console !== 'undefined' && console.log) {
+            console.log('[Auth] authorize() called - lazy loading db');
+          }
+          // #endregion
+          
+          // Lazy import db only when authorize() is called (not in middleware/Edge Runtime)
+          const { db } = await import("@/lib/db");
+          
+          if (!credentials?.email || !credentials?.password) {
+            throw new Error("Invalid credentials")
+          }
 
-// #region agent log
-// Log successful initialization
-if (typeof console !== 'undefined' && console.log) {
-  console.log('[Auth] NextAuth initialized successfully');
+          // Normalize email to lowercase for case-insensitive comparison
+          const email = (credentials.email as string).toLowerCase().trim()
+          const password = credentials.password as string
+
+          const user = await db.user.findUnique({
+            where: {
+              email: email,
+            },
+          })
+
+          if (!user || !user.password) {
+            throw new Error("Invalid credentials")
+          }
+
+          const isPasswordValid = await bcrypt.compare(
+            password,
+            user.password
+          )
+
+          if (!isPasswordValid) {
+            throw new Error("Invalid credentials")
+          }
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role as Role,
+          }
+        },
+      }),
+    ],
+    callbacks: {
+      async jwt({ token, user }: { token: any; user?: any }) {
+        if (user) {
+          token.id = user.id
+          // User interface extends with role property via module declaration
+          token.role = user.role
+        }
+        return token
+      },
+      async session({ session, token }: { session: any; token: any }) {
+        if (session.user) {
+          session.user.id = token.id as string
+          session.user.role = (token.role as Role) || "CUSTOMER"
+        }
+        return session
+      },
+    },
+    // Support both AUTH_SECRET (preferred in v5) and NEXTAUTH_SECRET (legacy)
+    secret: authSecret,
+  };
+
+  if (typeof console !== 'undefined' && console.log) {
+    console.log('[Auth] Config created successfully');
+  }
+} catch (error) {
+  if (typeof console !== 'undefined' && console.error) {
+    console.error('[Auth] Config creation error:', error);
+  }
+  throw error;
 }
+
+let nextAuthResult: any;
+try {
+  nextAuthResult = NextAuth(authConfig);
+
+  if (typeof console !== 'undefined' && console.log) {
+    console.log('[Auth] NextAuth initialized successfully');
+  }
+} catch (error) {
+  if (typeof console !== 'undefined' && console.error) {
+    console.error('[Auth] NextAuth initialization error:', error);
+  }
+  throw error;
+}
+
+export const { handlers, auth, signIn, signOut } = nextAuthResult;
 // #endregion
