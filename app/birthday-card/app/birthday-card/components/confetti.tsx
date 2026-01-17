@@ -39,6 +39,7 @@ export function Confetti({ active, onComplete }: ConfettiProps) {
   useEffect(() => {
     if (active && !shouldRender) {
       setShouldRender(true)
+<<<<<<< Current (Your changes)
 
       // Initialize confetti pieces
       const pieces: ConfettiPiece[] = []
@@ -62,6 +63,8 @@ export function Confetti({ active, onComplete }: ConfettiProps) {
         })
       }
       confettiPiecesRef.current = pieces
+=======
+>>>>>>> Incoming (Background Agent changes)
     } else if (!active && shouldRender) {
       // Fade out confetti
       setTimeout(() => {
@@ -94,6 +97,29 @@ export function Confetti({ active, onComplete }: ConfettiProps) {
     }
 
     resize()
+
+    // Initialize confetti pieces after canvas is sized
+    if (confettiPiecesRef.current.length === 0) {
+      const pieces: ConfettiPiece[] = []
+      const { width, height } = canvasSizeRef.current
+      const count = 150
+      for (let i = 0; i < count; i++) {
+        pieces.push({
+          id: i,
+          x: Math.random() * width,
+          y: -10 - Math.random() * 100,
+          vx: (Math.random() - 0.5) * 2,
+          vy: 2 + Math.random() * 4,
+          rotation: Math.random() * Math.PI * 2,
+          rotationSpeed: (Math.random() - 0.5) * 0.2,
+          color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
+          size: 4 + Math.random() * 8,
+          life: 1,
+          maxLife: 200 + Math.random() * 100,
+        })
+      }
+      confettiPiecesRef.current = pieces
+    }
 
     let resizeTimeout: NodeJS.Timeout
     const handleResize = () => {
