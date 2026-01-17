@@ -11,12 +11,15 @@ logToFile('lib/auth.ts:3', 'Module loading started', {}, 'H4');
 
 // Lazy import db to avoid Prisma Client initialization in Edge Runtime (middleware)
 // db will only be imported when authorize() is called, which doesn't run in middleware
-import bcrypt from "bcryptjs"
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 
+// Dynamic import for bcryptjs to avoid Edge Runtime issues
+// bcryptjs will only be imported when authorize() is called, not during middleware/Edge bundling
+let bcrypt: any;
+
 // #region agent log
-logToFile('lib/auth.ts:16', 'Core dependencies loaded', {deps:['bcrypt','NextAuth','CredentialsProvider']}, 'H4');
+logToFile('lib/auth.ts:16', 'Core dependencies loaded', {deps:['NextAuth','CredentialsProvider']}, 'H4');
 // #endregion
 
 // Role type for SQLite (stored as string)
@@ -96,6 +99,10 @@ try {
             throw new Error("Invalid credentials")
           }
 
+          // Dynamic import bcryptjs only when needed (not in Edge Runtime)
+          if (!bcrypt) {
+            bcrypt = (await import("bcryptjs")).default;
+          }
           const isPasswordValid = await bcrypt.compare(
             password,
             user.password
