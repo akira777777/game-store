@@ -275,7 +275,7 @@ export const Fireworks = forwardRef<FireworksHandle, { className?: string; isMob
     }
   }, [isMobile])
 
-return <canvas ref={canvasRef} className={`fixed inset-0 pointer-events-none z-10 ${className || ""}`} />
+  return <canvas ref={canvasRef} className={`fixed inset-0 pointer-events-none z-10 ${className || ""}`} />
 })
 
 Fireworks.displayName = "Fireworks"
