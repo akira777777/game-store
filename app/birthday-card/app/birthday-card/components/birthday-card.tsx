@@ -66,9 +66,9 @@ export function BirthdayCard({ isVisible, isMobile = false, onReplay }: Birthday
 
   useEffect(() => {
     // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/9c660348-1fae-41cb-ac60-ee349900db14',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'birthday-card.tsx:67',message:'BirthdayCard useEffect triggered',data:{isVisible,hasOnReplay:!!onReplay},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'A'})}).catch(()=>{});
+    fetch('http://127.0.0.1:7244/ingest/9c660348-1fae-41cb-ac60-ee349900db14', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'birthday-card.tsx:67', message: 'BirthdayCard useEffect triggered', data: { isVisible, hasOnReplay: !!onReplay }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'initial', hypothesisId: 'A' }) }).catch(() => { });
     // #endregion
-    
+
     if (!isVisible) {
       setShowCard(false)
       setShowConfetti(false)
@@ -84,7 +84,7 @@ export function BirthdayCard({ isVisible, isMobile = false, onReplay }: Birthday
     setTimeout(() => {
       setShowCard(true)
       // #region agent log
-      fetch('http://127.0.0.1:7244/ingest/9c660348-1fae-41cb-ac60-ee349900db14',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'birthday-card.tsx:85',message:'Card shown',data:{showCard:true},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'B'})}).catch(()=>{});
+      fetch('http://127.0.0.1:7244/ingest/9c660348-1fae-41cb-ac60-ee349900db14', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'birthday-card.tsx:85', message: 'Card shown', data: { showCard: true }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'initial', hypothesisId: 'B' }) }).catch(() => { });
       // #endregion
     }, 200)
 
@@ -92,7 +92,7 @@ export function BirthdayCard({ isVisible, isMobile = false, onReplay }: Birthday
     setTimeout(() => {
       setShowReplayButton(true)
       // #region agent log
-      fetch('http://127.0.0.1:7244/ingest/9c660348-1fae-41cb-ac60-ee349900db14',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'birthday-card.tsx:93',message:'Replay button shown',data:{showReplayButton:true},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'C'})}).catch(()=>{});
+      fetch('http://127.0.0.1:7244/ingest/9c660348-1fae-41cb-ac60-ee349900db14', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'birthday-card.tsx:93', message: 'Replay button shown', data: { showReplayButton: true }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'initial', hypothesisId: 'C' }) }).catch(() => { });
       // #endregion
     }, 2500)
 

@@ -20,16 +20,8 @@ if ($gitStatus) {
     $commit = Read-Host "Do you want to commit these changes? (y/n)"
     if ($commit -eq "y" -or $commit -eq "Y") {
         $commitMessage = Read-Host "Enter commit message"
-        if ([string]::IsNullOrWhiteSpace($commitMessage)) {
-            Write-Host "❌ Error: Commit message cannot be empty" -ForegroundColor Red
-            exit 1
-        }
         git add .
         git commit -m "$commitMessage"
-        if ($LASTEXITCODE -ne 0) {
-            Write-Host "❌ Failed to commit changes" -ForegroundColor Red
-            exit 1
-        }
         Write-Host "✅ Changes committed" -ForegroundColor Green
     }
 }
