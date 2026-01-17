@@ -43,25 +43,25 @@ export default async function HomePage() {
       <div className="flex flex-col">
         <HeroSection />
 
-        <div className="container mx-auto px-4 py-12 space-y-16">
+        <main className="container mx-auto px-4 py-12 space-y-16" role="main">
           {/* Featured Games Section */}
-          <section className="space-y-6">
-            <div className="flex items-center justify-between">
+          <section className="space-y-6" aria-labelledby="featured-heading">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                  <TrendingUp className="h-5 w-5 text-primary" />
+                  <TrendingUp className="h-5 w-5 text-primary" aria-hidden="true" />
                 </div>
                 <div>
-                  <h2 className="text-3xl font-bold tracking-tight">Рекомендуемые игры</h2>
+                  <h2 id="featured-heading" className="text-2xl sm:text-3xl font-bold tracking-tight">Рекомендуемые игры</h2>
                   <p className="text-sm text-muted-foreground">
                     Самые популярные и востребованные игры
                   </p>
                 </div>
               </div>
               <Link href="/games?featured=true">
-                <Button variant="outline" className="gap-2">
+                <Button variant="outline" className="gap-2 w-full sm:w-auto">
                   Все игры
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </Link>
             </div>
@@ -82,23 +82,23 @@ export default async function HomePage() {
 
           {/* New Games Section */}
           {newGames.length > 0 && (
-            <section className="space-y-6">
-              <div className="flex items-center justify-between">
+            <section className="space-y-6" aria-labelledby="new-games-heading">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                    <span className="text-lg">🆕</span>
+                    <span className="text-lg" aria-hidden="true">🆕</span>
                   </div>
                   <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Новинки</h2>
+                    <h2 id="new-games-heading" className="text-2xl sm:text-3xl font-bold tracking-tight">Новинки</h2>
                     <p className="text-sm text-muted-foreground">
                       Только что добавленные игры в наш каталог
                     </p>
                   </div>
                 </div>
                 <Link href="/games?sort=newest">
-                  <Button variant="outline" className="gap-2">
+                  <Button variant="outline" className="gap-2 w-full sm:w-auto">
                     Все новинки
-                    <ArrowRight className="h-4 w-4" />
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </Button>
                 </Link>
               </div>
@@ -108,30 +108,30 @@ export default async function HomePage() {
 
           {/* Discounted Games Section */}
           {discountedGames.length > 0 && (
-            <section className="space-y-6">
-              <div className="flex items-center justify-between">
+            <section className="space-y-6" aria-labelledby="discounts-heading">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-destructive/10">
-                    <span className="text-lg">🔥</span>
+                    <span className="text-lg" aria-hidden="true">🔥</span>
                   </div>
                   <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Скидки</h2>
+                    <h2 id="discounts-heading" className="text-2xl sm:text-3xl font-bold tracking-tight">Скидки</h2>
                     <p className="text-sm text-muted-foreground">
                       Игры со специальными ценами
                     </p>
                   </div>
                 </div>
                 <Link href="/games?sort=price_asc">
-                  <Button variant="outline" className="gap-2">
+                  <Button variant="outline" className="gap-2 w-full sm:w-auto">
                     Все скидки
-                    <ArrowRight className="h-4 w-4" />
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </Button>
                 </Link>
               </div>
               <GameGrid games={discountedGames.slice(0, 8)} />
             </section>
           )}
-        </div>
+        </main>
       </div>
     )
   } catch (error) {

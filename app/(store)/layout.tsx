@@ -8,7 +8,9 @@ export default function StoreLayout({
   return (
     <>
       <Navigation />
-      {children}
+      <div id="main-content" tabIndex={-1}>
+        {children}
+      </div>
     </>
   )
 }

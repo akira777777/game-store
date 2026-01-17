@@ -1,14 +1,13 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
+import { useSession } from "next-auth/react"
+import Image from "next/image"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 
 interface CartItem {
   id: string
@@ -113,8 +112,10 @@ export default function CartPage() {
   }, 0)
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-8">Корзина</h1>
+    <main className="container mx-auto px-4 py-8" role="main">
+      <header>
+        <h1 className="text-4xl font-bold mb-8">Корзина</h1>
+      </header>
 
       {items.length === 0 ? (
         <Card>
@@ -128,8 +129,8 @@ export default function CartPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-4">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
+          <div className="xl:col-span-2 space-y-4">
             {items.map((item) => {
               const price = Number(item.game.discountPrice || item.game.price)
               const hasDiscount = !!item.game.discountPrice
@@ -138,22 +139,23 @@ export default function CartPage() {
                 <Card key={item.id}>
                   <CardContent className="p-6">
                     <div className="flex gap-4">
-                      <Link href={`/games/${item.game.slug}`}>
+                      <Link href={`/games/${item.game.slug}`} aria-label={`Перейти к игре ${item.game.title}`}>
                         <div className="relative w-24 h-24 bg-muted rounded-md overflow-hidden flex-shrink-0">
                           {(() => {
-                            const images = typeof item.game.images === 'string' 
-                              ? JSON.parse(item.game.images || '[]') 
+                            const images = typeof item.game.images === 'string'
+                              ? JSON.parse(item.game.images || '[]')
                               : (Array.isArray(item.game.images) ? item.game.images : [])
                             return images.length > 0 ? (
                               <Image
                                 src={images[0]}
-                                alt={item.game.title}
+                                alt={`Обложка игры ${item.game.title}`}
                                 fill
                                 className="object-cover"
                                 sizes="96px"
+                                loading="lazy"
                               />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">
+                              <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground" role="img" aria-label="Изображение недоступно">
                                 Нет изображения
                               </div>
                             )
@@ -162,7 +164,7 @@ export default function CartPage() {
                       </Link>
 
                       <div className="flex-1">
-                        <Link href={`/games/${item.game.slug}`}>
+                        <Link href={`/games/${item.game.slug}`} aria-label={`Подробнее о игре ${item.game.title}`}>
                           <h3 className="font-semibold text-lg mb-2 hover:underline">
                             {item.game.title}
                           </h3>
@@ -183,24 +185,28 @@ export default function CartPage() {
                             </span>
                           )}
                         </div>
-                        <div className="flex items-center gap-4">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                           <div className="flex items-center gap-2">
-                            <label className="text-sm">Количество:</label>
+                            <label htmlFor={`quantity-${item.id}`} className="text-sm">Количество:</label>
                             <Input
+                              id={`quantity-${item.id}`}
                               type="number"
                               min="1"
+                              max="99"
                               value={item.quantity}
                               onChange={(e) => {
                                 const newQuantity = parseInt(e.target.value) || 1
                                 updateQuantity(item.game.id, newQuantity)
                               }}
                               className="w-20"
+                              aria-label={`Количество товара ${item.game.title}`}
                             />
                           </div>
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => removeItem(item.game.id)}
+                            aria-label={`Удалить ${item.game.title} из корзины`}
                           >
                             Удалить
                           </Button>
@@ -248,6 +254,6 @@ export default function CartPage() {
           </div>
         </div>
       )}
-    </div>
+    </main>
   )
 }

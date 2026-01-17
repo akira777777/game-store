@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select"
 import { Filter, X } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -126,12 +126,18 @@ export function GameFilters({ genres = [], platforms = [] }: GameFiltersProps) {
     <div className="space-y-6 p-6 border rounded-lg bg-card">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold flex items-center gap-2">
-          <Filter className="h-5 w-5" />
+          <Filter className="h-5 w-5" aria-hidden="true" />
           Фильтры
         </h3>
         {hasActiveFilters && (
-          <Button variant="ghost" size="sm" onClick={clearFilters} className="gap-2">
-            <X className="h-4 w-4" />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={clearFilters}
+            className="gap-2"
+            aria-label="Сбросить все фильтры"
+          >
+            <X className="h-4 w-4" aria-hidden="true" />
             Сбросить
           </Button>
         )}
@@ -208,7 +214,7 @@ export function GameFilters({ genres = [], platforms = [] }: GameFiltersProps) {
           </Select>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="minPrice">Мин. цена ($)</Label>
             <Input
@@ -246,8 +252,9 @@ export function GameFilters({ genres = [], platforms = [] }: GameFiltersProps) {
               <button
                 onClick={() => updateFilter("genre", "all")}
                 className="ml-1 hover:text-destructive"
+                aria-label={`Убрать фильтр по жанру: ${filters.genre}`}
               >
-                <X className="h-3 w-3" />
+                <X className="h-3 w-3" aria-hidden="true" />
               </button>
             </Badge>
           )}
@@ -257,8 +264,9 @@ export function GameFilters({ genres = [], platforms = [] }: GameFiltersProps) {
               <button
                 onClick={() => updateFilter("platform", "all")}
                 className="ml-1 hover:text-destructive"
+                aria-label={`Убрать фильтр по платформе: ${filters.platform}`}
               >
-                <X className="h-3 w-3" />
+                <X className="h-3 w-3" aria-hidden="true" />
               </button>
             </Badge>
           )}
@@ -268,8 +276,9 @@ export function GameFilters({ genres = [], platforms = [] }: GameFiltersProps) {
               <button
                 onClick={() => updateFilter("search", undefined)}
                 className="ml-1 hover:text-destructive"
+                aria-label={`Убрать поисковый запрос: ${filters.search}`}
               >
-                <X className="h-3 w-3" />
+                <X className="h-3 w-3" aria-hidden="true" />
               </button>
             </Badge>
           )}

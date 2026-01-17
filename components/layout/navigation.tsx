@@ -1,7 +1,6 @@
 "use client"
 
-import Link from "next/link"
-import { useSession, signOut } from "next-auth/react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -11,11 +10,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ShoppingCart, Menu, Gamepad2, Settings, LogOut, User, Shield } from "lucide-react"
+import { Gamepad2, LogOut, Menu, Shield, ShoppingCart, User, X } from "lucide-react"
+import { signOut, useSession } from "next-auth/react"
+import Link from "next/link"
+import { useState } from "react"
 
 export function Navigation() {
   const { data: session } = useSession()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const userInitials = session?.user?.name
     ?.split(" ")
     .map((n) => n[0])
@@ -23,36 +25,45 @@ export function Navigation() {
     .toUpperCase() || session?.user?.email?.[0].toUpperCase() || "?"
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" aria-label="Главная навигация">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-2xl font-bold transition-colors hover:text-primary">
-            <Gamepad2 className="h-6 w-6" />
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-2xl font-bold transition-colors hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-md"
+            aria-label="Главная страница Game Store"
+          >
+            <Gamepad2 className="h-6 w-6" aria-hidden="true" />
             <span className="hidden sm:inline">Game Store</span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-2">
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-2" role="navigation" aria-label="Основные разделы">
             <Link href="/games">
-              <Button variant="ghost" className="gap-2">
-                <Menu className="h-4 w-4" />
+              <Button variant="ghost" className="gap-2" aria-label="Каталог игр">
+                <Menu className="h-4 w-4" aria-hidden="true" />
                 Каталог
               </Button>
             </Link>
             <Link href="/cart">
-              <Button variant="ghost" className="gap-2 relative">
-                <ShoppingCart className="h-4 w-4" />
-                Корзина
+              <Button variant="ghost" className="gap-2 relative" aria-label="Корзина">
+                <ShoppingCart className="h-4 w-4" aria-hidden="true" />
+                <span className="hidden lg:inline">Корзина</span>
               </Button>
             </Link>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             {session ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                  <Button
+                    variant="ghost"
+                    className="relative h-10 w-10 rounded-full"
+                    aria-label="Меню пользователя"
+                  >
                     <Avatar className="h-10 w-10">
-                      <AvatarImage src={undefined} alt={session.user?.name || ""} />
+                      <AvatarImage src={undefined} alt={session.user?.name || session.user?.email || "Пользователь"} />
                       <AvatarFallback className="bg-primary text-primary-foreground">
                         {userInitials}
                       </AvatarFallback>
@@ -70,15 +81,15 @@ export function Navigation() {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/profile" className="flex items-center gap-2 cursor-pointer">
-                      <User className="h-4 w-4" />
+                    <Link href="/profile" className="flex items-center gap-2 cursor-pointer" onClick={() => setMobileMenuOpen(false)}>
+                      <User className="h-4 w-4" aria-hidden="true" />
                       Профиль
                     </Link>
                   </DropdownMenuItem>
                   {session.user?.role === "ADMIN" && (
                     <DropdownMenuItem asChild>
-                      <Link href="/admin" className="flex items-center gap-2 cursor-pointer">
-                        <Shield className="h-4 w-4" />
+                      <Link href="/admin" className="flex items-center gap-2 cursor-pointer" onClick={() => setMobileMenuOpen(false)}>
+                        <Shield className="h-4 w-4" aria-hidden="true" />
                         Админ-панель
                       </Link>
                     </DropdownMenuItem>
@@ -86,9 +97,12 @@ export function Navigation() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="cursor-pointer text-destructive focus:text-destructive"
-                    onClick={() => signOut()}
+                    onClick={() => {
+                      signOut()
+                      setMobileMenuOpen(false)
+                    }}
                   >
-                    <LogOut className="h-4 w-4 mr-2" />
+                    <LogOut className="h-4 w-4 mr-2" aria-hidden="true" />
                     Выйти
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -101,12 +115,109 @@ export function Navigation() {
                   </Button>
                 </Link>
                 <Link href="/register">
-                  <Button>Регистрация</Button>
+                  <Button className="hidden sm:flex">Регистрация</Button>
                 </Link>
               </>
             )}
+
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label={mobileMenuOpen ? "Закрыть меню" : "Открыть меню"}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-menu"
+            >
+              {mobileMenuOpen ? (
+                <X className="h-6 w-6" aria-hidden="true" />
+              ) : (
+                <Menu className="h-6 w-6" aria-hidden="true" />
+              )}
+            </Button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div
+            id="mobile-menu"
+            className="md:hidden border-t bg-background"
+            role="navigation"
+            aria-label="Мобильное меню"
+          >
+            <div className="container mx-auto px-4 py-4 space-y-2">
+              <Link
+                href="/games"
+                className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-accent transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Menu className="h-4 w-4" aria-hidden="true" />
+                Каталог
+              </Link>
+              <Link
+                href="/cart"
+                className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-accent transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <ShoppingCart className="h-4 w-4" aria-hidden="true" />
+                Корзина
+              </Link>
+              {session ? (
+                <>
+                  <div className="border-t my-2 pt-2">
+                    <Link
+                      href="/profile"
+                      className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-accent transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <User className="h-4 w-4" aria-hidden="true" />
+                      Профиль
+                    </Link>
+                    {session.user?.role === "ADMIN" && (
+                      <Link
+                        href="/admin"
+                        className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-accent transition-colors"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <Shield className="h-4 w-4" aria-hidden="true" />
+                        Админ-панель
+                      </Link>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => {
+                      signOut()
+                      setMobileMenuOpen(false)
+                    }}
+                    className="w-full flex items-center gap-2 px-4 py-2 rounded-md text-destructive hover:bg-destructive/10 transition-colors"
+                  >
+                    <LogOut className="h-4 w-4" aria-hidden="true" />
+                    Выйти
+                  </button>
+                </>
+              ) : (
+                <div className="border-t my-2 pt-2 space-y-2">
+                  <Link
+                    href="/login"
+                    className="block px-4 py-2 rounded-md hover:bg-accent transition-colors text-center"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Войти
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="block px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-center"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Регистрация
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   )

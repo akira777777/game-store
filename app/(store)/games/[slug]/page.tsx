@@ -30,14 +30,14 @@ export default async function GamePage({
   const platforms = parseJsonArrayOrString(game.platforms)
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <main className="container mx-auto px-4 py-8" role="main">
+      <article className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div>
           {images.length > 0 ? (
             <div className="relative aspect-video w-full bg-muted rounded-lg overflow-hidden">
               <Image
                 src={images[0]}
-                alt={game.title}
+                alt={`Обложка игры ${game.title}`}
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, 50vw"
@@ -45,7 +45,7 @@ export default async function GamePage({
               />
             </div>
           ) : (
-            <div className="aspect-video w-full bg-muted rounded-lg flex items-center justify-center">
+            <div className="aspect-video w-full bg-muted rounded-lg flex items-center justify-center" role="img" aria-label="Изображение недоступно">
               <p className="text-muted-foreground">Нет изображения</p>
             </div>
           )}
@@ -133,11 +133,11 @@ export default async function GamePage({
         </Card>
       </div>
 
-      <div className="mt-8">
+      <nav className="mt-8" aria-label="Навигация">
         <Link href="/games">
-          <Button variant="outline">← Вернуться к каталогу</Button>
+          <Button variant="outline" aria-label="Вернуться к каталогу игр">← Вернуться к каталогу</Button>
         </Link>
-      </div>
-    </div>
+      </nav>
+    </main>
   )
 }

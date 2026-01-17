@@ -1,6 +1,6 @@
+import { Skeleton } from "@/components/ui/skeleton"
 import { Game } from "@prisma/client"
 import { GameCard } from "./game-card"
-import { Skeleton } from "@/components/ui/skeleton"
 
 interface GameGridProps {
   games: Game[]
@@ -10,13 +10,16 @@ interface GameGridProps {
 export function GameGrid({ games, isLoading = false }: GameGridProps) {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="space-y-4">
+          <div key={i} className="space-y-4 animate-fade-in">
             <Skeleton className="aspect-video w-full rounded-lg" />
-            <Skeleton className="h-6 w-3/4" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-2/3" />
+            <div className="space-y-2">
+              <Skeleton className="h-6 w-3/4" />
+              <Skeleton className="h-4 w-1/2" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-5/6" />
+            </div>
             <Skeleton className="h-10 w-full" />
           </div>
         ))}
@@ -26,21 +29,45 @@ export function GameGrid({ games, isLoading = false }: GameGridProps) {
 
   if (games.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
-        <p className="text-xl font-semibold text-muted-foreground mb-2">
+      <div className="flex flex-col items-center justify-center py-16 text-center sm:py-20">
+        <div className="mb-4 rounded-full bg-muted p-4">
+          <svg
+            className="h-8 w-8 text-muted-foreground"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        </div>
+        <h3 className="mb-2 text-lg font-semibold text-foreground sm:text-xl">
           Игры не найдены
-        </p>
-        <p className="text-sm text-muted-foreground">
-          Попробуйте изменить фильтры поиска
+        </h3>
+        <p className="max-w-sm text-sm text-muted-foreground">
+          Попробуйте изменить фильтры поиска или просмотрите другие категории
         </p>
       </div>
     )
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {games.map((game) => (
-        <GameCard key={game.id} game={game} />
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {games.map((game, index) => (
+        <div
+          key={game.id}
+          className="animate-fade-in"
+          style={{
+            animationDelay: `${Math.min(index * 0.05, 0.3)}s`,
+          }}
+        >
+          <GameCard game={game} />
+        </div>
       ))}
     </div>
   )

@@ -1,10 +1,10 @@
 "use client"
 
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
-import { ShoppingBag, ArrowRight } from "lucide-react"
+import { ArrowRight, ShoppingBag } from "lucide-react"
 import Link from "next/link"
 
 interface CartSummaryProps {
@@ -23,7 +23,7 @@ export function CartSummary({ subtotal, total, itemCount, discount = 0 }: CartSu
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <ShoppingBag className="h-5 w-5" />
+          <ShoppingBag className="h-5 w-5" aria-hidden="true" />
           Итого
         </CardTitle>
       </CardHeader>
@@ -51,13 +51,13 @@ export function CartSummary({ subtotal, total, itemCount, discount = 0 }: CartSu
         </div>
       </CardContent>
       <CardFooter className="flex flex-col gap-2">
-        <Link href="/checkout" className="w-full">
-          <Button className="w-full" size="lg">
+        <Link href="/checkout" className="w-full" aria-label="Перейти к оформлению заказа">
+          <Button className="w-full" size="lg" aria-label="Оформить заказ">
             Оформить заказ
-            <ArrowRight className="ml-2 h-4 w-4" />
+            <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
           </Button>
         </Link>
-        <Link href="/games" className="w-full">
+        <Link href="/games" className="w-full" aria-label="Вернуться к каталогу игр">
           <Button variant="outline" className="w-full">
             Продолжить покупки
           </Button>
