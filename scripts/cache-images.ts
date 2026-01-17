@@ -1,17 +1,17 @@
 /**
  * Image Caching Script
- * 
+ *
  * This script downloads game images from external URLs (IGDB, Unsplash, etc.)
  * and optionally uploads them to a CDN or stores them locally.
- * 
+ *
  * This is useful for production environments where:
  * - IGDB images may be removed after 30 days
  * - You want faster load times
  * - You need to comply with image licensing requirements
- * 
+ *
  * Usage:
  *   npx tsx scripts/cache-images.ts
- * 
+ *
  * Environment variables (optional):
  *   IMAGE_CACHE_DIR - Directory to store cached images (default: ./public/images/games)
  *   CDN_URL - CDN base URL if uploading to CDN (optional)
@@ -20,9 +20,6 @@
 import { PrismaClient } from '@prisma/client'
 import fs from 'fs/promises'
 import path from 'path'
-import { createWriteStream } from 'fs'
-import { pipeline } from 'stream/promises'
-import { Readable } from 'stream'
 
 const prisma = new PrismaClient()
 
@@ -46,7 +43,7 @@ async function downloadImage(
   outputPath: string
 ): Promise<void> {
   const response = await fetch(url)
-  
+
   if (!response.ok) {
     throw new Error(`Failed to download image: ${response.status} ${response.statusText}`)
   }
@@ -77,13 +74,13 @@ function getFilenameFromUrl(url: string, index: number): string {
     const urlObj = new URL(url)
     const pathname = urlObj.pathname
     const ext = path.extname(pathname) || '.jpg'
-    
+
     // Extract image ID from IGDB URLs
     const igdbMatch = url.match(/\/([a-z0-9]+)\.(jpg|png)$/i)
     if (igdbMatch) {
       return `${igdbMatch[1]}${ext}`
     }
-    
+
     // Fallback: use hash of URL
     const hash = Buffer.from(url).toString('base64').slice(0, 16).replace(/[^a-z0-9]/gi, '')
     return `${hash}-${index}${ext}`
@@ -108,7 +105,7 @@ async function cacheGameImages(
     const filename = getFilenameFromUrl(url, i)
     const relativePath = path.join(gameId, filename)
     const fullPath = path.join(IMAGE_CACHE_DIR, relativePath)
-    const cachedUrl = CDN_URL 
+    const cachedUrl = CDN_URL
       ? `${CDN_URL}/${relativePath}`
       : `/images/games/${relativePath.replace(/\\/g, '/')}`
 
@@ -183,7 +180,7 @@ async function main() {
 
     for (const game of games) {
       const imageUrls = JSON.parse(game.images || '[]') as string[]
-      
+
       if (imageUrls.length === 0) {
         console.log(`⚠ Skipping ${game.title}: no images`)
         continue

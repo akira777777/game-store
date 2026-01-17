@@ -1,11 +1,11 @@
 /**
  * Seed script for populating database with diverse game data
- * 
+ *
  * This script creates:
  * - Admin and test users
  * - 30+ diverse games across multiple genres and platforms
  * - Real IGDB image URLs for visual appeal
- * 
+ *
  * To use IGDB API integration, set IGDB_CLIENT_ID and IGDB_CLIENT_SECRET
  * in your .env file (see .env.example)
  */
@@ -966,7 +966,7 @@ async function main() {
 
   // Process games
   console.log(`\n📦 Processing ${staticGames.length} games...`)
-  
+
   for (const staticGame of staticGames) {
     try {
       let gameData: GameSeedData = staticGame
@@ -987,7 +987,7 @@ async function main() {
               inStock: staticGame.inStock,
               stockQuantity: staticGame.stockQuantity,
               // Merge images (IGDB + static)
-              images: converted.images.length > 0 
+              images: converted.images.length > 0
                 ? [...new Set([...converted.images, ...staticGame.images])]
                 : staticGame.images,
               // Use IGDB data if available, otherwise static
@@ -1038,7 +1038,7 @@ async function main() {
         },
       })
       console.log(`  ✅ Created/updated: ${gameData.title}`)
-      
+
       // Small delay to avoid rate limits
       if (useIGDB) {
         await new Promise((resolve) => setTimeout(resolve, 100))

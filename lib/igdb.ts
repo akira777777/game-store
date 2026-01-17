@@ -1,9 +1,9 @@
 /**
  * IGDB API integration module
- * 
+ *
  * Provides functions to fetch game data from IGDB (Internet Game Database)
  * Requires Twitch OAuth credentials (free tier available)
- * 
+ *
  * Documentation: https://api-docs.igdb.com/
  */
 
@@ -133,7 +133,7 @@ async function getIGDBAuthToken(): Promise<string> {
 
 /**
  * Formats IGDB image ID to full URL
- * 
+ *
  * @param imageId - IGDB image hash
  * @param size - Image size variant (cover_big, screenshot_big, etc.)
  * @returns Full URL to the image
@@ -144,7 +144,7 @@ export function formatIGDBImageUrl(imageId: string, size: string = 'cover_big'):
 
 /**
  * Fetches game data from IGDB by slug
- * 
+ *
  * @param slug - Game slug (e.g., 'cyberpunk-2077')
  * @returns Game data from IGDB or null if not found
  */
@@ -195,7 +195,7 @@ export async function fetchGameBySlug(slug: string): Promise<IGDBGame | null> {
 
 /**
  * Converts IGDB game data to our database format
- * 
+ *
  * @param igdbGame - Game data from IGDB
  * @param fallbackPrice - Price to use if not available from IGDB
  * @returns Game data in our database format
