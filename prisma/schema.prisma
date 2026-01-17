@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String // hashed
+  role          String    @default("CUSTOMER")
+  orders        Order[]
+  cart          CartItem[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Game {
+  id            String    @id @default(cuid())
+  title         String
+  slug          String    @unique
+  description   String
+  price         Float
+  discountPrice Float?
+  images        String // JSON массив URL изображений
+  releaseDate   DateTime?
+  developer     String?
+  publisher     String?
+  platforms     String // JSON массив Platform
+  genres        String // JSON массив Genre
+  featured      Boolean   @default(false)
+  inStock       Boolean   @default(true)
+  stockQuantity Int       @default(0)
+  orderItems    OrderItem[]
+  cartItems     CartItem[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String
+  gameId    String
+  quantity  Int      @default(1)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, gameId])
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  userId          String
+  status          String @default("PENDING")
+  total           Float
+  stripeSessionId String?     @unique
+  items           OrderItem[]
+  user            User        @relation(fields: [userId], references: [id])
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model OrderItem {
+  id       String  @id @default(cuid())
+  orderId  String
+  gameId   String
+  quantity Int
+  price    Float
+  order    Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  game     Game    @relation(fields: [gameId], references: [id])
+}
+
+// Enums are stored as strings in SQLite
+// Role: "CUSTOMER" | "ADMIN"
+// OrderStatus: "PENDING" | "PAID" | "PROCESSING" | "COMPLETED" | "CANCELLED"
+// Platform: "PC" | "PLAYSTATION" | "XBOX" | "NINTENDO_SWITCH" | "MOBILE"
+// Genre: "ACTION" | "ADVENTURE" | "RPG" | "STRATEGY" | "SPORTS" | "RACING" | "SHOOTER" | "SIMULATION" | "INDIE" | "PUZZLE"
