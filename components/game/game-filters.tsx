@@ -1,19 +1,19 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import { X, Filter } from "lucide-react"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import { Filter, X } from "lucide-react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useEffect, useState } from "react"
 
 // String arrays for SQLite compatibility (enums stored as strings)
 const GENRES = ["ACTION", "ADVENTURE", "RPG", "STRATEGY", "SPORTS", "RACING", "SHOOTER", "SIMULATION", "INDIE", "PUZZLE"] as const
@@ -39,10 +39,18 @@ export interface FilterState {
 export function GameFilters({ genres = [], platforms = [] }: GameFiltersProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const getSortByValue = (): FilterState["sortBy"] => {
+    const sortBy = searchParams.get("sortBy") || searchParams.get("sort")
+    if (sortBy === "price_asc" || sortBy === "price_desc" || sortBy === "newest" || sortBy === "oldest") {
+      return sortBy
+    }
+    return "newest"
+  }
+
   const [filters, setFilters] = useState<FilterState>({
     genre: searchParams.get("genre") || "all",
     platform: searchParams.get("platform") || "all",
-    sortBy: (searchParams.get("sortBy") || searchParams.get("sort") as FilterState["sortBy"]) || "newest",
+    sortBy: getSortByValue(),
     search: searchParams.get("search") || undefined,
   })
   const [isInitialMount, setIsInitialMount] = useState(true)
@@ -56,34 +64,34 @@ export function GameFilters({ genres = [], platforms = [] }: GameFiltersProps) {
     if (isInitialMount) return
 
     const params = new URLSearchParams()
-    
+
     if (filters.genre && filters.genre !== "all") {
       params.set("genre", filters.genre)
     }
-    
+
     if (filters.platform && filters.platform !== "all") {
       params.set("platform", filters.platform)
     }
-    
+
     if (filters.search) {
       params.set("search", filters.search)
     }
-    
+
     if (filters.sortBy && filters.sortBy !== "newest") {
       params.set("sortBy", filters.sortBy)
     }
-    
+
     if (filters.minPrice) {
       params.set("minPrice", filters.minPrice.toString())
     }
-    
+
     if (filters.maxPrice) {
       params.set("maxPrice", filters.maxPrice.toString())
     }
-    
+
     const newUrl = `/games?${params.toString()}`
     const currentUrl = `/games?${searchParams.toString()}`
-    
+
     // Only push if URL actually changed
     if (newUrl !== currentUrl) {
       router.push(newUrl)

@@ -1,7 +1,9 @@
-import { db } from "@/lib/db"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { OrderStatus } from "@prisma/client"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { db } from "@/lib/db"
+
+// OrderStatus is stored as string in SQLite, not as enum
+type OrderStatus = "PENDING" | "PAID" | "PROCESSING" | "COMPLETED" | "CANCELLED"
 
 export default async function AdminOrdersPage() {
   const orders = await db.order.findMany({
@@ -72,8 +74,8 @@ export default async function AdminOrdersPage() {
                     <p className="text-2xl font-bold">
                       ${Number(order.total).toFixed(2)}
                     </p>
-                    <Badge variant={statusColors[order.status] as any}>
-                      {statusLabels[order.status]}
+                    <Badge variant={statusColors[order.status as OrderStatus] as any}>
+                      {statusLabels[order.status as OrderStatus]}
                     </Badge>
                   </div>
                 </div>

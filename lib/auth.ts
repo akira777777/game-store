@@ -1,8 +1,8 @@
+import { db } from "@/lib/db"
+import { PrismaAdapter } from "@auth/prisma-adapter"
+import bcrypt from "bcryptjs"
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import { db } from "@/lib/db"
-import bcrypt from "bcryptjs"
 
 // Role type for SQLite (stored as string)
 type Role = "CUSTOMER" | "ADMIN"
@@ -53,7 +53,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           id: user.id,
           email: user.email,
           name: user.name,
-          role: user.role,
+          role: user.role as Role,
         }
       },
     }),
