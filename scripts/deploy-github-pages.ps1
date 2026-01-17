@@ -24,8 +24,7 @@ if ($gitStatus) {
         git commit -m "$commitMessage"
         Write-Host "✅ Changes committed" -ForegroundColor Green
     }
-}
-else {
+} else {
     Write-Host "✅ Working directory is clean" -ForegroundColor Green
 }
 
@@ -51,8 +50,7 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "4. The deployment will start automatically" -ForegroundColor White
     Write-Host ""
     Write-Host "📖 See GITHUB_PAGES_DEPLOY.md for detailed instructions" -ForegroundColor Cyan
-}
-else {
+} else {
     Write-Host "❌ Failed to push to GitHub" -ForegroundColor Red
     exit 1
 }
