@@ -951,7 +951,7 @@ async function main() {
     console.log(`Created/updated game: ${game.title}`)
   }
 
-  console.log(`\n🎉 Seeding completed! ${staticGames.length} games processed.`)
+  console.log(`\n🎉 Seeding completed! ${games.length} games processed.`)
 }
 
 main()
