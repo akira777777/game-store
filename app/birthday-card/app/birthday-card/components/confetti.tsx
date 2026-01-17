@@ -1,5 +1,3 @@
-<<<<<<< Current (Your changes)
-=======
 "use client"
 
 import { useEffect, useRef, useState } from "react"
@@ -39,32 +37,6 @@ export function Confetti({ active, onComplete }: ConfettiProps) {
   useEffect(() => {
     if (active && !shouldRender) {
       setShouldRender(true)
-<<<<<<< Current (Your changes)
-
-      // Initialize confetti pieces
-      const pieces: ConfettiPiece[] = []
-      const canvas = canvasRef.current
-      if (!canvas) return
-
-      const count = 150
-      for (let i = 0; i < count; i++) {
-        pieces.push({
-          id: i,
-          x: Math.random() * canvas.width,
-          y: -10 - Math.random() * 100,
-          vx: (Math.random() - 0.5) * 2,
-          vy: 2 + Math.random() * 4,
-          rotation: Math.random() * Math.PI * 2,
-          rotationSpeed: (Math.random() - 0.5) * 0.2,
-          color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
-          size: 4 + Math.random() * 8,
-          life: 1,
-          maxLife: 200 + Math.random() * 100,
-        })
-      }
-      confettiPiecesRef.current = pieces
-=======
->>>>>>> Incoming (Background Agent changes)
     } else if (!active && shouldRender) {
       // Fade out confetti
       setTimeout(() => {
@@ -130,8 +102,7 @@ export function Confetti({ active, onComplete }: ConfettiProps) {
     window.addEventListener("resize", handleResize)
 
     const animate = () => {
-      const { width, height } = canvasSizeRef.current
-      ctx.clearRect(0, 0, width, height)
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
 
       confettiPiecesRef.current = confettiPiecesRef.current.filter((piece) => {
         if (piece.life <= 0) return false
@@ -211,4 +182,3 @@ export function Confetti({ active, onComplete }: ConfettiProps) {
     />
   )
 }
->>>>>>> Incoming (Background Agent changes)
