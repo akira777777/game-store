@@ -75,10 +75,7 @@ model Order {
 
   @@index([userId])
   @@index([status])
-<<<<<<< Current (Your changes)
   @@index([stripeSessionId])
-=======
->>>>>>> Incoming (Background Agent changes)
   @@index([createdAt])
 }
 
