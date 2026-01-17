@@ -66,11 +66,14 @@ export function formatErrorResponse(error: unknown): {
   details?: unknown
 } {
   if (error instanceof AppError) {
-    return {
+    const result: { error: string; code?: string; details?: unknown } = {
       error: error.message,
       code: error.code,
-      ...(error.details && { details: error.details }),
     }
+    if (error.details) {
+      result.details = error.details
+    }
+    return result
   }
 
   if (error instanceof Error) {

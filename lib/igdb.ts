@@ -36,22 +36,20 @@ interface IGDBTokenResponse {
  */
 const PLATFORM_MAP: Record<number, string> = {
   6: 'PC', // PC (Microsoft Windows)
-  48: 'PLAYSTATION', // PlayStation 4
-  49: 'XBOX', // Xbox One
-  130: 'NINTENDO_SWITCH', // Nintendo Switch
-  39: 'PLAYSTATION', // PlayStation 3
-  12: 'XBOX', // Xbox 360
-  3: 'PLAYSTATION', // PlayStation 2
-  11: 'XBOX', // Xbox
   8: 'PLAYSTATION', // PlayStation
-  7: 'NINTENDO_SWITCH', // Nintendo Switch (older ID)
-  34: 'PC', // Android
+  3: 'PLAYSTATION', // PlayStation 2
   39: 'PLAYSTATION', // PlayStation 3
+  48: 'PLAYSTATION', // PlayStation 4
   167: 'PLAYSTATION', // PlayStation 5
+  11: 'XBOX', // Xbox
+  12: 'XBOX', // Xbox 360
+  49: 'XBOX', // Xbox One
   169: 'XBOX', // Xbox Series X|S
+  7: 'NINTENDO_SWITCH', // Nintendo Switch (older ID)
+  130: 'NINTENDO_SWITCH', // Nintendo Switch
   37: 'NINTENDO_SWITCH', // Nintendo 3DS
-  41: 'MOBILE', // iOS
   34: 'MOBILE', // Android
+  41: 'MOBILE', // iOS
 }
 
 /**

@@ -38,13 +38,13 @@ export function createErrorResponse(
 
   // Handle custom ApiError
   if (error instanceof ApiError) {
-    return NextResponse.json(
-      {
-        error: error.message,
-        ...(error.details && process.env.NODE_ENV === 'development' && { details: error.details }),
-      },
-      { status: error.statusCode }
-    )
+    const responseBody: { error: string; details?: unknown } = {
+      error: error.message,
+    }
+    if (error.details && process.env.NODE_ENV === 'development') {
+      responseBody.details = error.details
+    }
+    return NextResponse.json(responseBody, { status: error.statusCode })
   }
 
   // Log unexpected errors (but don't expose details to client)

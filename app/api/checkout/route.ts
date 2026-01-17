@@ -52,6 +52,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    if (!stripe) {
+      return NextResponse.json(
+        { error: "Payment service is not configured" },
+        { status: 500 }
+      )
+    }
+
     // Create Stripe checkout session
     const stripeSession = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
