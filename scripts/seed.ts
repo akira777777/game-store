@@ -11,8 +11,6 @@
  */
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
-import { fetchGameBySlug, convertIGDBGameToDbFormat, isIGDBConfigured } from '../lib/igdb'
-import { toDbJsonArray } from '../lib/game-utils'
 
 const prisma = new PrismaClient()
 
@@ -650,7 +648,6 @@ async function main() {
       role: 'CUSTOMER',
     },
   })
-<<<<<<< Current (Your changes)
   console.log('Created test user:', user.email)
 
   // Create sample games with real image URLs from IGDB and free sources
@@ -952,101 +949,6 @@ async function main() {
       create: game,
     })
     console.log(`Created/updated game: ${game.title}`)
-=======
-  console.log('✅ Created test user:', user.email)
-
-  // Determine if we should try IGDB API
-  const useIGDB = isIGDBConfigured()
-  if (useIGDB) {
-    console.log('🔗 IGDB API configured, attempting to fetch real game data...')
-  } else {
-    console.log('⚠️  IGDB API not configured, using static game data')
-    console.log('   (Set IGDB_CLIENT_ID and IGDB_CLIENT_SECRET in .env to enable API integration)')
-  }
-
-  // Process games
-  console.log(`\n📦 Processing ${staticGames.length} games...`)
-
-  for (const staticGame of staticGames) {
-    try {
-      let gameData: GameSeedData = staticGame
-
-      // Try to fetch from IGDB if configured
-      if (useIGDB) {
-        try {
-          const igdbGame = await fetchGameBySlug(staticGame.slug)
-          if (igdbGame) {
-            const converted = convertIGDBGameToDbFormat(igdbGame, staticGame.price)
-            // Merge with static data (prefer static for metadata we control)
-            gameData = {
-              ...converted,
-              // Keep our pricing and stock info
-              price: staticGame.price,
-              discountPrice: staticGame.discountPrice,
-              featured: staticGame.featured,
-              inStock: staticGame.inStock,
-              stockQuantity: staticGame.stockQuantity,
-              // Merge images (IGDB + static)
-              images: converted.images.length > 0
-                ? [...new Set([...converted.images, ...staticGame.images])]
-                : staticGame.images,
-              // Use IGDB data if available, otherwise static
-              developer: converted.developer || staticGame.developer,
-              publisher: converted.publisher || staticGame.publisher,
-              releaseDate: converted.releaseDate || staticGame.releaseDate,
-            }
-            console.log(`  ✓ Fetched from IGDB: ${gameData.title}`)
-          }
-        } catch (error) {
-          console.log(`  ⚠️  IGDB fetch failed for ${staticGame.slug}, using static data`)
-        }
-      }
-
-      // Save to database
-      await prisma.game.upsert({
-        where: { slug: gameData.slug },
-        update: {
-          title: gameData.title,
-          description: gameData.description,
-          price: gameData.price,
-          discountPrice: gameData.discountPrice,
-          images: toDbJsonArray(gameData.images),
-          platforms: toDbJsonArray(gameData.platforms),
-          genres: toDbJsonArray(gameData.genres),
-          featured: gameData.featured,
-          inStock: gameData.inStock,
-          stockQuantity: gameData.stockQuantity,
-          developer: gameData.developer,
-          publisher: gameData.publisher,
-          releaseDate: gameData.releaseDate || null,
-        },
-        create: {
-          title: gameData.title,
-          slug: gameData.slug,
-          description: gameData.description,
-          price: gameData.price,
-          discountPrice: gameData.discountPrice,
-          images: toDbJsonArray(gameData.images),
-          platforms: toDbJsonArray(gameData.platforms),
-          genres: toDbJsonArray(gameData.genres),
-          featured: gameData.featured,
-          inStock: gameData.inStock,
-          stockQuantity: gameData.stockQuantity,
-          developer: gameData.developer,
-          publisher: gameData.publisher,
-          releaseDate: gameData.releaseDate || null,
-        },
-      })
-      console.log(`  ✅ Created/updated: ${gameData.title}`)
-
-      // Small delay to avoid rate limits
-      if (useIGDB) {
-        await new Promise((resolve) => setTimeout(resolve, 100))
-      }
-    } catch (error) {
-      console.error(`  ❌ Error processing ${staticGame.title}:`, error)
-    }
->>>>>>> Incoming (Background Agent changes)
   }
 
   console.log(`\n🎉 Seeding completed! ${staticGames.length} games processed.`)

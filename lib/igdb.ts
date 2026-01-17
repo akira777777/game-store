@@ -56,8 +56,7 @@ const PLATFORM_MAP: Record<number, string> = {
  * Genre mapping from IGDB IDs to our genre enum values
  */
 const GENRE_MAP: Record<number, string> = {
-  31: 'ADVENTURE', // Adventure
-  32: 'INDIE', // Indie
+  2: 'POINT_AND_CLICK', // Point-and-click
   4: 'FIGHTING', // Fighting
   5: 'SHOOTER', // Shooter
   7: 'MUSIC', // Music
@@ -79,7 +78,6 @@ const GENRE_MAP: Record<number, string> = {
   33: 'ARCADE', // Arcade
   34: 'VISUAL_NOVEL', // Visual Novel
   35: 'CARD_BATTLE', // Card & Board Game
-  2: 'POINT_AND_CLICK', // Point-and-click
 }
 
 let cachedToken: { token: string; expiresAt: number } | null = null

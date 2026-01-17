@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
+import { ConflictError, DatabaseError, formatErrorResponse, ValidationError } from "@/lib/errors"
 import { logger } from "@/lib/logger"
 import bcrypt from "bcryptjs"
+import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
-import { formatErrorResponse, ValidationError, ConflictError, DatabaseError } from "@/lib/errors"
 
 const registerSchema = z.object({
   email: z.string().email("Invalid email address").toLowerCase().trim(),
