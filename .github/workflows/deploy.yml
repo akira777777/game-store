@@ -37,10 +37,13 @@ jobs:
         env:
           GITHUB_PAGES: "true"
           REPO_NAME: ${{ github.event.repository.name }}
+          # Set a dummy DATABASE_URL for static export (not used for GitHub Pages)
+          DATABASE_URL: "file:./dummy.db"
         run: npm run build
 
       - name: Add .nojekyll
-        run: touch out/.nojekyll
+        # Ensure out/ directory exists before creating .nojekyll
+        run: mkdir -p out && touch out/.nojekyll
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

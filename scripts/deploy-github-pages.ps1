@@ -20,8 +20,16 @@ if ($gitStatus) {
     $commit = Read-Host "Do you want to commit these changes? (y/n)"
     if ($commit -eq "y" -or $commit -eq "Y") {
         $commitMessage = Read-Host "Enter commit message"
+        if ([string]::IsNullOrWhiteSpace($commitMessage)) {
+            Write-Host "❌ Error: Commit message cannot be empty" -ForegroundColor Red
+            exit 1
+        }
         git add .
         git commit -m "$commitMessage"
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "❌ Failed to commit changes" -ForegroundColor Red
+            exit 1
+        }
         Write-Host "✅ Changes committed" -ForegroundColor Green
     }
 }
@@ -50,9 +58,9 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "3. Set Source to 'GitHub Actions'" -ForegroundColor White
     Write-Host "4. The deployment will start automatically" -ForegroundColor White
     Write-Host ""
+    Write-Host "📖 See GITHUB_PAGES_DEPLOY.md for detailed instructions" -ForegroundColor Cyan
 }
 else {
-    else {
-        Write-Host "❌ Failed to push to GitHub" -ForegroundColor Red
-        exit 1
-    }
+    Write-Host "❌ Failed to push to GitHub" -ForegroundColor Red
+    exit 1
+}
