@@ -6,6 +6,17 @@ import CredentialsProvider from "next-auth/providers/credentials"
 // Role type for SQLite (stored as string)
 type Role = "CUSTOMER" | "ADMIN"
 
+// #region agent log
+// Validate secret before NextAuth initialization
+const authSecret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET;
+if (!authSecret && process.env.NODE_ENV === 'production') {
+  throw new Error(
+    'Missing AUTH_SECRET or NEXTAUTH_SECRET environment variable. ' +
+    'Please set one of these variables in Vercel Environment Variables (Settings → Environment Variables).'
+  );
+}
+// #endregion
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   // PrismaAdapter type compatibility issue - adapter is optional when using credentials
   // adapter: PrismaAdapter(db) as any,
@@ -81,5 +92,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
   // Support both AUTH_SECRET (preferred in v5) and NEXTAUTH_SECRET (legacy)
-  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
+  secret: authSecret,
 })
