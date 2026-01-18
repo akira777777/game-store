@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Gift, Sparkles, Star, Zap } from "lucide-react"
-import Link from "next/link"
+import { Link } from "@/lib/navigation"
+import { getTranslations } from "next-intl/server"
 
-export function CtaSection() {
+export async function CtaSection() {
+  const t = await getTranslations("cta")
+
   return (
     <section
       className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-primary/5 to-background p-6 sm:p-10 shadow-xl"
@@ -22,29 +25,29 @@ export function CtaSection() {
           <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/30 px-4 py-2 text-xs font-medium text-primary shadow-md backdrop-blur-sm">
             <Sparkles className="h-4 w-4 animate-pulse" aria-hidden="true" />
             <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-              Лучшие предложения недели
+              {t("badge")}
             </span>
           </div>
           <h2 id="cta-heading" className="text-2xl sm:text-3xl lg:text-4xl font-bold text-balance bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
-            Готовы выбрать новую игру?
+            {t("title")}
           </h2>
           <p className="text-muted-foreground max-w-xl text-base leading-relaxed">
-            Откройте каталог, сравните цены и получите доступ к игре за пару минут.
+            {t("description")}
           </p>
 
           {/* Feature highlights */}
           <div className="flex flex-wrap gap-4 pt-2">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Zap className="h-4 w-4 text-primary" aria-hidden="true" />
-              <span>Мгновенная доставка</span>
+              <span>{t("instantDelivery", { defaultValue: "Instant delivery" })}</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Star className="h-4 w-4 text-primary" aria-hidden="true" />
-              <span>Только проверенные игры</span>
+              <span>{t("verifiedGames", { defaultValue: "Verified games" })}</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Gift className="h-4 w-4 text-primary" aria-hidden="true" />
-              <span>Эксклюзивные скидки</span>
+              <span>{t("exclusiveDiscounts", { defaultValue: "Exclusive discounts" })}</span>
             </div>
           </div>
         </div>
@@ -55,7 +58,7 @@ export function CtaSection() {
               size="lg"
               className="w-full sm:w-auto text-base px-8 py-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary"
             >
-              Перейти в каталог
+              {t("goToCatalog")}
               <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" aria-hidden="true" />
             </Button>
           </Link>
@@ -65,7 +68,7 @@ export function CtaSection() {
               size="lg"
               className="w-full sm:w-auto text-base px-8 py-6 border-2 hover:bg-accent/50 transition-all duration-300 hover:scale-105"
             >
-              Создать аккаунт
+              {t("createAccount")}
             </Button>
           </Link>
         </div>

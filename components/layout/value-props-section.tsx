@@ -1,31 +1,34 @@
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Headphones, ShieldCheck, Sparkles, Zap } from "lucide-react"
+import { getTranslations } from "next-intl/server"
 
-const valueProps = [
-  {
-    title: "Мгновенная доставка",
-    description: "Получайте цифровые ключи сразу после оплаты без ожидания.",
-    icon: Zap,
-  },
-  {
-    title: "Безопасные платежи",
-    description: "Покупайте с уверенностью благодаря защищенным транзакциям.",
-    icon: ShieldCheck,
-  },
-  {
-    title: "Поддержка 24/7",
-    description: "Ответим на вопросы в любое время и поможем с покупкой.",
-    icon: Headphones,
-  },
-  {
-    title: "Новые релизы",
-    description: "Добавляем горячие новинки и проверенные хиты каждый день.",
-    icon: Sparkles,
-  },
-]
+export async function ValuePropsSection() {
+  const t = await getTranslations("valueProps")
 
-export function ValuePropsSection() {
+  const valueProps = [
+    {
+      title: t("instantDelivery.title"),
+      description: t("instantDelivery.description"),
+      icon: Zap,
+    },
+    {
+      title: t("securePayments.title"),
+      description: t("securePayments.description"),
+      icon: ShieldCheck,
+    },
+    {
+      title: t("support24.title"),
+      description: t("support24.description"),
+      icon: Headphones,
+    },
+    {
+      title: t("newReleases.title"),
+      description: t("newReleases.description"),
+      icon: Sparkles,
+    },
+  ]
+
   return (
     <section
       className="rounded-2xl border bg-muted/30 p-6 sm:p-10"
@@ -34,14 +37,13 @@ export function ValuePropsSection() {
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-3">
           <Badge variant="secondary" className="w-fit">
-            Преимущества
+            {t("badge")}
           </Badge>
           <h2 id="value-props-heading" className="text-2xl sm:text-3xl font-bold text-balance">
-            Почему выбирают Game Store
+            {t("title")}
           </h2>
           <p className="text-muted-foreground max-w-2xl">
-            Мы собрали лучший каталог игр с удобным поиском, безопасной оплатой и
-            мгновенной доставкой цифровых копий.
+            {t("description")}
           </p>
         </div>
 

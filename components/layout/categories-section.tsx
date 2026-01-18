@@ -1,16 +1,14 @@
-"use client"
-
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Car, Gamepad2, Puzzle, Sparkles, Sword, Target, Zap } from "lucide-react"
-import Link from "next/link"
+import { Link } from "@/lib/navigation"
+import { getTranslations } from "next-intl/server"
 
 const categories = [
   {
-    name: "Экшн",
+    name: "Action",
     slug: "ACTION",
     icon: Zap,
-    description: "Динамичные боевые игры",
     color: "from-red-500/20 to-orange-500/20",
     hoverColor: "hover:from-red-500/30 hover:to-orange-500/30",
   },
@@ -18,45 +16,42 @@ const categories = [
     name: "RPG",
     slug: "RPG",
     icon: Sword,
-    description: "Ролевые приключения",
     color: "from-purple-500/20 to-pink-500/20",
     hoverColor: "hover:from-purple-500/30 hover:to-pink-500/30",
   },
   {
-    name: "Шутеры",
+    name: "Shooter",
     slug: "SHOOTER",
     icon: Target,
-    description: "Тактические сражения",
     color: "from-blue-500/20 to-cyan-500/20",
     hoverColor: "hover:from-blue-500/30 hover:to-cyan-500/30",
   },
   {
-    name: "Гонки",
+    name: "Racing",
     slug: "RACING",
     icon: Car,
-    description: "Скоростные трассы",
     color: "from-yellow-500/20 to-amber-500/20",
     hoverColor: "hover:from-yellow-500/30 hover:to-amber-500/30",
   },
   {
-    name: "Головоломки",
+    name: "Puzzle",
     slug: "PUZZLE",
     icon: Puzzle,
-    description: "Логические задачи",
     color: "from-green-500/20 to-emerald-500/20",
     hoverColor: "hover:from-green-500/30 hover:to-emerald-500/30",
   },
   {
-    name: "Инди",
+    name: "Indie",
     slug: "INDIE",
     icon: Sparkles,
-    description: "Независимые проекты",
     color: "from-indigo-500/20 to-violet-500/20",
     hoverColor: "hover:from-indigo-500/30 hover:to-violet-500/30",
   },
 ]
 
-export function CategoriesSection() {
+export async function CategoriesSection() {
+  const t = await getTranslations("categories")
+
   return (
     <section className="space-y-8" aria-labelledby="categories-heading">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -66,16 +61,16 @@ export function CategoriesSection() {
           </div>
           <div>
             <h2 id="categories-heading" className="text-2xl sm:text-3xl font-bold tracking-tight">
-              Популярные категории
+              {t("title")}
             </h2>
             <p className="text-sm text-muted-foreground">
-              Найдите игры по вашему любимому жанру
+              {t("description")}
             </p>
           </div>
         </div>
         <Button asChild variant="outline" className="gap-2 w-full sm:w-auto">
           <Link href="/games">
-            Все категории
+            {t("allCategories")}
             <Gamepad2 className="h-4 w-4" aria-hidden="true" />
           </Link>
         </Button>
@@ -89,7 +84,7 @@ export function CategoriesSection() {
               key={category.slug}
               href={`/games?genre=${category.slug}`}
               className="group"
-              aria-label={`Перейти к категории ${category.name}`}
+              aria-label={t("ariaLabel", { name: t(`items.${category.name}.name`) })}
             >
               <Card
                 className={`relative overflow-hidden border border-border/50 bg-gradient-to-br ${category.color} backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-xl hover:-translate-y-1 ${category.hoverColor}`}
@@ -106,10 +101,10 @@ export function CategoriesSection() {
                   </div>
                   <div className="space-y-1">
                     <h3 className="font-semibold text-sm group-hover:text-primary transition-colors">
-                      {category.name}
+                      {t(`items.${category.name}.name`)}
                     </h3>
                     <p className="text-xs text-muted-foreground line-clamp-2">
-                      {category.description}
+                      {t(`items.${category.name}.description`)}
                     </p>
                   </div>
                 </CardContent>

@@ -82,12 +82,47 @@
       "description": "We add hot new releases and proven hits every day."
     }
   },
+  "categories": {
+    "title": "Popular Categories",
+    "description": "Find games by your favorite genre",
+    "allCategories": "All Categories",
+    "ariaLabel": "Go to category {name}",
+    "items": {
+      "Action": {
+        "name": "Action",
+        "description": "Dynamic combat games"
+      },
+      "RPG": {
+        "name": "RPG",
+        "description": "Role-playing adventures"
+      },
+      "Shooter": {
+        "name": "Shooter",
+        "description": "Tactical battles"
+      },
+      "Racing": {
+        "name": "Racing",
+        "description": "High-speed tracks"
+      },
+      "Puzzle": {
+        "name": "Puzzle",
+        "description": "Logic puzzles"
+      },
+      "Indie": {
+        "name": "Indie",
+        "description": "Independent projects"
+      }
+    }
+  },
   "cta": {
     "badge": "Best deals of the week",
     "title": "Ready to choose a new game?",
     "description": "Open the catalog, compare prices and get access to the game in a couple of minutes.",
     "goToCatalog": "Go to catalog",
-    "createAccount": "Create account"
+    "createAccount": "Create account",
+    "instantDelivery": "Instant delivery",
+    "verifiedGames": "Verified games",
+    "exclusiveDiscounts": "Exclusive discounts"
   },
   "home": {
     "title": "Home",
