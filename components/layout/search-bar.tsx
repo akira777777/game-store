@@ -1,63 +1,63 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { cn } from "@/lib/utils"
-import { Search, X } from "lucide-react"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useRef, useState } from "react"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { Search, X } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useRef, useState } from "react";
 
 interface SearchBarProps {
-  className?: string
-  variant?: "default" | "mobile"
+  className?: string;
+  variant?: "default" | "mobile";
 }
 
-export function SearchBar({ className, variant = "default" }: SearchBarProps) {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const pathname = usePathname()
-  const [searchQuery, setSearchQuery] = useState("")
-  const [isFocused, setIsFocused] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+function SearchBarContent({ className, variant = "default" }: SearchBarProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Получаем текущий поисковый запрос из URL и обновляем при изменении
   useEffect(() => {
-    const currentSearch = searchParams.get("search") || ""
-    setSearchQuery(currentSearch)
-  }, [searchParams])
+    const currentSearch = searchParams.get("search") || "";
+    setSearchQuery(currentSearch);
+  }, [searchParams]);
 
   const handleSearch = (e?: React.FormEvent) => {
-    e?.preventDefault()
-    const trimmedQuery = searchQuery.trim()
+    e?.preventDefault();
+    const trimmedQuery = searchQuery.trim();
 
     if (trimmedQuery) {
-      router.push(`/games?search=${encodeURIComponent(trimmedQuery)}`)
+      router.push(`/games?search=${encodeURIComponent(trimmedQuery)}`);
     } else {
-      router.push("/games")
+      router.push("/games");
     }
 
     // Снимаем фокус с инпута
-    inputRef.current?.blur()
-  }
+    inputRef.current?.blur();
+  };
 
   const handleClear = () => {
-    setSearchQuery("")
-    inputRef.current?.focus()
+    setSearchQuery("");
+    inputRef.current?.focus();
     // Если мы на странице игр, очищаем поиск
     if (pathname === "/games") {
-      router.push("/games")
+      router.push("/games");
     }
-  }
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      handleSearch(e)
+      handleSearch(e);
     }
     if (e.key === "Escape") {
-      inputRef.current?.blur()
-      setIsFocused(false)
+      inputRef.current?.blur();
+      setIsFocused(false);
     }
-  }
+  };
 
   if (variant === "mobile") {
     return (
@@ -89,7 +89,7 @@ export function SearchBar({ className, variant = "default" }: SearchBarProps) {
           )}
         </div>
       </form>
-    )
+    );
   }
 
   return (
@@ -97,7 +97,7 @@ export function SearchBar({ className, variant = "default" }: SearchBarProps) {
       onSubmit={handleSearch}
       className={cn(
         "relative hidden md:flex items-center gap-2 max-w-md flex-1",
-        className
+        className,
       )}
     >
       <div className="relative flex-1">
@@ -113,7 +113,7 @@ export function SearchBar({ className, variant = "default" }: SearchBarProps) {
           onBlur={() => setIsFocused(false)}
           className={cn(
             "w-full pl-9 pr-9 transition-all",
-            isFocused && "ring-2 ring-ring ring-offset-2"
+            isFocused && "ring-2 ring-ring ring-offset-2",
           )}
         />
         {searchQuery && (
@@ -138,5 +138,17 @@ export function SearchBar({ className, variant = "default" }: SearchBarProps) {
         Найти
       </Button>
     </form>
-  )
+  );
+}
+
+export function SearchBar(props: SearchBarProps) {
+  return (
+    <Suspense
+      fallback={
+        <div className="h-10 bg-muted rounded w-full md:max-w-md animate-pulse" />
+      }
+    >
+      <SearchBarContent {...props} />
+    </Suspense>
+  );
 }

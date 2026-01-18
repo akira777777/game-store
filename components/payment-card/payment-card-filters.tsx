@@ -1,35 +1,42 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useRouter, useSearchParams } from "next/navigation"
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 interface PaymentCardFiltersProps {
-  cardTypes: string[]
-  regions: string[]
-  currentCardType?: string
-  currentRegion?: string
+  cardTypes: string[];
+  regions: string[];
+  currentCardType?: string;
+  currentRegion?: string;
 }
 
-export function PaymentCardFilters({
+function PaymentCardFiltersContent({
   cardTypes,
   regions,
   currentCardType,
   currentRegion,
 }: PaymentCardFiltersProps) {
-  const router = useRouter()
-  const searchParams = useSearchParams()
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const updateFilter = (key: string, value: string) => {
-    const params = new URLSearchParams(searchParams.toString())
+    const params = new URLSearchParams(searchParams.toString());
     if (value) {
-      params.set(key, value)
+      params.set(key, value);
     } else {
-      params.delete(key)
+      params.delete(key);
     }
-    params.delete("page") // Reset to first page when filtering
-    router.push(`/payment-cards?${params.toString()}`)
-  }
+    params.delete("page"); // Reset to first page when filtering
+    router.push(`/payment-cards?${params.toString()}`);
+  };
 
   return (
     <div className="mb-6 flex flex-wrap gap-4 items-end">
@@ -74,13 +81,20 @@ export function PaymentCardFilters({
       </div>
 
       {(currentCardType || currentRegion) && (
-        <Button
-          variant="outline"
-          onClick={() => router.push("/payment-cards")}
-        >
+        <Button variant="outline" onClick={() => router.push("/payment-cards")}>
           Сбросить фильтры
         </Button>
       )}
     </div>
-  )
+  );
+}
+
+export function PaymentCardFilters(props: PaymentCardFiltersProps) {
+  return (
+    <Suspense
+      fallback={<div className="h-10 bg-muted rounded animate-pulse" />}
+    >
+      <PaymentCardFiltersContent {...props} />
+    </Suspense>
+  );
 }

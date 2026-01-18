@@ -1,47 +1,46 @@
-import { PaymentCardsList } from "@/components/payment-card/payment-cards-list"
-import { PageHeader } from "@/components/layout/page-header"
-import { db } from "@/lib/db"
-import { CreditCard } from "lucide-react"
+import { PageHeader } from "@/components/layout/page-header";
+import { PaymentCardsList } from "@/components/payment-card/payment-cards-list";
+import { db } from "@/lib/db";
 
-export const dynamic = "force-dynamic"
+export const dynamic = "force-dynamic";
 
 interface SearchParams {
-  cardType?: string
-  region?: string
-  search?: string
-  page?: string
+  cardType?: string;
+  region?: string;
+  search?: string;
+  page?: string;
 }
 
 export default async function PaymentCardsPage({
   searchParams,
 }: {
-  searchParams: SearchParams
+  searchParams: SearchParams;
 }) {
   try {
-    const page = Math.max(1, parseInt(searchParams.page || "1", 10) || 1)
-    const limit = 12
-    const skip = (page - 1) * limit
+    const page = Math.max(1, parseInt(searchParams.page || "1", 10) || 1);
+    const limit = 12;
+    const skip = (page - 1) * limit;
 
     const whereConditions: any = {
       inStock: true,
-    }
+    };
 
     if (searchParams.cardType?.trim()) {
-      whereConditions.cardType = searchParams.cardType.trim()
+      whereConditions.cardType = searchParams.cardType.trim();
     }
 
     if (searchParams.region?.trim()) {
-      whereConditions.region = searchParams.region.trim()
+      whereConditions.region = searchParams.region.trim();
     }
 
     if (searchParams.search?.trim()) {
-      const databaseUrl = process.env.DATABASE_URL?.trim() || ''
-      const isSQLite = databaseUrl.startsWith('file:')
-      const searchTerm = searchParams.search.trim()
+      const databaseUrl = process.env.DATABASE_URL?.trim() || "";
+      const isSQLite = databaseUrl.startsWith("file:");
+      const searchTerm = searchParams.search.trim();
       const searchCondition = isSQLite
         ? { contains: searchTerm }
-        : { contains: searchTerm, mode: 'insensitive' as const }
-      
+        : { contains: searchTerm, mode: "insensitive" as const };
+
       whereConditions.OR = [
         {
           title: searchCondition,
@@ -49,7 +48,7 @@ export default async function PaymentCardsPage({
         {
           description: searchCondition,
         },
-      ]
+      ];
     }
 
     const [cards, total] = await Promise.all([
@@ -62,15 +61,23 @@ export default async function PaymentCardsPage({
       db.paymentCard.count({
         where: whereConditions,
       }),
-    ])
+    ]);
 
     // Get unique card types and regions for filters
     const allCards = await db.paymentCard.findMany({
       where: { inStock: true },
       select: { cardType: true, region: true },
-    })
-    const cardTypes = Array.from(new Set(allCards.map(c => c.cardType).filter(Boolean)))
-    const regions = Array.from(new Set(allCards.map(c => c.region).filter(Boolean)))
+    });
+    const cardTypes = Array.from(
+      new Set(
+        allCards.map((c) => c.cardType).filter((t): t is string => t !== null),
+      ),
+    );
+    const regions = Array.from(
+      new Set(
+        allCards.map((c) => c.region).filter((r): r is string => r !== null),
+      ),
+    );
 
     return (
       <main className="container mx-auto px-4 py-8" role="main">
@@ -86,13 +93,13 @@ export default async function PaymentCardsPage({
             className="px-4 py-2 border rounded-md bg-background"
             defaultValue={searchParams.cardType || ""}
             onChange={(e) => {
-              const params = new URLSearchParams(window.location.search)
+              const params = new URLSearchParams(window.location.search);
               if (e.target.value) {
-                params.set("cardType", e.target.value)
+                params.set("cardType", e.target.value);
               } else {
-                params.delete("cardType")
+                params.delete("cardType");
               }
-              window.location.search = params.toString()
+              window.location.search = params.toString();
             }}
           >
             <option value="">Все типы</option>
@@ -107,13 +114,13 @@ export default async function PaymentCardsPage({
             className="px-4 py-2 border rounded-md bg-background"
             defaultValue={searchParams.region || ""}
             onChange={(e) => {
-              const params = new URLSearchParams(window.location.search)
+              const params = new URLSearchParams(window.location.search);
               if (e.target.value) {
-                params.set("region", e.target.value)
+                params.set("region", e.target.value);
               } else {
-                params.delete("region")
+                params.delete("region");
               }
-              window.location.search = params.toString()
+              window.location.search = params.toString();
             }}
           >
             <option value="">Все регионы</option>
@@ -158,9 +165,9 @@ export default async function PaymentCardsPage({
           </div>
         )}
       </main>
-    )
+    );
   } catch (error) {
-    console.error("Error fetching payment cards:", error)
+    console.error("Error fetching payment cards:", error);
     return (
       <main className="container mx-auto px-4 py-8">
         <PageHeader title="Платежные карты" backUrl="/" />
@@ -168,6 +175,6 @@ export default async function PaymentCardsPage({
           <p className="text-destructive">Ошибка при загрузке карт</p>
         </div>
       </main>
-    )
+    );
   }
 }

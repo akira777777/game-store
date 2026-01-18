@@ -1,8 +1,9 @@
-"use client"
+"use client";
 
-import { Badge } from "@/components/ui/badge"
-import { useRouter, useSearchParams } from "next/navigation"
-import { X } from "lucide-react"
+import { Badge } from "@/components/ui/badge";
+import { X } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 const POPULAR_GENRES = [
   { value: "ACTION", label: "Экшн" },
@@ -10,37 +11,37 @@ const POPULAR_GENRES = [
   { value: "STRATEGY", label: "Стратегии" },
   { value: "ADVENTURE", label: "Приключения" },
   { value: "SHOOTER", label: "Шутеры" },
-] as const
+] as const;
 
 const POPULAR_PLATFORMS = [
   { value: "PC", label: "PC" },
   { value: "PLAYSTATION", label: "PlayStation" },
   { value: "XBOX", label: "Xbox" },
   { value: "NINTENDO_SWITCH", label: "Nintendo Switch" },
-] as const
+] as const;
 
-export function QuickFilters() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const currentGenre = searchParams.get("genre")
-  const currentPlatform = searchParams.get("platform")
+function QuickFiltersContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentGenre = searchParams.get("genre");
+  const currentPlatform = searchParams.get("platform");
 
   const applyFilter = (type: "genre" | "platform", value: string) => {
-    const params = new URLSearchParams(searchParams.toString())
+    const params = new URLSearchParams(searchParams.toString());
     if (params.get(type) === value) {
-      params.delete(type)
+      params.delete(type);
     } else {
-      params.set(type, value)
-      params.delete("page") // Reset to first page when filtering
+      params.set(type, value);
+      params.delete("page"); // Reset to first page when filtering
     }
-    router.push(`/games?${params.toString()}`)
-  }
+    router.push(`/games?${params.toString()}`);
+  };
 
   const clearFilters = () => {
-    router.push("/games")
-  }
+    router.push("/games");
+  };
 
-  const hasActiveFilters = currentGenre || currentPlatform
+  const hasActiveFilters = currentGenre || currentPlatform;
 
   return (
     <div className="space-y-4">
@@ -88,7 +89,9 @@ export function QuickFilters() {
                 aria-pressed={currentPlatform === platform.value}
               >
                 <Badge
-                  variant={currentPlatform === platform.value ? "default" : "outline"}
+                  variant={
+                    currentPlatform === platform.value ? "default" : "outline"
+                  }
                   className="cursor-pointer hover:bg-primary/80 transition-colors"
                 >
                   {platform.label}
@@ -99,5 +102,24 @@ export function QuickFilters() {
         </div>
       </div>
     </div>
-  )
+  );
+}
+
+export function QuickFilters() {
+  return (
+    <Suspense
+      fallback={
+        <div className="space-y-4 animate-pulse">
+          <div className="h-6 bg-muted rounded w-32" />
+          <div className="flex flex-wrap gap-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="h-8 bg-muted rounded w-16" />
+            ))}
+          </div>
+        </div>
+      }
+    >
+      <QuickFiltersContent />
+    </Suspense>
+  );
 }
