@@ -4,6 +4,7 @@ import { GameCard } from "@/components/game/game-card"
 import { ViewToggle } from "@/components/game/view-toggle"
 import { parseJsonArrayOrString } from "@/lib/game-utils"
 import { Game } from "@prisma/client"
+import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
 
@@ -54,10 +55,13 @@ export function GamesList({ games, total }: GamesListProps) {
                   <div className="flex gap-4">
                     <div className="relative w-32 h-20 flex-shrink-0 rounded overflow-hidden bg-muted">
                       {images.length > 0 ? (
-                        <img
+                        <Image
                           src={images[0]}
                           alt={`Обложка ${game.title}`}
-                          className="w-full h-full object-cover"
+                          fill
+                          className="object-cover"
+                          sizes="128px"
+                          loading="lazy"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">

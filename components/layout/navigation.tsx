@@ -29,16 +29,16 @@ export function Navigation() {
     .toUpperCase() || session?.user?.email?.[0].toUpperCase() || "?"
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" aria-label="Главная навигация">
+    <nav className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80 shadow-sm" aria-label="Главная навигация">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-2 text-2xl font-bold transition-colors hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-md"
+            className="flex items-center gap-2 text-2xl font-bold transition-all duration-300 hover:text-primary hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-md"
             aria-label="Главная страница Game Store"
           >
-            <Gamepad2 className="h-6 w-6" aria-hidden="true" />
-            <span className="hidden sm:inline">Game Store</span>
+            <Gamepad2 className="h-6 w-6 transition-transform duration-300 hover:rotate-12" aria-hidden="true" />
+            <span className="hidden sm:inline bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">Game Store</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -46,7 +46,7 @@ export function Navigation() {
             <Button
               asChild
               variant={isGamesActive ? "secondary" : "ghost"}
-              className="gap-2"
+              className="gap-2 transition-all duration-300 hover:scale-105"
               aria-current={isGamesActive ? "page" : undefined}
             >
               <Link href="/games" aria-label="Каталог игр">
@@ -57,11 +57,11 @@ export function Navigation() {
             <Button
               asChild
               variant={isCartActive ? "secondary" : "ghost"}
-              className="gap-2 relative"
+              className="gap-2 relative transition-all duration-300 hover:scale-105"
               aria-current={isCartActive ? "page" : undefined}
             >
               <Link href="/cart" aria-label="Корзина">
-                <ShoppingCart className="h-4 w-4" aria-hidden="true" />
+                <ShoppingCart className="h-4 w-4 transition-transform duration-300 hover:scale-110" aria-hidden="true" />
                 <span className="hidden lg:inline">Корзина</span>
               </Link>
             </Button>

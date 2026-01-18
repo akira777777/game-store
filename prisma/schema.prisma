@@ -8,25 +8,25 @@ generator client {
 datasource db {
   // ИЗМЕНЕНО: sqlite заменен на postgresql для работы в облаке (Neon, Supabase и т.д.)
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  // url moved to prisma.config.ts in Prisma 7
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String?
-  password      String // hashed
-  role          String    @default("CUSTOMER")
-  orders        Order[]
-  cart          CartItem[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id        String     @id @default(cuid())
+  email     String     @unique
+  name      String?
+  password  String // hashed
+  role      String     @default("CUSTOMER")
+  orders    Order[]
+  cart      CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
 model Game {
-  id            String    @id @default(cuid())
+  id            String      @id @default(cuid())
   title         String
-  slug          String    @unique
+  slug          String      @unique
   description   String
   price         Float
   discountPrice Float?
@@ -36,19 +36,22 @@ model Game {
   publisher     String?
   platforms     String // JSON массив Platform
   genres        String // JSON массив Genre
-  featured      Boolean   @default(false)
-  inStock       Boolean   @default(true)
-  stockQuantity Int       @default(0)
+  featured      Boolean     @default(false)
+  inStock       Boolean     @default(true)
+  stockQuantity Int         @default(0)
   orderItems    OrderItem[]
   cartItems     CartItem[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
   @@index([inStock])
   @@index([featured])
   @@index([createdAt])
   @@index([title])
   @@index([price])
+  @@index([discountPrice])
+  @@index([inStock, featured])
+  @@index([inStock, createdAt])
 }
 
 model CartItem {
@@ -65,11 +68,11 @@ model CartItem {
 }
 
 model Order {
-  id              String  @id @default(cuid())
+  id              String      @id @default(cuid())
   userId          String
-  status          String @default("PENDING")
+  status          String      @default("PENDING")
   total           Float
-  stripeSessionId String? @unique
+  stripeSessionId String?     @unique
   items           OrderItem[]
   user            User        @relation(fields: [userId], references: [id])
   createdAt       DateTime    @default(now())
@@ -82,11 +85,11 @@ model Order {
 }
 
 model OrderItem {
-  id       String  @id @default(cuid())
+  id       String @id @default(cuid())
   orderId  String
   gameId   String
   quantity Int
   price    Float
-  order    Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  game     Game    @relation(fields: [gameId], references: [id])
+  order    Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  game     Game   @relation(fields: [gameId], references: [id])
 }

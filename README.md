@@ -53,7 +53,7 @@ cp .env.example .env
 1. Заполните переменные окружения в `.env`:
 
 ```env
-DATABASE_URL="file:./prisma/dev.db"
+DATABASE_URL="postgresql://user:password@host:5432/database?sslmode=require"
 NEXTAUTH_SECRET="your-secret-key-here-generate-with-openssl-rand-base64-32"
 NEXTAUTH_URL="http://localhost:3000"
 STRIPE_SECRET_KEY="sk_test_..."
@@ -61,10 +61,16 @@ STRIPE_PUBLISHABLE_KEY="pk_test_..."
 STRIPE_WEBHOOK_SECRET="whsec_..."
 ```
 
-**Примечание**: По умолчанию используется SQLite. Для продакшена рекомендуется PostgreSQL:
+**Примечание**: Проект использует PostgreSQL. Для локальной разработки можно использовать:
+
+- **Neon** (бесплатный): <https://neon.tech/>
+- **Supabase** (бесплатный): <https://supabase.com/>
+- **Локальный PostgreSQL**: `postgresql://user:password@localhost:5432/gamestore?schema=public`
+
+Пример для Neon:
 
 ```env
-DATABASE_URL="postgresql://user:password@localhost:5432/gamestore?schema=public"
+DATABASE_URL="postgresql://user:password@ep-xxxxx.us-east-2.aws.neon.tech/neondb?sslmode=require"
 ```
 
 Для генерации `NEXTAUTH_SECRET` выполните:
@@ -169,11 +175,13 @@ npm run start
 Перейдите в **Site settings → Build & deploy → Environment → Environment variables** и добавьте следующие переменные:
 
 **Обязательные переменные:**
+
 - `NEXTAUTH_SECRET` - Секретный ключ для NextAuth (сгенерируйте с помощью скрипта)
 - `DATABASE_URL` - URL базы данных (для SQLite: `file:./prisma/dev.db`)
 - `NEXTAUTH_URL` - URL вашего сайта (например, `https://your-site.netlify.app`)
 
 **Для Stripe:**
+
 - `STRIPE_SECRET_KEY` - Секретный ключ Stripe
 - `STRIPE_PUBLISHABLE_KEY` - Публичный ключ Stripe
 - `STRIPE_WEBHOOK_SECRET` - Секрет для вебхуков Stripe
@@ -195,16 +203,19 @@ openssl rand -hex 32
 #### 3. Настройка базы данных
 
 **Для SQLite (локальная разработка):**
+
 - Убедитесь, что файл `prisma/dev.db` существует и добавлен в репозиторий
 - Используйте URL: `file:./prisma/dev.db`
 
 **Для PostgreSQL (продакшен):**
+
 - Рекомендуется использовать управляемую базу данных (например, Neon, Supabase, Railway)
 - Используйте URL в формате: `postgresql://user:password@host:port/database?schema=public`
 
 #### 4. Настройка сборки
 
 В настройках Netlify:
+
 - **Build command:** `npm run build`
 - **Publish directory:** `.next`
 - **Node version:** 18 или выше
@@ -243,6 +254,7 @@ openssl rand -hex 32
 После настройки всех переменных окружения и конфигурации, деплой произойдет автоматически при пуше в основную ветку.
 
 Для ручного деплоя:
+
 1. Запушьте изменения в репозиторий
 2. Перейдите в панель Netlify и нажмите "Trigger deploy"
 3. Следите за логами сборки в разделе "Deploys"

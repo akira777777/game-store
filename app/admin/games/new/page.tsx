@@ -7,10 +7,6 @@ import { Label } from "@/components/ui/label"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
-// #region agent log
-fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app/admin/games/new/page.tsx:10', message: 'Admin new game page module load', data: { hasUseClient: true }, timestamp: Date.now(), sessionId: 'debug-session', hypothesisId: 'D' }) }).catch(() => { });
-// #endregion
-
 const platforms: string[] = ["PC", "PLAYSTATION", "XBOX", "NINTENDO_SWITCH", "MOBILE"]
 const genres: string[] = ["ACTION", "ADVENTURE", "RPG", "STRATEGY", "SPORTS", "RACING", "SHOOTER", "SIMULATION", "INDIE", "PUZZLE"]
 

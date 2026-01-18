@@ -1,11 +1,12 @@
 import { GameCard } from "@/components/game/game-card"
 import { GameFilters } from "@/components/game/game-filters"
-import { db } from "@/lib/db"
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
+import { db } from "@/lib/db"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import Link from "next/link"
 
 export const dynamic = "force-dynamic"
+export const revalidate = 3600 // Revalidate every hour
 
 interface SearchParams {
   genre?: string
@@ -81,12 +82,12 @@ export default async function GamesPage({
     if (minPrice !== null || maxPrice !== null) {
       // Price filtering: (discountPrice IS NOT NULL AND discountPrice >= min) OR (discountPrice IS NULL AND price >= min)
       const priceFilters: any[] = []
-      
+
       if (minPrice !== null) {
         priceFilters.push({
           OR: [
             { discountPrice: { gte: minPrice } },
-            { 
+            {
               AND: [
                 { discountPrice: null },
                 { price: { gte: minPrice } }
@@ -95,12 +96,12 @@ export default async function GamesPage({
           ]
         })
       }
-      
+
       if (maxPrice !== null) {
         priceFilters.push({
           OR: [
             { discountPrice: { lte: maxPrice } },
-            { 
+            {
               AND: [
                 { discountPrice: null },
                 { price: { lte: maxPrice } }
@@ -149,8 +150,8 @@ export default async function GamesPage({
       games.sort((a, b) => {
         const finalPriceA = a.discountPrice ?? a.price
         const finalPriceB = b.discountPrice ?? b.price
-        return sortByParam === "price_asc" 
-          ? finalPriceA - finalPriceB 
+        return sortByParam === "price_asc"
+          ? finalPriceA - finalPriceB
           : finalPriceB - finalPriceA
       })
     }
@@ -158,31 +159,48 @@ export default async function GamesPage({
     const totalPages = Math.ceil(total / limit)
 
     return (
-      <div className="container mx-auto px-4 py-8">
-        <header>
-          <h1 className="text-4xl font-bold mb-8">Каталог игр</h1>
+      <div className="container mx-auto px-4 py-8 sm:py-12">
+        <header className="mb-8 sm:mb-12">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </div>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+              Каталог игр
+            </h1>
+          </div>
+          <p className="text-muted-foreground text-sm sm:text-base max-w-2xl">
+            Найдите свою следующую любимую игру среди тысяч доступных вариантов
+          </p>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
           <aside className="lg:col-span-1" aria-label="Фильтры каталога игр">
             <GameFilters />
           </aside>
 
           <main className="lg:col-span-3" role="main">
             {games.length === 0 ? (
-              <div className="text-center py-12" role="status" aria-live="polite">
-                <p className="text-muted-foreground text-lg">
+              <div className="text-center py-16 sm:py-20 rounded-2xl border border-dashed border-border/50 bg-muted/30" role="status" aria-live="polite">
+                <div className="mb-4 inline-flex items-center justify-center rounded-full bg-muted p-4">
+                  <svg className="h-8 w-8 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                <p className="text-muted-foreground text-lg font-medium mb-2">
                   Игры не найдены
                 </p>
-                <p className="text-sm text-muted-foreground mt-2">
+                <p className="text-sm text-muted-foreground">
                   Попробуйте изменить параметры фильтрации
                 </p>
               </div>
             ) : (
               <>
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 p-4 rounded-lg bg-muted/30 border border-border/50">
                   <p className="text-sm text-muted-foreground">
-                    Найдено игр: <span className="font-semibold text-foreground">{total}</span>
+                    Найдено игр: <span className="font-semibold text-foreground text-base">{total}</span>
                   </p>
                   {totalPages > 1 && (
                     <p className="text-sm text-muted-foreground">
@@ -191,7 +209,7 @@ export default async function GamesPage({
                   )}
                 </div>
                 <div
-                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10"
                   role="list"
                   aria-label={`Список игр, найдено ${games.length}`}
                 >
@@ -203,7 +221,7 @@ export default async function GamesPage({
                 </div>
 
                 {totalPages > 1 && (
-                  <nav aria-label="Пагинация страниц" className="flex items-center justify-center gap-2">
+                  <nav aria-label="Пагинация страниц" className="flex items-center justify-center gap-2 flex-wrap">
                     {page > 1 && (
                       <Link
                         href={(() => {
@@ -221,7 +239,7 @@ export default async function GamesPage({
                         </Button>
                       </Link>
                     )}
-                    
+
                     <div className="flex gap-2">
                       {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
                         let pageNum: number

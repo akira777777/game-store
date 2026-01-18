@@ -72,7 +72,12 @@
   }
 
   /* Improved typography scale */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-semibold tracking-tight;
     line-height: 1.2;
   }
@@ -108,12 +113,14 @@
   }
 
   /* Smooth transitions for interactive elements */
-  a, button {
+  a,
+  button {
     @apply transition-colors duration-200;
   }
 }
 
 @layer utilities {
+
   /* Accessibility: Screen reader only class */
   .sr-only {
     position: absolute;
@@ -193,17 +200,16 @@
 }
 
 @layer components {
+
   /* Enhanced text shimmer effect */
   .animate-text-shimmer {
     background-size: 200% auto;
-    background-image: linear-gradient(
-      90deg,
-      #ec4899 0%,
-      #8b5cf6 25%,
-      #3b82f6 50%,
-      #8b5cf6 75%,
-      #ec4899 100%
-    );
+    background-image: linear-gradient(90deg,
+        #ec4899 0%,
+        #8b5cf6 25%,
+        #3b82f6 50%,
+        #8b5cf6 75%,
+        #ec4899 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -211,6 +217,7 @@
 
   /* Smooth animations for better performance */
   @media (prefers-reduced-motion: reduce) {
+
     *,
     *::before,
     *::after {
@@ -222,30 +229,70 @@
 }
 
 @layer utilities {
+
   /* Enhanced text animations */
   @keyframes text-shimmer {
     0% {
       background-position: -200% center;
     }
+
     100% {
       background-position: 200% center;
     }
   }
 
   .text-shimmer {
-    background: linear-gradient(
-      90deg,
-      #ff6b6b 0%,
-      #ffd93d 25%,
-      #6bcf7f 50%,
-      #4ecdc4 75%,
-      #ff6b6b 100%
-    );
+    background: linear-gradient(90deg,
+        #ff6b6b 0%,
+        #ffd93d 25%,
+        #6bcf7f 50%,
+        #4ecdc4 75%,
+        #ff6b6b 100%);
     background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     animation: text-shimmer 3s linear infinite;
+  }
+
+  /* Fade in animation */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.6s ease-out forwards;
+  }
+
+  /* Gradient animation */
+  @keyframes gradient {
+
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 3s ease infinite;
+  }
+
+  /* Pulse animation delay */
+  .delay-1000 {
+    animation-delay: 1s;
   }
 
   /* Smooth transitions for all animated elements */

@@ -1,5 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton"
 import { Game } from "@prisma/client"
+import { memo } from "react"
 import { GameCard } from "./game-card"
 
 interface GameGridProps {
@@ -7,7 +8,7 @@ interface GameGridProps {
   isLoading?: boolean
 }
 
-export function GameGrid({ games, isLoading = false }: GameGridProps) {
+function GameGridComponent({ games, isLoading = false }: GameGridProps) {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -72,3 +73,5 @@ export function GameGrid({ games, isLoading = false }: GameGridProps) {
     </div>
   )
 }
+
+export const GameGrid = memo(GameGridComponent)

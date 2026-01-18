@@ -6,10 +6,6 @@ import { AlertCircle, Home, RefreshCw } from "lucide-react"
 import Link from "next/link"
 import { useEffect } from "react"
 
-// #region agent log
-fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app/error.tsx:9', message: 'Error component module load', data: { hasUseClient: true }, timestamp: Date.now(), sessionId: 'debug-session', hypothesisId: 'C' }) }).catch(() => { });
-// #endregion
-
 export default function Error({
   error,
   reset,

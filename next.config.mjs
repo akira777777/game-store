@@ -37,7 +37,7 @@ const nextConfig = {
   compress: true,
 
   // Enable React strict mode for better error detection
-  reactStrictMode: false, // Disable in production to reduce bundle size
+  reactStrictMode: true,
 
 
   // Reduce bundle size for Cloudflare Pages
@@ -58,13 +58,21 @@ const nextConfig = {
   // Performance optimizations
   poweredByHeader: false,
 
+  // Optimize fonts
+  optimizeFonts: true,
+
+  // Experimental optimizations
+  experimental: {
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+  },
 
 
 
 
-  // Disable ESLint during build to avoid circular reference issues
+
+  // Enable ESLint during build to catch errors early
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
 };
 

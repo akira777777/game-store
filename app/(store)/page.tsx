@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button"
 import { ErrorBoundary } from "@/components/ui/error-boundary"
 import { db } from "@/lib/db"
 import { ArrowRight, TrendingUp } from "lucide-react"
-import Link from "next/link"
 import type { Metadata } from "next"
+import Link from "next/link"
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 3600 // Revalidate every hour
@@ -22,7 +22,13 @@ export const metadata: Metadata = {
 }
 
 export default async function HomePage() {
+  // #region agent log
+  fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app/(store)/page.tsx:24', message: 'HomePage entry', data: {}, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'D' }) }).catch(() => { });
+  // #endregion
   try {
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app/(store)/page.tsx:27', message: 'Before DB queries', data: {}, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'D' }) }).catch(() => { });
+    // #endregion
     const featuredGamesPromise = db.game.findMany({
       where: { featured: true },
       take: 8,
@@ -52,6 +58,10 @@ export default async function HomePage() {
       newGamesPromise,
       discountedGamesPromise,
     ])
+
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app/(store)/page.tsx:54', message: 'After DB queries', data: { featuredCount: featuredGames.length, newCount: newGames.length, discountedCount: discountedGames.length }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'D' }) }).catch(() => { });
+    // #endregion
 
     return (
       <ErrorBoundary>
@@ -161,6 +171,9 @@ export default async function HomePage() {
       </ErrorBoundary>
     )
   } catch (error) {
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app/(store)/page.tsx:163', message: 'HomePage error', data: { errorMessage: error instanceof Error ? error.message : String(error), errorName: error instanceof Error ? error.name : 'unknown' }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'D' }) }).catch(() => { });
+    // #endregion
     throw error
   }
 }

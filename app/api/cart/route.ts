@@ -1,22 +1,50 @@
-import { auth } from "@/lib/auth"
-import { db } from "@/lib/db"
-import { NextRequest, NextResponse } from "next/server"
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
+  // #region agent log
+  fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app/api/cart/route.ts:5', message: 'GET /api/cart entry', data: {}, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'E' }) }).catch(() => { });
+  // #endregion
   try {
     const session = await auth()
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app/api/cart/route.ts:7', message: 'After auth', data: { hasSession: !!session, hasUserId: !!session?.user?.id }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'E' }) }).catch(() => { });
+    // #endregion
 
     if (!session?.user?.id) {
       return NextResponse.json({ items: [] })
     }
 
+    // Only select necessary fields from game to reduce payload size
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app/api/cart/route.ts:13', message: 'Before cart query', data: { userId: session.user.id }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'E' }) }).catch(() => { });
+    // #endregion
     const cartItems = await db.cartItem.findMany({
       where: { userId: session.user.id },
-      include: { game: true },
+      include: {
+        game: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            price: true,
+            discountPrice: true,
+            images: true,
+            inStock: true,
+          },
+        },
+      },
     })
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app/api/cart/route.ts:30', message: 'After cart query', data: { itemsCount: cartItems.length }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'E' }) }).catch(() => { });
+    // #endregion
 
     return NextResponse.json({ items: cartItems })
   } catch (error) {
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app/api/cart/route.ts:33', message: 'GET /api/cart error', data: { errorMessage: error instanceof Error ? error.message : String(error), errorName: error instanceof Error ? error.name : 'unknown' }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'E' }) }).catch(() => { });
+    // #endregion
     console.error("Error fetching cart:", error)
     return NextResponse.json(
       { error: "Internal server error" },
@@ -77,7 +105,19 @@ export async function POST(request: NextRequest) {
         gameId: gameId,
         quantity: validQuantity,
       },
-      include: { game: true },
+      include: {
+        game: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            price: true,
+            discountPrice: true,
+            images: true,
+            inStock: true,
+          },
+        },
+      },
     })
 
     return NextResponse.json({ item: cartItem })
@@ -182,7 +222,19 @@ export async function PATCH(request: NextRequest) {
         },
       },
       data: { quantity: validQuantity },
-      include: { game: true },
+      include: {
+        game: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            price: true,
+            discountPrice: true,
+            images: true,
+            inStock: true,
+          },
+        },
+      },
     })
 
     return NextResponse.json({ item: cartItem })

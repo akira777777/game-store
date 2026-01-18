@@ -8,4 +8,4 @@ NODE_VERSION = "20"
 [env.production.vars]
 NODE_ENV = "production"
 NODE_VERSION = "20"
-DATABASE_URL = "file:./prisma/prod.db"
+# DATABASE_URL should be set in Cloudflare Pages environment variables, not here
