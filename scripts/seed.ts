@@ -9,10 +9,8 @@
  * To use IGDB API integration, set IGDB_CLIENT_ID and IGDB_CLIENT_SECRET
  * in your .env file (see .env.example)
  */
-import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
-
-const prisma = new PrismaClient()
+import { db } from '../lib/db'
 
 interface GameSeedData {
   title: string
@@ -624,7 +622,7 @@ async function main() {
 
   // Create admin user
   const hashedPassword = await bcrypt.hash('admin123', 10)
-  const admin = await prisma.user.upsert({
+  const admin = await db.user.upsert({
     where: { email: 'admin@example.com' },
     update: {},
     create: {
@@ -638,7 +636,7 @@ async function main() {
 
   // Create test user
   const userPassword = await bcrypt.hash('user123', 10)
-  const user = await prisma.user.upsert({
+  const user = await db.user.upsert({
     where: { email: 'user@example.com' },
     update: {},
     create: {
@@ -943,7 +941,7 @@ async function main() {
   ]
 
   for (const game of games) {
-    await prisma.game.upsert({
+    await db.game.upsert({
       where: { slug: game.slug },
       update: game,
       create: game,
@@ -960,5 +958,5 @@ main()
     process.exit(1)
   })
   .finally(async () => {
-    await prisma.$disconnect()
+    await db.$disconnect()
   })

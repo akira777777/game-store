@@ -1,8 +1,11 @@
 "use client"
 
+import { PageHeader } from "@/components/layout/page-header"
+import { useToast } from "@/components/providers/toast-provider"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { LoadingButton } from "@/components/ui/loading-button"
 import { normalizeJsonArray } from "@/lib/game-utils"
 import { formatCurrency } from "@/lib/utils"
 import { useSession } from "next-auth/react"
@@ -14,19 +17,32 @@ import { useEffect, useState } from "react"
 interface CartItem {
   id: string
   quantity: number
-  game: {
+  gameId?: string | null
+  paymentCardId?: string | null
+  game?: {
     id: string
     title: string
     slug: string
     price: number
     discountPrice: number | null
     images: string[] | string
-  }
+    inStock: boolean
+  } | null
+  paymentCard?: {
+    id: string
+    title: string
+    slug: string
+    price: number
+    discountPrice: number | null
+    images: string[] | string
+    inStock: boolean
+  } | null
 }
 
 export default function CartPage() {
   const { data: session } = useSession()
   const router = useRouter()
+  const { handleError, showSuccess } = useToast()
   const [items, setItems] = useState<CartItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isCheckingOut, setIsCheckingOut] = useState(false)
@@ -51,12 +67,20 @@ export default function CartPage() {
     }
   }
 
-  const updateQuantity = async (gameId: string, quantity: number) => {
+  const updateQuantity = async (item: CartItem, quantity: number) => {
     try {
+      const body = item.gameId
+        ? { gameId: item.gameId, quantity }
+        : item.paymentCardId
+          ? { paymentCardId: item.paymentCardId, quantity }
+          : null
+
+      if (!body) return
+
       const response = await fetch("/api/cart", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ gameId, quantity }),
+        body: JSON.stringify(body),
       })
 
       if (response.ok) {
@@ -67,9 +91,17 @@ export default function CartPage() {
     }
   }
 
-  const removeItem = async (gameId: string) => {
+  const removeItem = async (item: CartItem) => {
     try {
-      const response = await fetch(`/api/cart?gameId=${gameId}`, {
+      const url = item.gameId
+        ? `/api/cart?gameId=${item.gameId}`
+        : item.paymentCardId
+          ? `/api/cart?paymentCardId=${item.paymentCardId}`
+          : null
+
+      if (!url) return
+
+      const response = await fetch(url, {
         method: "DELETE",
       })
 
@@ -88,13 +120,21 @@ export default function CartPage() {
         method: "POST",
       })
 
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || "Ошибка при оформлении заказа")
+      }
+
       const data = await response.json()
 
       if (data.url) {
+        showSuccess("Перенаправление на страницу оплаты...")
         window.location.href = data.url
+      } else {
+        throw new Error("Не получен URL для оплаты")
       }
     } catch (error) {
-      // Error handled silently - checkout will not proceed
+      handleError(error, "Checkout")
     } finally {
       setIsCheckingOut(false)
     }
@@ -109,9 +149,11 @@ export default function CartPage() {
   }
 
   const total = items.reduce((sum, item) => {
-    const basePrice = Number.isFinite(Number(item.game.price)) ? Number(item.game.price) : 0
-    const discountValue = item.game.discountPrice !== null && Number.isFinite(Number(item.game.discountPrice))
-      ? Number(item.game.discountPrice)
+    const product = item.game || item.paymentCard
+    if (!product) return sum
+    const basePrice = Number.isFinite(Number(product.price)) ? Number(product.price) : 0
+    const discountValue = product.discountPrice !== null && Number.isFinite(Number(product.discountPrice))
+      ? Number(product.discountPrice)
       : null
     const finalPrice = discountValue && discountValue > 0 ? discountValue : basePrice
     return sum + finalPrice * item.quantity
@@ -119,9 +161,11 @@ export default function CartPage() {
 
   return (
     <main className="container mx-auto px-4 py-8" role="main">
-      <header>
-        <h1 className="text-4xl font-bold mb-8">Корзина</h1>
-      </header>
+      <PageHeader
+        title="Корзина"
+        description="Товары, которые вы добавили в корзину"
+        backUrl="/games"
+      />
 
       {items.length === 0 ? (
         <Card>
@@ -138,24 +182,34 @@ export default function CartPage() {
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
           <div className="xl:col-span-2 space-y-4">
             {items.map((item) => {
-              const basePrice = Number.isFinite(Number(item.game.price)) ? Number(item.game.price) : 0
-              const discountValue = item.game.discountPrice !== null && Number.isFinite(Number(item.game.discountPrice))
-                ? Number(item.game.discountPrice)
+              const product = item.game || item.paymentCard
+              if (!product) return null
+
+              const basePrice = Number.isFinite(Number(product.price)) ? Number(product.price) : 0
+              const discountValue = product.discountPrice !== null && Number.isFinite(Number(product.discountPrice))
+                ? Number(product.discountPrice)
                 : null
               const finalPrice = discountValue && discountValue > 0 ? discountValue : basePrice
               const hasDiscount = discountValue !== null && discountValue > 0 && basePrice > finalPrice
-              const images = normalizeJsonArray(item.game.images)
+              const images = normalizeJsonArray(product.images)
+              const itemId = item.gameId || item.paymentCardId || ""
+              const productSlug = product.slug || "#"
+              const productUrl = item.gameId
+                ? `/games/${productSlug}`
+                : item.paymentCardId
+                  ? `/payment-cards/${productSlug}`
+                  : "#"
 
               return (
                 <Card key={item.id}>
                   <CardContent className="p-6">
                     <div className="flex gap-4">
-                      <Link href={`/games/${item.game.slug}`} aria-label={`Перейти к игре ${item.game.title}`}>
+                      <Link href={productUrl} aria-label={`Перейти к товару ${product.title}`}>
                         <div className="relative w-24 h-24 bg-muted rounded-md overflow-hidden flex-shrink-0">
                           {images.length > 0 ? (
                             <Image
                               src={images[0]}
-                              alt={`Обложка игры ${item.game.title}`}
+                              alt={`Обложка товара ${product.title}`}
                               fill
                               className="object-cover"
                               sizes="96px"
@@ -170,9 +224,9 @@ export default function CartPage() {
                       </Link>
 
                       <div className="flex-1">
-                        <Link href={`/games/${item.game.slug}`} aria-label={`Подробнее о игре ${item.game.title}`}>
+                        <Link href={productUrl} aria-label={`Подробнее о товаре ${product.title}`}>
                           <h3 className="font-semibold text-lg mb-2 hover:underline">
-                            {item.game.title}
+                            {product.title}
                           </h3>
                         </Link>
                         <div className="flex items-center gap-4 mb-4">
@@ -202,17 +256,19 @@ export default function CartPage() {
                               value={item.quantity}
                               onChange={(e) => {
                                 const newQuantity = parseInt(e.target.value) || 1
-                                updateQuantity(item.game.id, newQuantity)
+                                updateQuantity(item, newQuantity)
                               }}
                               className="w-20"
-                              aria-label={`Количество товара ${item.game.title}`}
+                              aria-label={`Количество товара ${product.title}`}
                             />
                           </div>
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => removeItem(item.game.id)}
-                            aria-label={`Удалить ${item.game.title} из корзины`}
+                            onClick={() => {
+                              removeItem(item)
+                            }}
+                            aria-label={`Удалить ${product.title} из корзины`}
                           >
                             Удалить
                           </Button>
@@ -247,14 +303,15 @@ export default function CartPage() {
                     <span>{formatCurrency(total)}</span>
                   </div>
                 </div>
-                <Button
+                <LoadingButton
                   className="w-full"
                   size="lg"
                   onClick={handleCheckout}
-                  disabled={isCheckingOut}
+                  isLoading={isCheckingOut}
+                  loadingText="Обработка..."
                 >
-                  {isCheckingOut ? "Обработка..." : "Оформить заказ"}
-                </Button>
+                  Оформить заказ
+                </LoadingButton>
               </CardContent>
             </Card>
           </div>

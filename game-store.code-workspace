@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../../../../local-agent"
+		}
+	],
+	"settings": {
+		"python.languageServer": "None",
+		"powershell.cwd": "local-agent"
+	}
+}

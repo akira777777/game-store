@@ -1,7 +1,7 @@
-import { redirect } from "next/navigation"
+import { Button } from "@/components/ui/button"
 import { auth } from "@/lib/auth"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import { redirect } from "next/navigation"
 
 export default async function AdminLayout({
   children,
@@ -25,6 +25,9 @@ export default async function AdminLayout({
             <div className="flex items-center gap-4">
               <Link href="/admin/games">
                 <Button variant="ghost">Игры</Button>
+              </Link>
+              <Link href="/admin/payment-cards">
+                <Button variant="ghost">Платежные карты</Button>
               </Link>
               <Link href="/admin/orders">
                 <Button variant="ghost">Заказы</Button>

@@ -20,21 +20,33 @@ export function Footer() {
   const year = new Date().getFullYear()
 
   return (
-    <footer className="border-t border-border/50 bg-background/95 backdrop-blur-sm">
-      <div className="container mx-auto px-4 py-12 sm:py-16">
+    <footer className="relative border-t border-border/50 bg-gradient-to-b from-background/95 to-background backdrop-blur-sm">
+      {/* Decorative gradient line */}
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" aria-hidden="true" />
+
+      {/* Background decorations */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
+        <div className="absolute bottom-0 left-1/4 h-32 w-32 rounded-full bg-primary/10 blur-2xl" aria-hidden="true" />
+        <div className="absolute bottom-0 right-1/4 h-24 w-24 rounded-full bg-primary/10 blur-2xl" aria-hidden="true" />
+      </div>
+
+      <div className="container mx-auto px-4 py-12 sm:py-16 relative z-10">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-5">
-            <Link href="/" className="flex items-center gap-2 text-lg font-semibold transition-colors hover:text-primary">
-              <Gamepad2 className="h-5 w-5 text-primary transition-transform duration-300 hover:rotate-12" aria-hidden="true" />
-              <span className="bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">Game Store</span>
+            <Link href="/" className="flex items-center gap-2 text-lg font-semibold transition-all duration-300 hover:text-primary hover:scale-105 group">
+              <div className="relative">
+                <Gamepad2 className="h-5 w-5 text-primary transition-transform duration-300 group-hover:rotate-12 relative z-10" aria-hidden="true" />
+                <div className="absolute inset-0 bg-primary/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full" aria-hidden="true" />
+              </div>
+              <span className="bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent group-hover:from-primary group-hover:to-primary/80 transition-all duration-300">Game Store</span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Современный маркетплейс видеоигр с быстрым доступом к цифровым копиям
               и проверенными релизами.
             </p>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground p-3 rounded-lg bg-primary/5 border border-primary/10">
-              <ShieldCheck className="h-4 w-4 text-primary flex-shrink-0" aria-hidden="true" />
-              <span>Платежи защищены и обрабатываются мгновенно</span>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground p-3 rounded-lg bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 hover:border-primary/30 transition-all duration-300 hover:shadow-md group">
+              <ShieldCheck className="h-4 w-4 text-primary flex-shrink-0 group-hover:scale-110 transition-transform duration-300" aria-hidden="true" />
+              <span className="group-hover:text-foreground transition-colors">Платежи защищены и обрабатываются мгновенно</span>
             </div>
           </div>
 
@@ -47,9 +59,10 @@ export function Footer() {
                 <li key={item.label}>
                   <Link
                     href={item.href}
-                    className="text-muted-foreground hover:text-foreground transition-colors duration-200 inline-block hover:translate-x-1"
+                    className="text-muted-foreground hover:text-primary transition-all duration-300 inline-block hover:translate-x-1 group relative"
                   >
                     {item.label}
+                    <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-primary group-hover:w-full transition-all duration-300" aria-hidden="true" />
                   </Link>
                 </li>
               ))}
@@ -65,9 +78,10 @@ export function Footer() {
                 <li key={item.label}>
                   <Link
                     href={item.href}
-                    className="text-muted-foreground hover:text-foreground transition-colors duration-200 inline-block hover:translate-x-1"
+                    className="text-muted-foreground hover:text-primary transition-all duration-300 inline-block hover:translate-x-1 group relative"
                   >
                     {item.label}
+                    <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-primary group-hover:w-full transition-all duration-300" aria-hidden="true" />
                   </Link>
                 </li>
               ))}
@@ -80,26 +94,124 @@ export function Footer() {
             </p>
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-3 group">
-                <Mail className="h-4 w-4 text-primary flex-shrink-0 transition-transform duration-300 group-hover:scale-110" aria-hidden="true" />
-                <a href="mailto:support@gamestore.dev" className="text-muted-foreground hover:text-foreground transition-colors duration-200">
-                  support@gamestore.dev
+                <div className="relative">
+                  <Mail className="h-4 w-4 text-primary flex-shrink-0 transition-transform duration-300 group-hover:scale-110 relative z-10" aria-hidden="true" />
+                  <div className="absolute inset-0 bg-primary/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full" aria-hidden="true" />
+                </div>
+                <a href="mailto:artemmikhailov20031001@gmail.com" className="text-muted-foreground hover:text-primary transition-colors duration-300 relative group/link">
+                  artemmikhailov20031001@gmail.com
+                  <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-primary group-hover/link:w-full transition-all duration-300" aria-hidden="true" />
                 </a>
               </li>
               <li className="flex items-center gap-3 group">
-                <Phone className="h-4 w-4 text-primary flex-shrink-0 transition-transform duration-300 group-hover:scale-110" aria-hidden="true" />
-                <a href="tel:+78005553535" className="text-muted-foreground hover:text-foreground transition-colors duration-200">
-                  +7 (800) 555-35-35
+                <div className="relative">
+                  <Phone className="h-4 w-4 text-primary flex-shrink-0 transition-transform duration-300 group-hover:scale-110 relative z-10" aria-hidden="true" />
+                  <div className="absolute inset-0 bg-primary/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full" aria-hidden="true" />
+                </div>
+                <a href="tel:+78005553535" className="text-muted-foreground hover:text-primary transition-colors duration-300 relative group/link">
+                  +420 737 500 587
+                  <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-primary group-hover/link:w-full transition-all duration-300" aria-hidden="true" />
                 </a>
               </li>
-              <li className="flex items-center gap-3">
-                <Headphones className="h-4 w-4 text-primary flex-shrink-0" aria-hidden="true" />
-                <span className="text-muted-foreground">Круглосуточная помощь</span>
+              <li className="flex items-center gap-3 group">
+                <div className="relative">
+                  <Headphones className="h-4 w-4 text-primary flex-shrink-0 transition-transform duration-300 group-hover:scale-110 relative z-10" aria-hidden="true" />
+                  <div className="absolute inset-0 bg-primary/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full" aria-hidden="true" />
+                </div>
+                <span className="text-muted-foreground group-hover:text-primary transition-colors duration-300">Круглосуточная помощь</span>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-3 border-t border-border/50 pt-8 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+        {/* Payment Methods Section */}
+        <div className="mt-12 border-t border-border/50 pt-8">
+          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            Способы оплаты
+          </p>
+          <div className="flex flex-wrap items-center gap-4">
+            {/* PayPal */}
+            <div className="flex items-center justify-center rounded-lg bg-white p-3 shadow-sm transition-all hover:shadow-md dark:bg-gray-800">
+              <svg
+                className="h-8 w-auto"
+                viewBox="0 0 120 32"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-label="PayPal"
+              >
+                <path
+                  d="M25.5 8.5c-1.5 0-2.8.5-3.8 1.5-1 1-1.5 2.3-1.5 3.8v8.5c0 1.5.5 2.8 1.5 3.8 1 1 2.3 1.5 3.8 1.5h2.5c.3 0 .5-.2.5-.5v-1c0-.3-.2-.5-.5-.5h-2.5c-1 0-1.8-.3-2.5-1-.7-.7-1-1.5-1-2.5v-8.5c0-1 .3-1.8 1-2.5.7-.7 1.5-1 2.5-1h2.5c.3 0 .5-.2.5-.5v-1c0-.3-.2-.5-.5-.5h-2.5z"
+                  fill="#003087"
+                />
+                <path
+                  d="M35 8.5c-1.5 0-2.8.5-3.8 1.5-1 1-1.5 2.3-1.5 3.8v8.5c0 1.5.5 2.8 1.5 3.8 1 1 2.3 1.5 3.8 1.5h2.5c.3 0 .5-.2.5-.5v-1c0-.3-.2-.5-.5-.5h-2.5c-1 0-1.8-.3-2.5-1-.7-.7-1-1.5-1-2.5v-8.5c0-1 .3-1.8 1-2.5.7-.7 1.5-1 2.5-1h2.5c.3 0 .5-.2.5-.5v-1c0-.3-.2-.5-.5-.5h-2.5z"
+                  fill="#009CDE"
+                />
+                <text x="15" y="21" fontSize="13" fontWeight="bold" fill="#003087">
+                  PayPal
+                </text>
+              </svg>
+            </div>
+
+            {/* Visa */}
+            <div className="flex items-center justify-center rounded-lg bg-white p-3 shadow-sm transition-all hover:shadow-md dark:bg-gray-800">
+              <svg
+                className="h-8 w-auto"
+                viewBox="0 0 120 32"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-label="Visa"
+              >
+                <path
+                  d="M42.5 9.5l-2.5 9h-2.5l2.5-9h2.5zm-8.5 0l-3.5 6.2-1.5-5.2c-.2-.5-.7-.8-1.2-.8h-5.5l-.1.5c1 .2 2.1.6 2.8 1l2.5 6.5 6.5-13h3l-8.5 9zm20.5 0h-2.3c-.7 0-1.2.4-1.4 1l-4.5 8h2.8l.6-1.5h3.5l.4 1.5h2.5l-2.1-9zm-2.8 5.5l1.5-4-1.1 4h-1.4zm12.5-5.5l-2.5 9h-2.3l2.5-9h2.3z"
+                  fill="#1434CB"
+                />
+                <text x="60" y="21" fontSize="18" fontWeight="bold" fill="#1434CB" letterSpacing="3">
+                  VISA
+                </text>
+              </svg>
+            </div>
+
+            {/* MasterCard */}
+            <div className="flex items-center justify-center rounded-lg bg-white p-3 shadow-sm transition-all hover:shadow-md dark:bg-gray-800">
+              <svg
+                className="h-8 w-auto"
+                viewBox="0 0 120 32"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-label="MasterCard"
+              >
+                <circle cx="30" cy="16" r="10" fill="#EB001B" />
+                <circle cx="40" cy="16" r="10" fill="#F79E1B" />
+                <path
+                  d="M35 6c-5.5 0-10 4.5-10 10s4.5 10 10 10c2.8 0 5.3-1.2 7-3.1-1.7-1.9-4.2-3.1-7-3.1-3.3 0-6-2.7-6-6s2.7-6 6-6c2.8 0 5.3 1.2 7 3.1-1.7-1.9-4.2-3.1-7-3.1z"
+                  fill="#FF5F00"
+                />
+                <text x="55" y="20" fontSize="11" fontWeight="bold" fill="#1A1F71" letterSpacing="0.5">
+                  Mastercard
+                </text>
+              </svg>
+            </div>
+
+            {/* Stripe */}
+            <div className="flex items-center justify-center rounded-lg bg-white p-3 shadow-sm transition-all hover:shadow-md dark:bg-gray-800">
+              <svg
+                className="h-8 w-auto"
+                viewBox="0 0 120 32"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-label="Stripe"
+              >
+                <rect width="120" height="32" rx="2" fill="#635BFF" />
+                <text x="60" y="21" fontSize="14" fontWeight="bold" fill="white" textAnchor="middle" letterSpacing="1.5">
+                  Stripe
+                </text>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8 flex flex-col gap-3 border-t border-border/50 pt-8 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p className="font-medium">© {year} Game Store. Все права защищены.</p>
           <p>Публичная оферта и политика возврата доступны через поддержку.</p>
         </div>

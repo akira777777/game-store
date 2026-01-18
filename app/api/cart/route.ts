@@ -10,11 +10,22 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ items: [] })
     }
 
-    // Only select necessary fields from game to reduce payload size
+    // Only select necessary fields from game/paymentCard to reduce payload size
     const cartItems = await db.cartItem.findMany({
       where: { userId: session.user.id },
       include: {
         game: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            price: true,
+            discountPrice: true,
+            images: true,
+            inStock: true,
+          },
+        },
+        paymentCard: {
           select: {
             id: true,
             title: true,
@@ -50,11 +61,19 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { gameId, quantity = 1 } = body
+    const { gameId, paymentCardId, quantity = 1 } = body
 
-    if (!gameId || typeof gameId !== 'string') {
+    // Validate that exactly one ID is provided
+    if (!gameId && !paymentCardId) {
       return NextResponse.json(
-        { error: "Game ID is required" },
+        { error: "Game ID or Payment Card ID is required" },
+        { status: 400 }
+      )
+    }
+
+    if (gameId && paymentCardId) {
+      return NextResponse.json(
+        { error: "Cannot specify both gameId and paymentCardId" },
         { status: 400 }
       )
     }
@@ -62,48 +81,95 @@ export async function POST(request: NextRequest) {
     // Validate quantity
     const validQuantity = Math.max(1, Math.min(99, Math.floor(Number(quantity)) || 1))
 
-    // Check if game exists and is in stock
-    const game = await db.game.findUnique({
-      where: { id: gameId },
-    })
+    if (gameId) {
+      // Handle game
+      const game = await db.game.findUnique({
+        where: { id: gameId },
+      })
 
-    if (!game || !game.inStock) {
-      return NextResponse.json(
-        { error: "Game not found or out of stock" },
-        { status: 404 }
-      )
-    }
+      if (!game || !game.inStock) {
+        return NextResponse.json(
+          { error: "Game not found or out of stock" },
+          { status: 404 }
+        )
+      }
 
-    // Upsert cart item
-    const cartItem = await db.cartItem.upsert({
-      where: {
-        userId_gameId: {
-          userId: session.user.id,
-          gameId: gameId,
-        },
-      },
-      update: {
-        quantity: { increment: validQuantity },
-      },
-      create: {
-        userId: session.user.id,
-        gameId: gameId,
-        quantity: validQuantity,
-      },
-      include: {
-        game: {
-          select: {
-            id: true,
-            title: true,
-            slug: true,
-            price: true,
-            discountPrice: true,
-            images: true,
-            inStock: true,
+      const cartItem = await db.cartItem.upsert({
+        where: {
+          userId_gameId: {
+            userId: session.user.id,
+            gameId: gameId,
           },
         },
-      },
-    })
+        update: {
+          quantity: { increment: validQuantity },
+        },
+        create: {
+          userId: session.user.id,
+          gameId: gameId,
+          quantity: validQuantity,
+        },
+        include: {
+          game: {
+            select: {
+              id: true,
+              title: true,
+              slug: true,
+              price: true,
+              discountPrice: true,
+              images: true,
+              inStock: true,
+            },
+          },
+        },
+      })
+
+      return NextResponse.json({ item: cartItem })
+    } else if (paymentCardId) {
+      // Handle payment card
+      const card = await db.paymentCard.findUnique({
+        where: { id: paymentCardId },
+      })
+
+      if (!card || !card.inStock) {
+        return NextResponse.json(
+          { error: "Payment card not found or out of stock" },
+          { status: 404 }
+        )
+      }
+
+      const cartItem = await db.cartItem.upsert({
+        where: {
+          userId_paymentCardId: {
+            userId: session.user.id,
+            paymentCardId: paymentCardId,
+          },
+        },
+        update: {
+          quantity: { increment: validQuantity },
+        },
+        create: {
+          userId: session.user.id,
+          paymentCardId: paymentCardId,
+          quantity: validQuantity,
+        },
+        include: {
+          paymentCard: {
+            select: {
+              id: true,
+              title: true,
+              slug: true,
+              price: true,
+              discountPrice: true,
+              images: true,
+              inStock: true,
+            },
+          },
+        },
+      })
+
+      return NextResponse.json({ item: cartItem })
+    }
 
     return NextResponse.json({ item: cartItem })
   } catch (error) {
@@ -128,22 +194,34 @@ export async function DELETE(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const gameId = searchParams.get("gameId")
+    const paymentCardId = searchParams.get("paymentCardId")
 
-    if (!gameId) {
+    if (!gameId && !paymentCardId) {
       return NextResponse.json(
-        { error: "Game ID is required" },
+        { error: "Game ID or Payment Card ID is required" },
         { status: 400 }
       )
     }
 
-    await db.cartItem.delete({
-      where: {
-        userId_gameId: {
-          userId: session.user.id,
-          gameId: gameId,
+    if (gameId) {
+      await db.cartItem.delete({
+        where: {
+          userId_gameId: {
+            userId: session.user.id,
+            gameId: gameId,
+          },
         },
-      },
-    })
+      })
+    } else if (paymentCardId) {
+      await db.cartItem.delete({
+        where: {
+          userId_paymentCardId: {
+            userId: session.user.id,
+            paymentCardId: paymentCardId,
+          },
+        },
+      })
+    }
 
     return NextResponse.json({ success: true })
   } catch (error) {
@@ -167,11 +245,11 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { gameId, quantity } = body
+    const { gameId, paymentCardId, quantity } = body
 
-    if (!gameId || typeof gameId !== 'string') {
+    if (!gameId && !paymentCardId) {
       return NextResponse.json(
-        { error: "Game ID is required" },
+        { error: "Game ID or Payment Card ID is required" },
         { status: 400 }
       )
     }
@@ -188,39 +266,77 @@ export async function PATCH(request: NextRequest) {
 
     if (validQuantity <= 0) {
       // Delete item if quantity is 0 or less
-      await db.cartItem.delete({
+      if (gameId) {
+        await db.cartItem.delete({
+          where: {
+            userId_gameId: {
+              userId: session.user.id,
+              gameId: gameId,
+            },
+          },
+        })
+      } else if (paymentCardId) {
+        await db.cartItem.delete({
+          where: {
+            userId_paymentCardId: {
+              userId: session.user.id,
+              paymentCardId: paymentCardId,
+            },
+          },
+        })
+      }
+      return NextResponse.json({ success: true })
+    }
+
+    if (gameId) {
+      const cartItem = await db.cartItem.update({
         where: {
           userId_gameId: {
             userId: session.user.id,
             gameId: gameId,
           },
         },
-      })
-      return NextResponse.json({ success: true })
-    }
-
-    const cartItem = await db.cartItem.update({
-      where: {
-        userId_gameId: {
-          userId: session.user.id,
-          gameId: gameId,
-        },
-      },
-      data: { quantity: validQuantity },
-      include: {
-        game: {
-          select: {
-            id: true,
-            title: true,
-            slug: true,
-            price: true,
-            discountPrice: true,
-            images: true,
-            inStock: true,
+        data: { quantity: validQuantity },
+        include: {
+          game: {
+            select: {
+              id: true,
+              title: true,
+              slug: true,
+              price: true,
+              discountPrice: true,
+              images: true,
+              inStock: true,
+            },
           },
         },
-      },
-    })
+      })
+      return NextResponse.json({ item: cartItem })
+    } else if (paymentCardId) {
+      const cartItem = await db.cartItem.update({
+        where: {
+          userId_paymentCardId: {
+            userId: session.user.id,
+            paymentCardId: paymentCardId,
+          },
+        },
+        data: { quantity: validQuantity },
+        include: {
+          paymentCard: {
+            select: {
+              id: true,
+              title: true,
+              slug: true,
+              price: true,
+              discountPrice: true,
+              images: true,
+              inStock: true,
+            },
+          },
+        },
+      })
+      return NextResponse.json({ item: cartItem })
+    }
 
     return NextResponse.json({ item: cartItem })
   } catch (error) {

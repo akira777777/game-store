@@ -17,7 +17,10 @@ export async function POST(request: NextRequest) {
     // Get cart items
     const cartItems = await db.cartItem.findMany({
       where: { userId: session.user.id },
-      include: { game: true },
+      include: {
+        game: true,
+        paymentCard: true,
+      },
     })
 
     if (cartItems.length === 0) {
@@ -27,8 +30,20 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Filter out items without game or paymentCard
+    const validItems = cartItems.filter(item => item.game || item.paymentCard)
+    if (validItems.length === 0) {
+      return NextResponse.json(
+        { error: "All items in your cart are invalid" },
+        { status: 400 }
+      )
+    }
+
     // Validate all cart items are in stock
-    const outOfStockItems = cartItems.filter(item => !item.game.inStock)
+    const outOfStockItems = validItems.filter(item => {
+      const product = item.game || item.paymentCard
+      return product && !product.inStock
+    })
     if (outOfStockItems.length > 0) {
       return NextResponse.json(
         { error: "Some items in your cart are out of stock" },
@@ -37,10 +52,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate total with validation
-    const total = cartItems.reduce((sum, item) => {
-      const price = Number(item.game.discountPrice || item.game.price)
+    const total = validItems.reduce((sum, item) => {
+      const product = item.game || item.paymentCard
+      if (!product) return sum
+      const price = Number(product.discountPrice || product.price)
       if (!isFinite(price) || price < 0) {
-        throw new Error(`Invalid price for game: ${item.game.title}`)
+        throw new Error(`Invalid price for item: ${product.title}`)
       }
       return sum + price * item.quantity
     }, 0)
@@ -62,19 +79,23 @@ export async function POST(request: NextRequest) {
     // Create Stripe checkout session
     const stripeSession = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
-      line_items: cartItems.map((item) => {
-        const images = typeof item.game.images === 'string'
-          ? JSON.parse(item.game.images || '[]')
-          : (Array.isArray(item.game.images) ? item.game.images : [])
+      line_items: validItems.map((item) => {
+        const product = item.game || item.paymentCard
+        if (!product) {
+          throw new Error("Invalid cart item")
+        }
+        const images = typeof product.images === 'string'
+          ? JSON.parse(product.images || '[]')
+          : (Array.isArray(product.images) ? product.images : [])
         return {
           price_data: {
             currency: "usd",
             product_data: {
-              name: item.game.title,
+              name: product.title,
               images: images.length > 0 ? [images[0]] : [],
             },
             unit_amount: Math.round(
-              Number(item.game.discountPrice || item.game.price) * 100
+              Number(product.discountPrice || product.price) * 100
             ),
           },
           quantity: item.quantity,
@@ -96,11 +117,18 @@ export async function POST(request: NextRequest) {
         status: "PENDING",
         stripeSessionId: stripeSession.id,
         items: {
-          create: cartItems.map((item) => ({
-            gameId: item.gameId,
-            quantity: item.quantity,
-            price: item.game.discountPrice || item.game.price,
-          })),
+          create: validItems.map((item) => {
+            const product = item.game || item.paymentCard
+            if (!product) {
+              throw new Error("Invalid cart item")
+            }
+            return {
+              gameId: item.gameId || null,
+              paymentCardId: item.paymentCardId || null,
+              quantity: item.quantity,
+              price: product.discountPrice || product.price,
+            }
+          }),
         },
       },
     })

@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    /* Light theme - Gaming-inspired color palette */
+    /* Light theme - Gaming-inspired color palette with improved contrast */
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
@@ -28,28 +28,32 @@
     --radius: 0.75rem;
   }
 
+
   .dark {
-    /* Dark theme - Modern dark gaming aesthetic */
+    /* Dark theme - Modern dark gaming aesthetic with improved contrast */
+    /* Улучшенная контрастность для лучшей читаемости */
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
+    --card: 240 10% 6%;
     --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
+    --popover: 240 10% 6%;
     --popover-foreground: 0 0% 98%;
-    /* Primary: Bright cyan-blue for dark mode gaming vibe */
-    --primary: 262 70% 60%;
+    /* Primary: Яркий цвет с хорошим контрастом */
+    --primary: 262 75% 65%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 240 3.7% 15.9%;
+    --secondary: 240 3.7% 18%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
+    /* Улучшенная читаемость для muted текста */
+    --muted: 240 3.7% 18%;
+    --muted-foreground: 240 5% 75%;
+    --accent: 240 3.7% 18%;
     --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
+    /* Более яркий деструктивный цвет для лучшей видимости */
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 262 70% 60%;
+    --border: 240 3.7% 22%;
+    --input: 240 3.7% 22%;
+    --ring: 262 75% 65%;
   }
 }
 
@@ -112,10 +116,70 @@
     @apply bg-primary/20 text-primary-foreground;
   }
 
-  /* Smooth transitions for interactive elements */
+  /* Smooth transitions for interactive elements and theme changes */
   a,
   button {
-    @apply transition-colors duration-200;
+    @apply transition-colors duration-300 ease-in-out;
+  }
+
+  /* Плавные переходы для всех элементов при смене темы */
+  *,
+  *::before,
+  *::after {
+    transition-property: background-color, border-color, color, fill, stroke, box-shadow, opacity;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 400ms;
+  }
+
+  /* Исключаем элементы, которые не должны анимироваться */
+  svg:not([class*="transition"]),
+  img,
+  video,
+  canvas,
+  iframe,
+  [data-no-transition],
+  script,
+  style {
+    transition: none !important;
+  }
+
+  /* Специальные переходы для карточек и контейнеров */
+  [class*="card"],
+  [class*="Card"],
+  nav,
+  header,
+  footer,
+  main,
+  section,
+  div[class*="container"],
+  article {
+    transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Улучшенная читаемость текста в темной теме */
+  .dark p,
+  .dark span,
+  .dark h1,
+  .dark h2,
+  .dark h3,
+  .dark h4,
+  .dark h5,
+  .dark h6,
+  .dark li,
+  .dark td,
+  .dark th {
+    color: hsl(var(--foreground));
+  }
+
+  /* Улучшенный контраст для ссылок в темной теме */
+  .dark a:not([class*="text-"]) {
+    color: hsl(var(--primary));
+  }
+
+  .dark a:hover:not([class*="text-"]) {
+    color: hsl(var(--primary) / 0.8);
   }
 }
 
@@ -270,6 +334,89 @@
 
   .animate-fade-in {
     animation: fade-in 0.6s ease-out forwards;
+  }
+
+  /* Slide in from left */
+  @keyframes slide-in-left {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-slide-in-left {
+    animation: slide-in-left 0.5s ease-out forwards;
+  }
+
+  /* Slide in from right */
+  @keyframes slide-in-right {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-right 0.5s ease-out forwards;
+  }
+
+  /* Scale in animation */
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.4s ease-out forwards;
+  }
+
+  /* Float animation */
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  /* Shimmer effect */
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 100%
+    );
+    background-size: 1000px 100%;
   }
 
   /* Gradient animation */

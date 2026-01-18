@@ -2,9 +2,6 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { db } from "@/lib/db"
 
-// OrderStatus is stored as string in SQLite, not as enum
-type OrderStatus = "PENDING" | "PAID" | "PROCESSING" | "COMPLETED" | "CANCELLED"
-
 export const dynamic = 'force-dynamic'
 
 export default async function AdminOrdersPage() {
@@ -32,7 +29,7 @@ export default async function AdminOrdersPage() {
     },
   })
 
-  const statusColors: Record<OrderStatus, string> = {
+  const statusColors: Record<string, string> = {
     PENDING: "secondary",
     PAID: "default",
     PROCESSING: "default",
@@ -40,7 +37,7 @@ export default async function AdminOrdersPage() {
     CANCELLED: "destructive",
   }
 
-  const statusLabels: Record<OrderStatus, string> = {
+  const statusLabels: Record<string, string> = {
     PENDING: "Ожидает оплаты",
     PAID: "Оплачен",
     PROCESSING: "В обработке",
@@ -76,8 +73,8 @@ export default async function AdminOrdersPage() {
                     <p className="text-2xl font-bold">
                       ${Number(order.total).toFixed(2)}
                     </p>
-                    <Badge variant={statusColors[order.status as OrderStatus] as any}>
-                      {statusLabels[order.status as OrderStatus]}
+                    <Badge variant={statusColors[order.status] as any}>
+                      {statusLabels[order.status]}
                     </Badge>
                   </div>
                 </div>
@@ -92,7 +89,7 @@ export default async function AdminOrdersPage() {
                     <ul className="space-y-1">
                       {order.items.map((item) => (
                         <li key={item.id} className="text-sm text-muted-foreground">
-                          {item.game.title} × {item.quantity} - $
+                          {item.game?.title || "Товар удален"} × {item.quantity} - $
                           {Number(item.price).toFixed(2)}
                         </li>
                       ))}

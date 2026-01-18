@@ -1,11 +1,17 @@
-import { NextResponse, type NextRequest } from "next/server";
+import createMiddleware from 'next-intl/middleware';
+import { type NextRequest } from "next/server";
+import { defaultLocale, locales } from './i18n';
 
-// Middleware that doesn't depend on auth() to avoid Edge Runtime bundling issues
-// Instead of using auth() middleware, we'll implement basic route protection
-// and rely on server-side authentication for actual auth checks
+const intlMiddleware = createMiddleware({
+  locales,
+  defaultLocale,
+  localePrefix: 'always'
+});
 
+// Middleware that handles i18n routing and security headers
 export default function middleware(req: NextRequest) {
-  const response = NextResponse.next();
+  // Handle i18n routing
+  const response = intlMiddleware(req);
 
   // Add security headers
   response.headers.set("X-Content-Type-Options", "nosniff");
@@ -28,6 +34,6 @@ export default function middleware(req: NextRequest) {
 export const config = {
   matcher: [
     "/admin/:path*",
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)",
   ],
 }

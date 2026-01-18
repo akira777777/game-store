@@ -12,10 +12,19 @@ type Role = "CUSTOMER" | "ADMIN"
 
 // Validate secret before NextAuth initialization
 const authSecret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET;
-if (!authSecret && process.env.NODE_ENV === 'production') {
-  throw new Error(
-    'Missing AUTH_SECRET or NEXTAUTH_SECRET environment variable. ' +
-    'Please set one of these variables in Vercel Environment Variables (Settings → Environment Variables).'
+if (!authSecret) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'Missing AUTH_SECRET or NEXTAUTH_SECRET environment variable. ' +
+      'Please set one of these variables in Vercel Environment Variables (Settings → Environment Variables).'
+    );
+  }
+  // Use a development-only fallback secret (NOT for production!)
+  // In production, this will never be reached due to the check above
+  console.warn(
+    '⚠️  Warning: NEXTAUTH_SECRET not set. Using development fallback secret. ' +
+    'This should NEVER be used in production. ' +
+    'Generate a secret with: node scripts/generate-secret.js'
   );
 }
 
@@ -100,7 +109,10 @@ try {
       },
     },
     // Support both AUTH_SECRET (preferred in v5) and NEXTAUTH_SECRET (legacy)
-    secret: authSecret,
+    // Use fixed development fallback secret if not provided (ONLY for development)
+    secret: authSecret || (process.env.NODE_ENV === 'development'
+      ? 'dev-secret-only-not-for-production-please-set-nexauth-secret-in-env'
+      : undefined),
   };
 } catch (error: any) {
   throw error;

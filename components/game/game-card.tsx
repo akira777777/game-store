@@ -25,7 +25,10 @@ function GameCardComponent({ game }: GameCardProps) {
   }, [game.discountPrice, game.price, game.images, game.genres])
 
   return (
-    <Card className="overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-[1.03] hover:-translate-y-2 group border-border/50 bg-background/50 backdrop-blur-sm">
+    <Card className="relative overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-[1.03] hover:-translate-y-2 group border-border/50 bg-gradient-to-br from-background/80 to-background/60 backdrop-blur-sm">
+      {/* Decorative gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" aria-hidden="true" />
+
       <Link href={`/games/${game.slug}`} aria-label={`Подробнее о игре ${game.title}`}>
         <div className="relative aspect-video w-full bg-muted overflow-hidden">
           {images.length > 0 ? (
@@ -34,11 +37,13 @@ function GameCardComponent({ game }: GameCardProps) {
                 src={images[0]}
                 alt={`Обложка игры ${game.title}`}
                 fill
-                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                className="object-cover transition-transform duration-700 group-hover:scale-110"
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              {/* Shine effect on hover */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" aria-hidden="true" />
             </>
           ) : (
             <div className="w-full h-full flex items-center justify-center text-muted-foreground bg-gradient-to-br from-muted to-muted/50" aria-hidden="true">
@@ -47,17 +52,18 @@ function GameCardComponent({ game }: GameCardProps) {
           )}
           {hasDiscount && discountPercent > 0 && (
             <Badge
-              className="absolute top-3 right-3 shadow-lg animate-pulse"
+              className="absolute top-3 right-3 shadow-lg animate-pulse z-10 border-2 border-background/50"
               variant="destructive"
               aria-label={`Скидка ${discountPercent}%`}
             >
-              -{discountPercent}%
+              <span className="relative z-10">-{discountPercent}%</span>
+              <div className="absolute inset-0 bg-destructive/50 blur-md -z-10 animate-pulse" aria-hidden="true" />
             </Badge>
           )}
         </div>
       </Link>
-      <CardHeader className="pb-3">
-        <CardTitle className="line-clamp-2 text-lg group-hover:text-primary transition-colors duration-300">
+      <CardHeader className="pb-3 relative z-10">
+        <CardTitle className="line-clamp-2 text-lg group-hover:text-primary transition-colors duration-300 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text group-hover:from-primary group-hover:to-primary/80">
           {game.title}
         </CardTitle>
         {genres.length > 0 && (
@@ -67,7 +73,7 @@ function GameCardComponent({ game }: GameCardProps) {
                 key={genre}
                 variant="secondary"
                 role="listitem"
-                className="text-xs"
+                className="text-xs group-hover:bg-primary/10 group-hover:text-primary transition-colors duration-300"
               >
                 {genre}
               </Badge>
@@ -98,13 +104,14 @@ function GameCardComponent({ game }: GameCardProps) {
           </div>
         </div>
       </CardContent>
-      <CardFooter className="pt-0">
-        <Link href={`/games/${game.slug}`} className="w-full" aria-label={`Перейти на страницу игры ${game.title}`}>
+      <CardFooter className="pt-0 relative z-10">
+        <Link href={`/games/${game.slug}`} className="w-full group" aria-label={`Перейти на страницу игры ${game.title}`}>
           <Button
-            className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 shadow-md hover:shadow-lg"
+            className="w-full group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-primary/90 group-hover:text-primary-foreground transition-all duration-300 shadow-md hover:shadow-xl hover:scale-105 relative overflow-hidden"
             aria-label={`Подробнее о игре ${game.title}`}
           >
-            Подробнее
+            <span className="relative z-10">Подробнее</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" aria-hidden="true" />
           </Button>
         </Link>
       </CardFooter>
