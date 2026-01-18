@@ -15,9 +15,6 @@ const VALID_SORT_FIELDS = ['createdAt', 'price', 'title', 'updatedAt'] as const
 const VALID_ORDER = ['asc', 'desc'] as const
 
 export async function GET(request: NextRequest) {
-  // #region agent log
-  fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app/api/games/route.ts:15', message: 'GET /api/games entry', data: {}, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'C' }) }).catch(() => { });
-  // #endregion
   try {
     const searchParams = request.nextUrl.searchParams
     const genre = searchParams.get("genre")?.trim() || null
@@ -108,9 +105,6 @@ export async function GET(request: NextRequest) {
     }
 
     // Execute query with filters applied at database level
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app/api/games/route.ts:105', message: 'Before DB query', data: { whereConditions: JSON.stringify(whereConditions) }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'C' }) }).catch(() => { });
-    // #endregion
     const [games, total] = await Promise.all([
       db.game.findMany({
         where: whereConditions,
@@ -124,9 +118,6 @@ export async function GET(request: NextRequest) {
         where: whereConditions,
       }),
     ])
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app/api/games/route.ts:118', message: 'After DB query', data: { gamesCount: games.length, total }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'C' }) }).catch(() => { });
-    // #endregion
 
     const response = NextResponse.json({
       games,
@@ -143,9 +134,6 @@ export async function GET(request: NextRequest) {
 
     return response
   } catch (error) {
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app/api/games/route.ts:134', message: 'GET /api/games error', data: { errorMessage: error instanceof Error ? error.message : String(error), errorName: error instanceof Error ? error.name : 'unknown' }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'C' }) }).catch(() => { });
-    // #endregion
     console.error("Error fetching games:", error)
     return NextResponse.json(
       { error: "Internal server error" },

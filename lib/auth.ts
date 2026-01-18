@@ -12,9 +12,6 @@ type Role = "CUSTOMER" | "ADMIN"
 
 // Validate secret before NextAuth initialization
 const authSecret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET;
-// #region agent log
-fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'lib/auth.ts:14', message: 'Auth secret check', data: { hasAuthSecret: !!authSecret, hasAuthSecretEnv: !!process.env.AUTH_SECRET, hasNextAuthSecretEnv: !!process.env.NEXTAUTH_SECRET, nodeEnv: process.env.NODE_ENV }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'B' }) }).catch(() => { });
-// #endregion
 if (!authSecret && process.env.NODE_ENV === 'production') {
   throw new Error(
     'Missing AUTH_SECRET or NEXTAUTH_SECRET environment variable. ' +
@@ -24,9 +21,6 @@ if (!authSecret && process.env.NODE_ENV === 'production') {
 
 let authConfig: any;
 try {
-  // #region agent log
-  fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'lib/auth.ts:22', message: 'Auth config init start', data: {}, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'B' }) }).catch(() => { });
-  // #endregion
   authConfig = {
     // PrismaAdapter type compatibility issue - adapter is optional when using credentials
     // adapter: PrismaAdapter(db) as any,
@@ -108,13 +102,7 @@ try {
     // Support both AUTH_SECRET (preferred in v5) and NEXTAUTH_SECRET (legacy)
     secret: authSecret,
   };
-  // #region agent log
-  fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'lib/auth.ts:104', message: 'Auth config init success', data: {}, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'B' }) }).catch(() => { });
-  // #endregion
 } catch (error: any) {
-  // #region agent log
-  fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'lib/auth.ts:105', message: 'Auth config init error', data: { errorMessage: error?.message || String(error), errorName: error?.name || 'unknown' }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'B' }) }).catch(() => { });
-  // #endregion
   throw error;
 }
 

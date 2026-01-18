@@ -5,14 +5,7 @@ import { NextResponse, type NextRequest } from "next/server";
 // and rely on server-side authentication for actual auth checks
 
 export default function middleware(req: NextRequest) {
-  // #region agent log
-  // Note: Middleware runs in Edge Runtime, so we can't use file I/O here
-  // Logging will be done via fetch to the debug endpoint
-  fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'middleware.ts:7', message: 'Middleware entry', data: { pathname: req.nextUrl.pathname, method: req.method }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'J' }) }).catch(() => { });
-  // #endregion
-
   const response = NextResponse.next();
-  const pathname = req.nextUrl.pathname;
 
   // Add security headers
   response.headers.set("X-Content-Type-Options", "nosniff");
@@ -28,10 +21,6 @@ export default function middleware(req: NextRequest) {
       "max-age=31536000; includeSubDomains; preload"
     );
   }
-
-  // #region agent log
-  fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'middleware.ts:28', message: 'Middleware exit', data: { pathname, headersSet: true }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'J' }) }).catch(() => { });
-  // #endregion
 
   return response;
 }
