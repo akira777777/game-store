@@ -1,11 +1,11 @@
 "use client"
 
-import { PageHeader } from "@/components/layout/page-header"
-import { useToast } from "@/components/providers/toast-provider"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { PageHeader } from "@/components/layout/page-header"
 import { LoadingButton } from "@/components/ui/loading-button"
+import { useToast } from "@/components/providers/toast-provider"
 import { normalizeJsonArray } from "@/lib/game-utils"
 import { formatCurrency } from "@/lib/utils"
 import { useSession } from "next-auth/react"
@@ -69,11 +69,11 @@ export default function CartPage() {
 
   const updateQuantity = async (item: CartItem, quantity: number) => {
     try {
-      const body = item.gameId
+      const body = item.gameId 
         ? { gameId: item.gameId, quantity }
         : item.paymentCardId
-          ? { paymentCardId: item.paymentCardId, quantity }
-          : null
+        ? { paymentCardId: item.paymentCardId, quantity }
+        : null
 
       if (!body) return
 
@@ -96,8 +96,8 @@ export default function CartPage() {
       const url = item.gameId
         ? `/api/cart?gameId=${item.gameId}`
         : item.paymentCardId
-          ? `/api/cart?paymentCardId=${item.paymentCardId}`
-          : null
+        ? `/api/cart?paymentCardId=${item.paymentCardId}`
+        : null
 
       if (!url) return
 
@@ -194,11 +194,11 @@ export default function CartPage() {
               const images = normalizeJsonArray(product.images)
               const itemId = item.gameId || item.paymentCardId || ""
               const productSlug = product.slug || "#"
-              const productUrl = item.gameId
+              const productUrl = item.gameId 
                 ? `/games/${productSlug}`
                 : item.paymentCardId
-                  ? `/payment-cards/${productSlug}`
-                  : "#"
+                ? `/payment-cards/${productSlug}`
+                : "#"
 
               return (
                 <Card key={item.id}>

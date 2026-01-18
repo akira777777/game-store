@@ -1,0 +1,183 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "close": "Close",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "quantity": "Quantity",
+    "price": "Price",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "continue": "Continue",
+    "or": "or"
+  },
+  "nav": {
+    "home": "Home",
+    "catalog": "Catalog",
+    "cart": "Cart",
+    "profile": "Profile",
+    "admin": "Admin Panel",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "user": "User",
+    "newGames": "New Games",
+    "discounts": "Discounts",
+    "mainNavigation": "Main navigation",
+    "mainSections": "Main sections",
+    "mobileMenu": "Mobile menu",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "userMenu": "User menu",
+    "skipToContent": "Skip to main content"
+  },
+  "hero": {
+    "badge": "New games every day",
+    "title": "Discover the world",
+    "titleHighlight": "of video games",
+    "description": "Modern online store with the best games for all platforms.",
+    "exclusiveDiscounts": "Exclusive discounts",
+    "instantDelivery": "and instant delivery of digital copies.",
+    "goToCatalog": "Go to catalog",
+    "popularGames": "Popular games",
+    "instantDeliveryTitle": "Instant delivery",
+    "instantDeliveryDesc": "Keys arrive by email immediately after payment.",
+    "securePaymentTitle": "Secure payment",
+    "securePaymentDesc": "Modern security methods and transparent receipts.",
+    "support24Title": "24/7 Support",
+    "support24Desc": "We'll answer any questions in chat or by email.",
+    "gamesInCatalog": "Games in catalog",
+    "happyCustomers": "Happy customers",
+    "support": "Support"
+  },
+  "valueProps": {
+    "badge": "Benefits",
+    "title": "Why choose Game Store",
+    "description": "We've gathered the best game catalog with convenient search, secure payment and instant delivery of digital copies.",
+    "instantDelivery": {
+      "title": "Instant delivery",
+      "description": "Receive digital keys immediately after payment without waiting."
+    },
+    "securePayments": {
+      "title": "Secure payments",
+      "description": "Shop with confidence thanks to protected transactions."
+    },
+    "support24": {
+      "title": "24/7 Support",
+      "description": "We'll answer questions anytime and help with your purchase."
+    },
+    "newReleases": {
+      "title": "New releases",
+      "description": "We add hot new releases and proven hits every day."
+    }
+  },
+  "cta": {
+    "badge": "Best deals of the week",
+    "title": "Ready to choose a new game?",
+    "description": "Open the catalog, compare prices and get access to the game in a couple of minutes.",
+    "goToCatalog": "Go to catalog",
+    "createAccount": "Create account"
+  },
+  "home": {
+    "title": "Home",
+    "description": "Discover the world of video games. Modern online store with the best games for all platforms. Exclusive discounts and instant delivery of digital copies.",
+    "featuredGames": {
+      "title": "Featured games",
+      "description": "The most popular and in-demand games",
+      "allGames": "All games",
+      "showCount": "Showing {count} {count, plural, one {game} other {games}}",
+      "empty": "No featured games yet",
+      "emptyDescription": "Featured games will appear here when the administrator adds them"
+    },
+    "newGames": {
+      "title": "New games",
+      "description": "Recently added games to our catalog",
+      "allNew": "All new games"
+    },
+    "discountedGames": {
+      "title": "Discounts",
+      "description": "Games with special prices",
+      "allDiscounts": "All discounts"
+    }
+  },
+  "cart": {
+    "title": "Cart",
+    "description": "Items you've added to your cart",
+    "empty": "Your cart is empty",
+    "goToCatalog": "Go to catalog",
+    "items": "Items",
+    "total": "Total",
+    "checkout": "Checkout",
+    "processing": "Processing...",
+    "remove": "Remove",
+    "quantity": "Quantity:",
+    "noImage": "No image",
+    "redirectingToPayment": "Redirecting to payment page...",
+    "checkoutError": "Error during checkout",
+    "noPaymentUrl": "Payment URL not received"
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "description": "Enter your credentials to access your account",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Login",
+      "submitting": "Logging in...",
+      "noAccount": "Don't have an account?",
+      "register": "Register",
+      "invalidCredentials": "Invalid email or password",
+      "loginError": "An error occurred during login"
+    },
+    "register": {
+      "title": "Register",
+      "description": "Create a new account",
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "submit": "Register",
+      "submitting": "Registering...",
+      "hasAccount": "Already have an account?",
+      "login": "Login"
+    }
+  },
+  "footer": {
+    "description": "Modern video game marketplace with quick access to digital copies and verified releases.",
+    "paymentProtected": "Payments are protected and processed instantly",
+    "catalog": "Catalog",
+    "account": "Account",
+    "support": "Support",
+    "catalogLinks": {
+      "games": "Game catalog",
+      "featured": "Featured",
+      "new": "New games",
+      "cheapest": "Cheapest first"
+    },
+    "accountLinks": {
+      "cart": "Cart",
+      "profile": "Profile",
+      "login": "Login",
+      "register": "Register"
+    },
+    "support24": "24/7 support",
+    "copyright": "© {year} Game Store. All rights reserved.",
+    "terms": "Public offer and return policy available through support."
+  },
+  "metadata": {
+    "siteTitle": "Game Store - Online Video Game Store",
+    "siteDescription": "Modern online video game store for all platforms. Exclusive discounts and instant delivery of digital copies.",
+    "keywords": "games, video games, game store, digital games, steam, epic games, playstation, xbox, nintendo"
+  }
+}

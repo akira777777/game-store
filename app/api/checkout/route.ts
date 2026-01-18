@@ -17,9 +17,9 @@ export async function POST(request: NextRequest) {
     // Get cart items
     const cartItems = await db.cartItem.findMany({
       where: { userId: session.user.id },
-      include: { 
+      include: {
         game: true,
-        product: true,
+        paymentCard: true,
       },
     })
 
@@ -30,8 +30,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Filter out items without game or product
-    const validItems = cartItems.filter(item => item.game || item.product)
+    // Filter out items without game or paymentCard
+    const validItems = cartItems.filter(item => item.game || item.paymentCard)
     if (validItems.length === 0) {
       return NextResponse.json(
         { error: "All items in your cart are invalid" },
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
 
     // Validate all cart items are in stock
     const outOfStockItems = validItems.filter(item => {
-      const product = item.game || item.product
+      const product = item.game || item.paymentCard
       return product && !product.inStock
     })
     if (outOfStockItems.length > 0) {
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
 
     // Calculate total with validation
     const total = validItems.reduce((sum, item) => {
-      const product = item.game || item.product
+      const product = item.game || item.paymentCard
       if (!product) return sum
       const price = Number(product.discountPrice || product.price)
       if (!isFinite(price) || price < 0) {
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
     const stripeSession = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: validItems.map((item) => {
-        const product = item.game || item.product
+        const product = item.game || item.paymentCard
         if (!product) {
           throw new Error("Invalid cart item")
         }
@@ -118,13 +118,13 @@ export async function POST(request: NextRequest) {
         stripeSessionId: stripeSession.id,
         items: {
           create: validItems.map((item) => {
-            const product = item.game || item.product
+            const product = item.game || item.paymentCard
             if (!product) {
               throw new Error("Invalid cart item")
             }
             return {
               gameId: item.gameId || null,
-              productId: item.productId || null,
+              paymentCardId: item.paymentCardId || null,
               quantity: item.quantity,
               price: product.discountPrice || product.price,
             }

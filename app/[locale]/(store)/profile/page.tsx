@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { PageHeader } from "@/components/layout/page-header"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import Link from "next/link"
@@ -70,7 +71,11 @@ export default async function ProfilePage() {
 
     return (
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-8">Профиль</h1>
+        <PageHeader
+          title="Профиль"
+          description="Управление вашим аккаунтом и просмотр истории заказов"
+          backUrl="/"
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* User Information */}
@@ -152,18 +157,22 @@ export default async function ProfilePage() {
                         <div className="border-t pt-3">
                           <p className="text-sm font-medium mb-2">Товары:</p>
                           <ul className="space-y-1">
-                            {order.items.map((item) => (
-                              <li key={item.id} className="text-sm text-muted-foreground">
-                                <Link
-                                  href={`/games/${item.game.slug}`}
-                                  className="hover:text-primary hover:underline"
-                                >
-                                  {item.game.title}
-                                </Link>
-                                {" × "}
-                                {item.quantity} - ${Number(item.price).toFixed(2)}
-                              </li>
-                            ))}
+                            {order.items.map((item) => {
+                              const gameTitle = item.game?.title || "Товар удален"
+                              const gameSlug = item.game?.slug || "#"
+                              return (
+                                <li key={item.id} className="text-sm text-muted-foreground">
+                                  <Link
+                                    href={gameSlug !== "#" ? `/games/${gameSlug}` : "#"}
+                                    className="hover:text-primary hover:underline"
+                                  >
+                                    {gameTitle}
+                                  </Link>
+                                  {" × "}
+                                  {item.quantity} - ${Number(item.price).toFixed(2)}
+                                </li>
+                              )
+                            })}
                           </ul>
                         </div>
                       </div>
