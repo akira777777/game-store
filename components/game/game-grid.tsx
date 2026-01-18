@@ -1,5 +1,8 @@
-import { Skeleton } from "@/components/ui/skeleton"
+"use client"
+
+import { GameCardSkeleton } from "./game-card-skeleton"
 import { Game } from "@prisma/client"
+import { useTranslations } from "next-intl"
 import { memo } from "react"
 import { GameCard } from "./game-card"
 
@@ -9,19 +12,14 @@ interface GameGridProps {
 }
 
 function GameGridComponent({ games, isLoading = false }: GameGridProps) {
+  const t = useTranslations("components.gameGrid")
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="space-y-4 animate-fade-in">
-            <Skeleton className="aspect-video w-full rounded-lg" />
-            <div className="space-y-2">
-              <Skeleton className="h-6 w-3/4" />
-              <Skeleton className="h-4 w-1/2" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-5/6" />
-            </div>
-            <Skeleton className="h-10 w-full" />
+          <div key={i} className="animate-fade-in" style={{ animationDelay: `${i * 0.05}s` }}>
+            <GameCardSkeleton />
           </div>
         ))}
       </div>
@@ -48,10 +46,10 @@ function GameGridComponent({ games, isLoading = false }: GameGridProps) {
           </svg>
         </div>
         <h3 className="mb-2 text-lg font-semibold text-foreground sm:text-xl">
-          Игры не найдены
+          {t("noGamesFound")}
         </h3>
         <p className="max-w-sm text-sm text-muted-foreground">
-          Попробуйте изменить фильтры поиска или просмотрите другие категории
+          {t("tryChangingFilters")}
         </p>
       </div>
     )

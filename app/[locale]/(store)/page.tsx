@@ -15,13 +15,22 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 3600 // Revalidate every hour
 export const runtime = 'nodejs' // Ensure Node.js runtime for Prisma adapter
 
-export const metadata: Metadata = {
-  title: "Главная",
-  description: "Откройте мир видеоигр. Современный интернет-магазин с лучшими играми для всех платформ. Эксклюзивные скидки и мгновенная доставка цифровых копий.",
-  openGraph: {
-    title: "Game Store - Главная",
-    description: "Откройте мир видеоигр. Современный интернет-магазин с лучшими играми для всех платформ.",
-  },
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: "home" })
+
+  return {
+    title: t("title"),
+    description: t("description"),
+    openGraph: {
+      title: `Game Store - ${t("title")}`,
+      description: t("description"),
+    },
+  }
 }
 
 export default async function HomePage({

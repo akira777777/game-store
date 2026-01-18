@@ -179,5 +179,21 @@
     "siteTitle": "Game Store - Интернет-магазин видеоигр",
     "siteDescription": "Современный интернет-магазин видеоигр для всех платформ. Эксклюзивные скидки и мгновенная доставка цифровых копий.",
     "keywords": "игры, видеоигры, игровой магазин, цифровые игры, steam, epic games, playstation, xbox, nintendo"
+  },
+  "components": {
+    "gameGrid": {
+      "noGamesFound": "Игры не найдены",
+      "tryChangingFilters": "Попробуйте изменить фильтры поиска или просмотрите другие категории"
+    },
+    "gameCard": {
+      "detailsAria": "Подробнее о игре {title}",
+      "coverAlt": "Обложка игры {title}",
+      "noImage": "Нет изображения",
+      "discount": "-{percent}%",
+      "discountAria": "Скидка {percent}%",
+      "genresAria": "Жанры игры",
+      "details": "Подробнее",
+      "detailsAriaButton": "Подробнее о игре {title}"
+    }
   }
 }

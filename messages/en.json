@@ -179,5 +179,21 @@
     "siteTitle": "Game Store - Online Video Game Store",
     "siteDescription": "Modern online video game store for all platforms. Exclusive discounts and instant delivery of digital copies.",
     "keywords": "games, video games, game store, digital games, steam, epic games, playstation, xbox, nintendo"
+  },
+  "components": {
+    "gameGrid": {
+      "noGamesFound": "No games found",
+      "tryChangingFilters": "Try changing search filters or browse other categories"
+    },
+    "gameCard": {
+      "detailsAria": "Details about game {title}",
+      "coverAlt": "Cover of game {title}",
+      "noImage": "No image",
+      "discount": "-{percent}%",
+      "discountAria": "Discount {percent}%",
+      "genresAria": "Game genres",
+      "details": "Details",
+      "detailsAriaButton": "Details for {title}"
+    }
   }
 }

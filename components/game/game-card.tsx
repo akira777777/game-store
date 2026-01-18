@@ -1,3 +1,5 @@
+"use client"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -6,12 +8,15 @@ import { Game } from "@prisma/client"
 import Image from "next/image"
 import { Link } from "@/lib/navigation"
 import { memo, useMemo } from "react"
+import { useTranslations } from "next-intl"
 
 interface GameCardProps {
   game: Game
 }
 
 function GameCardComponent({ game }: GameCardProps) {
+  const t = useTranslations("components.gameCard")
+
   const { finalPrice, hasDiscount, discountPercent, images, genres } = useMemo(() => {
     const finalPrice = game.discountPrice || game.price
     const hasDiscount = !!game.discountPrice
@@ -29,13 +34,13 @@ function GameCardComponent({ game }: GameCardProps) {
       {/* Decorative gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" aria-hidden="true" />
 
-      <Link href={`/games/${game.slug}`} aria-label={`Подробнее о игре ${game.title}`}>
+      <Link href={`/games/${game.slug}`} aria-label={t("detailsAria", { title: game.title })}>
         <div className="relative aspect-video w-full bg-muted overflow-hidden">
           {images.length > 0 ? (
             <>
               <Image
                 src={images[0]}
-                alt={`Обложка игры ${game.title}`}
+                alt={t("coverAlt", { title: game.title })}
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-110"
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
@@ -47,16 +52,16 @@ function GameCardComponent({ game }: GameCardProps) {
             </>
           ) : (
             <div className="w-full h-full flex items-center justify-center text-muted-foreground bg-gradient-to-br from-muted to-muted/50" aria-hidden="true">
-              <span className="text-sm">Нет изображения</span>
+              <span className="text-sm">{t("noImage")}</span>
             </div>
           )}
           {hasDiscount && discountPercent > 0 && (
             <Badge
               className="absolute top-3 right-3 shadow-lg animate-pulse z-10 border-2 border-background/50"
               variant="destructive"
-              aria-label={`Скидка ${discountPercent}%`}
+              aria-label={t("discountAria", { percent: discountPercent })}
             >
-              <span className="relative z-10">-{discountPercent}%</span>
+              <span className="relative z-10">{t("discount", { percent: discountPercent })}</span>
               <div className="absolute inset-0 bg-destructive/50 blur-md -z-10 animate-pulse" aria-hidden="true" />
             </Badge>
           )}
@@ -67,7 +72,7 @@ function GameCardComponent({ game }: GameCardProps) {
           {game.title}
         </CardTitle>
         {genres.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-2" role="list" aria-label="Жанры игры">
+          <div className="flex flex-wrap gap-2 mt-2" role="list" aria-label={t("genresAria")}>
             {genres.slice(0, 2).map((genre) => (
               <Badge
                 key={genre}
@@ -105,12 +110,12 @@ function GameCardComponent({ game }: GameCardProps) {
         </div>
       </CardContent>
       <CardFooter className="pt-0 relative z-10">
-        <Link href={`/games/${game.slug}`} className="w-full group" aria-label={`Перейти на страницу игры ${game.title}`}>
+        <Link href={`/games/${game.slug}`} className="w-full group" aria-label={t("detailsAriaButton", { title: game.title })}>
           <Button
             className="w-full group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-primary/90 group-hover:text-primary-foreground transition-all duration-300 shadow-md hover:shadow-xl hover:scale-105 relative overflow-hidden"
-            aria-label={`Подробнее о игре ${game.title}`}
+            aria-label={t("detailsAriaButton", { title: game.title })}
           >
-            <span className="relative z-10">Подробнее</span>
+            <span className="relative z-10">{t("details")}</span>
             <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" aria-hidden="true" />
           </Button>
         </Link>
