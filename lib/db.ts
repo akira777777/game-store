@@ -49,6 +49,11 @@ pool.connect().then((client) => {
 
 let db: PrismaClient;
 try {
+  // #region agent log
+  const logDataBeforeCreate = { location: 'lib/db.ts:50', message: 'Before PrismaClient creation', data: { isGlobal: !!globalForPrisma.prisma, hasAdapter: !!adapter, runtime: typeof window === 'undefined' ? 'server' : 'client' }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'G' };
+  require('fs').appendFileSync(logPath, JSON.stringify(logDataBeforeCreate) + '\n');
+  // #endregion
+
   db = globalForPrisma.prisma ??
     new PrismaClient({
       adapter,
@@ -57,12 +62,12 @@ try {
     })
 
   // #region agent log
-  const logData2 = { location: 'lib/db.ts:30', message: 'PrismaClient created', data: { isGlobal: !!globalForPrisma.prisma, clientCreated: true }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'D' };
+  const logData2 = { location: 'lib/db.ts:60', message: 'PrismaClient created', data: { isGlobal: !!globalForPrisma.prisma, clientCreated: true, hasAdapter: !!adapter }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'G' };
   require('fs').appendFileSync(logPath, JSON.stringify(logData2) + '\n');
   // #endregion
 } catch (error: any) {
   // #region agent log
-  const logData3 = { location: 'lib/db.ts:33', message: 'PrismaClient creation error', data: { errorMessage: error?.message || String(error), errorName: error?.name || 'unknown', errorCode: error?.code || 'unknown' }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'D' };
+  const logData3 = { location: 'lib/db.ts:63', message: 'PrismaClient creation error', data: { errorMessage: error?.message || String(error), errorName: error?.name || 'unknown', errorCode: error?.code || 'unknown', errorStack: error?.stack?.substring(0, 200) || 'no stack' }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'G' };
   require('fs').appendFileSync(logPath, JSON.stringify(logData3) + '\n');
   // #endregion
   throw error;

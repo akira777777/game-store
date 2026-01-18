@@ -11,6 +11,7 @@ import Link from "next/link"
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 3600 // Revalidate every hour
+export const runtime = 'nodejs' // Ensure Node.js runtime for Prisma adapter
 
 export const metadata: Metadata = {
   title: "Главная",
@@ -23,35 +24,52 @@ export const metadata: Metadata = {
 
 export default async function HomePage() {
   // #region agent log
-  fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app/(store)/page.tsx:24', message: 'HomePage entry', data: {}, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'D' }) }).catch(() => { });
+  const logPath = 'c:\\Users\\-\\Desktop\\game-store\\.cursor\\debug.log';
+  const logDataEntry = { location: 'app/(store)/page.tsx:24', message: 'HomePage entry', data: { runtime: typeof window === 'undefined' ? 'server' : 'client' }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'F' };
+  require('fs').appendFileSync(logPath, JSON.stringify(logDataEntry) + '\n');
   // #endregion
   try {
     // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app/(store)/page.tsx:27', message: 'Before DB queries', data: {}, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'D' }) }).catch(() => { });
+    const logDataBefore = { location: 'app/(store)/page.tsx:28', message: 'Before DB queries', data: { hasDb: !!db }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'G' };
+    require('fs').appendFileSync(logPath, JSON.stringify(logDataBefore) + '\n');
     // #endregion
-    const featuredGamesPromise = db.game.findMany({
-      where: { featured: true },
-      take: 8,
-      orderBy: { createdAt: "desc" },
-    })
 
-    const newGamesPromise = db.game.findMany({
-      take: 8,
-      orderBy: { createdAt: "desc" },
-    })
+    let featuredGamesPromise, newGamesPromise, discountedGamesPromise;
+    try {
+      featuredGamesPromise = db.game.findMany({
+        where: { featured: true },
+        take: 8,
+        orderBy: { createdAt: "desc" },
+      })
 
-    // Get discounted games using database query
-    const discountedGamesPromise = db.game.findMany({
-      where: {
-        inStock: true,
-        discountPrice: {
-          not: null,
-          gt: 0,
+      newGamesPromise = db.game.findMany({
+        take: 8,
+        orderBy: { createdAt: "desc" },
+      })
+
+      discountedGamesPromise = db.game.findMany({
+        where: {
+          inStock: true,
+          discountPrice: {
+            not: null,
+            gt: 0,
+          },
         },
-      },
-      take: 8,
-      orderBy: { createdAt: "desc" },
-    })
+        take: 8,
+        orderBy: { createdAt: "desc" },
+      })
+
+      // #region agent log
+      const logDataQueries = { location: 'app/(store)/page.tsx:50', message: 'DB queries started', data: { queriesCreated: true }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'H' };
+      require('fs').appendFileSync(logPath, JSON.stringify(logDataQueries) + '\n');
+      // #endregion
+    } catch (queryError: any) {
+      // #region agent log
+      const logDataQueryErr = { location: 'app/(store)/page.tsx:53', message: 'DB query creation error', data: { errorMessage: queryError?.message || String(queryError), errorName: queryError?.name || 'unknown' }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'H' };
+      require('fs').appendFileSync(logPath, JSON.stringify(logDataQueryErr) + '\n');
+      // #endregion
+      throw queryError;
+    }
 
     const [featuredGames, newGames, discountedGames] = await Promise.all([
       featuredGamesPromise,
@@ -60,7 +78,8 @@ export default async function HomePage() {
     ])
 
     // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app/(store)/page.tsx:54', message: 'After DB queries', data: { featuredCount: featuredGames.length, newCount: newGames.length, discountedCount: discountedGames.length }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'D' }) }).catch(() => { });
+    const logDataAfter = { location: 'app/(store)/page.tsx:65', message: 'After DB queries', data: { featuredCount: featuredGames.length, newCount: newGames.length, discountedCount: discountedGames.length, featuredGames: featuredGames.map(g => ({ id: g.id, title: g.title })), newGames: newGames.map(g => ({ id: g.id, title: g.title })) }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'H' };
+    require('fs').appendFileSync(logPath, JSON.stringify(logDataAfter) + '\n');
     // #endregion
 
     return (
@@ -172,7 +191,9 @@ export default async function HomePage() {
     )
   } catch (error) {
     // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/52759509-b965-4546-8bf0-8fc4be97e169', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app/(store)/page.tsx:163', message: 'HomePage error', data: { errorMessage: error instanceof Error ? error.message : String(error), errorName: error instanceof Error ? error.name : 'unknown' }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'D' }) }).catch(() => { });
+    const logPath = 'c:\\Users\\-\\Desktop\\game-store\\.cursor\\debug.log';
+    const logDataErr = { location: 'app/(store)/page.tsx:173', message: 'HomePage error', data: { errorMessage: error instanceof Error ? error.message : String(error), errorName: error instanceof Error ? error.name : 'unknown', errorStack: error instanceof Error ? error.stack?.substring(0, 200) : 'no stack' }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'F' };
+    require('fs').appendFileSync(logPath, JSON.stringify(logDataErr) + '\n');
     // #endregion
     throw error
   }

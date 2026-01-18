@@ -63,14 +63,33 @@ try {
 }
 // #endregion
 
+// Check if using pooled connection (Neon pooler)
+const isPooledConnection = databaseUrl.includes('pooler');
+let directUrl: string | undefined;
+
+if (isPooledConnection) {
+  // For pooled connections, migrations need directUrl (non-pooled)
+  // Convert pooled URL to direct URL by removing '-pooler' from hostname
+  directUrl = databaseUrl.replace('-pooler', '').replace('.c-', '.');
+
+  // #region agent log
+  const logDataPooler = {
+    location: 'prisma.config.ts:66', message: 'Pooled connection detected', data: {
+      isPooled: true,
+      directUrlPreview: directUrl.substring(0, 80) + '...'
+    }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'D'
+  };
+  require('fs').appendFileSync(logPath, JSON.stringify(logDataPooler) + '\n');
+  // #endregion
+}
+
 const config = defineConfig({
   schema: "prisma/schema.prisma",
   migrations: { path: "prisma/migrations" },
   datasource: {
     url: databaseUrl,
-    // For Neon, if using pooled connection, migrations need directUrl
-    // Uncomment if you're using a pooled connection string:
-    // directUrl: process.env.DIRECT_DATABASE_URL || databaseUrl,
+    // For Neon pooled connections, migrations need directUrl
+    ...(directUrl && { directUrl }),
   },
 });
 
