@@ -114,3 +114,13 @@ export function parseGameData<T extends { images?: unknown; platforms?: unknown;
     genres: parseJsonArray<string>(game.genres as string),
   }
 }
+/**
+ * Formats price to USD currency string
+ */
+export function formatPrice(price: number | null | undefined): string {
+  if (price === null || price === undefined) return '$0'
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(price)
+}

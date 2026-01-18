@@ -1,33 +1,26 @@
-"use client"
-
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { parseJsonArrayOrString } from "@/lib/game-utils"
+import { parseJsonArrayOrString, formatPrice } from "@/lib/game-utils"
 import { Game } from "@prisma/client"
 import Image from "next/image"
 import { Link } from "@/lib/navigation"
-import { memo, useMemo } from "react"
-import { useTranslations } from "next-intl"
+import { getTranslations } from "next-intl/server"
 
 interface GameCardProps {
   game: Game
 }
 
-function GameCardComponent({ game }: GameCardProps) {
-  const t = useTranslations("components.gameCard")
+export async function GameCard({ game }: GameCardProps) {
+  const t = await getTranslations("components.gameCard")
 
-  const { finalPrice, hasDiscount, discountPercent, images, genres } = useMemo(() => {
-    const finalPrice = game.discountPrice || game.price
-    const hasDiscount = !!game.discountPrice
-    const discountPercent = hasDiscount && game.price > 0
-      ? Math.round(((game.price - (game.discountPrice || 0)) / game.price) * 100)
-      : 0
-    const images = parseJsonArrayOrString(game.images)
-    const genres = parseJsonArrayOrString(game.genres)
-
-    return { finalPrice, hasDiscount, discountPercent, images, genres }
-  }, [game.discountPrice, game.price, game.images, game.genres])
+  const finalPrice = game.discountPrice || game.price
+  const hasDiscount = !!game.discountPrice
+  const discountPercent = hasDiscount && game.price > 0
+    ? Math.round(((game.price - (game.discountPrice || 0)) / game.price) * 100)
+    : 0
+  const images = parseJsonArrayOrString(game.images)
+  const genres = parseJsonArrayOrString(game.genres)
 
   return (
     <Card className="relative overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-[1.03] hover:-translate-y-2 group border-border/50 bg-gradient-to-br from-background/80 to-background/60 backdrop-blur-sm">
@@ -95,15 +88,15 @@ function GameCardComponent({ game }: GameCardProps) {
             {hasDiscount ? (
               <>
                 <span className="text-2xl font-bold text-destructive">
-                  ${finalPrice !== null && finalPrice !== undefined ? finalPrice.toString() : '0'}
+                  {formatPrice(finalPrice)}
                 </span>
                 <span className="text-sm line-through text-muted-foreground">
-                  ${game.price !== null && game.price !== undefined ? game.price.toString() : '0'}
+                  {formatPrice(game.price)}
                 </span>
               </>
             ) : (
               <span className="text-2xl font-bold text-foreground">
-                ${finalPrice !== null && finalPrice !== undefined ? finalPrice.toString() : '0'}
+                {formatPrice(finalPrice)}
               </span>
             )}
           </div>
@@ -123,13 +116,3 @@ function GameCardComponent({ game }: GameCardProps) {
     </Card>
   )
 }
-
-export const GameCard = memo(GameCardComponent, (prevProps, nextProps) => {
-  return prevProps.game.id === nextProps.game.id &&
-    prevProps.game.price === nextProps.game.price &&
-    prevProps.game.discountPrice === nextProps.game.discountPrice &&
-    prevProps.game.images === nextProps.game.images &&
-    prevProps.game.title === nextProps.game.title &&
-    prevProps.game.description === nextProps.game.description &&
-    prevProps.game.genres === nextProps.game.genres
-})

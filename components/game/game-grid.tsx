@@ -1,9 +1,6 @@
-"use client"
-
 import { GameCardSkeleton } from "./game-card-skeleton"
 import { Game } from "@prisma/client"
-import { useTranslations } from "next-intl"
-import { memo } from "react"
+import { getTranslations } from "next-intl/server"
 import { GameCard } from "./game-card"
 
 interface GameGridProps {
@@ -11,8 +8,8 @@ interface GameGridProps {
   isLoading?: boolean
 }
 
-function GameGridComponent({ games, isLoading = false }: GameGridProps) {
-  const t = useTranslations("components.gameGrid")
+export async function GameGrid({ games, isLoading = false }: GameGridProps) {
+  const t = await getTranslations("components.gameGrid")
 
   if (isLoading) {
     return (
@@ -71,5 +68,3 @@ function GameGridComponent({ games, isLoading = false }: GameGridProps) {
     </div>
   )
 }
-
-export const GameGrid = memo(GameGridComponent)

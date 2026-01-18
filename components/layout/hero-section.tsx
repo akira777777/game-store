@@ -1,12 +1,10 @@
-"use client"
-
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Gamepad2, Headset, ShieldCheck, Sparkles, Star, Users, Zap } from "lucide-react"
-import { useTranslations } from "next-intl"
+import { getTranslations } from "next-intl/server"
 import { Link } from "@/lib/navigation"
 
-export function HeroSection() {
-  const t = useTranslations("hero")
+export async function HeroSection() {
+  const t = await getTranslations("hero")
   return (
     <section className="relative overflow-hidden border-b bg-gradient-to-br from-primary/5 via-primary/3 to-background py-16 sm:py-24 lg:py-32">
       {/* Enhanced animated background elements */}

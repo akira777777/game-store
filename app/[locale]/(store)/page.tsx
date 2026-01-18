@@ -10,10 +10,55 @@ import { ArrowRight, TrendingUp } from "lucide-react"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"
+import { unstable_cache } from "next/cache"
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 3600 // Revalidate every hour
 export const runtime = 'nodejs' // Ensure Node.js runtime for Prisma adapter
+
+// Cached query for featured games
+const getFeaturedGames = unstable_cache(
+  async () => {
+    return db.game.findMany({
+      where: { featured: true },
+      take: 8,
+      orderBy: { createdAt: "desc" },
+    })
+  },
+  ["featured-games"],
+  { revalidate: 3600, tags: ["games", "featured"] }
+)
+
+// Cached query for new games
+const getNewGames = unstable_cache(
+  async () => {
+    return db.game.findMany({
+      take: 8,
+      orderBy: { createdAt: "desc" },
+    })
+  },
+  ["new-games"],
+  { revalidate: 3600, tags: ["games", "new"] }
+)
+
+// Cached query for discounted games
+const getDiscountedGames = unstable_cache(
+  async () => {
+    return db.game.findMany({
+      where: {
+        inStock: true,
+        discountPrice: {
+          not: null,
+          gt: 0,
+        },
+      },
+      take: 8,
+      orderBy: { createdAt: "desc" },
+    })
+  },
+  ["discounted-games"],
+  { revalidate: 3600, tags: ["games", "discounts"] }
+)
 
 export async function generateMetadata({
   params,
@@ -42,33 +87,10 @@ export default async function HomePage({
   const t = await getTranslations("home")
 
   try {
-    const featuredGamesPromise = db.game.findMany({
-      where: { featured: true },
-      take: 8,
-      orderBy: { createdAt: "desc" },
-    })
-
-    const newGamesPromise = db.game.findMany({
-      take: 8,
-      orderBy: { createdAt: "desc" },
-    })
-
-    const discountedGamesPromise = db.game.findMany({
-      where: {
-        inStock: true,
-        discountPrice: {
-          not: null,
-          gt: 0,
-        },
-      },
-      take: 8,
-      orderBy: { createdAt: "desc" },
-    })
-
     const [featuredGames, newGames, discountedGames] = await Promise.all([
-      featuredGamesPromise,
-      newGamesPromise,
-      discountedGamesPromise,
+      getFeaturedGames(),
+      getNewGames(),
+      getDiscountedGames(),
     ])
 
     return (
