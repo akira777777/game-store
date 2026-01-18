@@ -1,8 +1,16 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { db } from "@/lib/db"
-import Link from "next/link"
+import { Link } from "@/lib/navigation"
+import { Edit, Plus } from "lucide-react"
 
 export const dynamic = 'force-dynamic'
 
@@ -12,57 +20,85 @@ export default async function AdminGamesPage() {
   })
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-4xl font-bold">Управление играми</h1>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold tracking-tight">Управление играми</h1>
         <Link href="/admin/games/new">
-          <Button>Добавить игру</Button>
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            Добавить игру
+          </Button>
         </Link>
       </div>
 
       {games.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground mb-4">Игр пока нет</p>
+        <div className="flex min-h-[400px] flex-col items-center justify-center rounded-md border border-dashed p-8 text-center animate-in fade-in-50">
+          <div className="mx-auto flex max-w-[420px] flex-col items-center justify-center text-center">
+            <h3 className="mt-4 text-lg font-semibold">Игр пока нет</h3>
+            <p className="mb-4 mt-2 text-sm text-muted-foreground">
+              Вы еще не добавили ни одной игры. Создайте первую игру прямо сейчас.
+            </p>
             <Link href="/admin/games/new">
               <Button>Добавить первую игру</Button>
             </Link>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {games.map((game) => (
-            <Card key={game.id}>
-              <CardHeader>
-                <CardTitle>{game.title}</CardTitle>
-                <div className="flex gap-2 mt-2">
-                  {game.featured && (
-                    <Badge variant="default">Рекомендуемая</Badge>
-                  )}
-                  {game.inStock ? (
-                    <Badge variant="secondary">В наличии</Badge>
-                  ) : (
-                    <Badge variant="destructive">Нет в наличии</Badge>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                  {game.description}
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="text-lg font-bold">
-                    ${Number(game.discountPrice || game.price).toFixed(2)}
-                  </span>
-                  <Link href={`/admin/games/${game.id}/edit`}>
-                    <Button variant="outline" size="sm">
-                      Редактировать
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Название</TableHead>
+                <TableHead>Цена</TableHead>
+                <TableHead>Статус</TableHead>
+                <TableHead>Метки</TableHead>
+                <TableHead className="text-right">Действия</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {games.map((game) => (
+                <TableRow key={game.id}>
+                  <TableCell className="font-medium">{game.title}</TableCell>
+                  <TableCell>
+                    <div className="flex flex-col">
+                      <span className="font-bold">
+                        ${Number(game.discountPrice || game.price).toFixed(2)}
+                      </span>
+                      {game.discountPrice && (
+                        <span className="text-xs text-muted-foreground line-through">
+                          ${Number(game.price).toFixed(2)}
+                        </span>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {game.inStock ? (
+                      <Badge variant="outline" className="bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800 border-green-200">
+                        В наличии
+                      </Badge>
+                    ) : (
+                      <Badge variant="destructive">
+                        Нет в наличии
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {game.featured && (
+                      <Badge variant="secondary">Featured</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Link href={`/admin/games/${game.id}/edit`}>
+                      <Button variant="ghost" size="icon">
+                        <Edit className="h-4 w-4" />
+                        <span className="sr-only">Редактировать</span>
+                      </Button>
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       )}
     </div>

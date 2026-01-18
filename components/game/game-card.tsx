@@ -4,7 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { parseJsonArrayOrString } from "@/lib/game-utils"
 import { Game } from "@prisma/client"
 import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@/lib/navigation"
 import { memo, useMemo } from "react"
 
 interface GameCardProps {

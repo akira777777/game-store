@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Gamepad2, Headset, ShieldCheck, Sparkles, Star, Users, Zap } from "lucide-react"
 import { useTranslations } from "next-intl"
-import Link from "next/link"
+import { Link } from "@/lib/navigation"
 
 export function HeroSection() {
   const t = useTranslations("hero")
