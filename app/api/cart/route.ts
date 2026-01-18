@@ -10,11 +10,22 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ items: [] })
     }
 
-    // Only select necessary fields from game to reduce payload size
+    // Only select necessary fields from game/product to reduce payload size
     const cartItems = await db.cartItem.findMany({
       where: { userId: session.user.id },
       include: {
         game: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            price: true,
+            discountPrice: true,
+            images: true,
+            inStock: true,
+          },
+        },
+        product: {
           select: {
             id: true,
             title: true,

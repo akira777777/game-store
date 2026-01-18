@@ -21,6 +21,12 @@ export default async function AdminOrdersPage() {
               slug: true,
             },
           },
+          product: {
+            select: {
+              title: true,
+              slug: true,
+            },
+          },
         },
       },
     },
@@ -89,7 +95,7 @@ export default async function AdminOrdersPage() {
                     <ul className="space-y-1">
                       {order.items.map((item) => (
                         <li key={item.id} className="text-sm text-muted-foreground">
-                          {item.game.title} × {item.quantity} - $
+                          {item.game?.title || item.product?.title || "Товар удален"} × {item.quantity} - $
                           {Number(item.price).toFixed(2)}
                         </li>
                       ))}

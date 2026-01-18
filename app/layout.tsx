@@ -1,4 +1,5 @@
 import { SessionProvider } from "@/components/providers/session-provider"
+import { ToastProvider } from "@/components/ui/toast-provider"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
@@ -64,7 +65,9 @@ export default function RootLayout({
         >
           Перейти к основному содержимому
         </a>
-        <SessionProvider>{children}</SessionProvider>
+        <SessionProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </SessionProvider>
       </body>
     </html>
   )
