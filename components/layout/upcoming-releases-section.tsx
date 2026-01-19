@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Calendar, Bell, Star, ArrowRight, TrendingUp } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
 
 const upcomingReleases = [
@@ -18,6 +19,7 @@ const upcomingReleases = [
     platforms: ["PC", "PS5", "Xbox"],
     hypeLevel: "extreme",
     wishlisted: 2500000,
+    image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&h=800&fit=crop&q=80",
   },
   {
     id: 2,
@@ -29,6 +31,7 @@ const upcomingReleases = [
     platforms: ["PC", "Xbox"],
     hypeLevel: "high",
     wishlisted: 1800000,
+    image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&h=800&fit=crop&q=80",
   },
   {
     id: 3,
@@ -41,6 +44,7 @@ const upcomingReleases = [
     platforms: ["PC", "Xbox"],
     hypeLevel: "high",
     wishlisted: 950000,
+    image: "https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=600&h=800&fit=crop&q=80",
   },
 ]
 
@@ -86,8 +90,15 @@ export function UpcomingReleasesSection() {
           {upcomingReleases.map((game, index) => (
             <Card key={game.id} className="group relative overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 animate-scale-in" style={{ animationDelay: `${index * 0.1}s` }}>
               <div className="relative aspect-[3/4] bg-muted">
+                <Image
+                  src={game.image}
+                  alt={game.title}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  priority={index === 0}
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent z-10" />
-                <div className="absolute inset-0 bg-muted animate-pulse" />
                 <div className="absolute bottom-4 left-4 right-4 z-20 p-4 rounded-lg bg-background/90 backdrop-blur-md border border-border/50">
                   <p className="text-xs text-muted-foreground mb-1">До релиза:</p>
                   <p className="text-2xl font-bold text-primary">{game.daysUntil} дней</p>
