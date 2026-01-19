@@ -2,12 +2,14 @@
   command = "npm run build"
   publish = ".next"
 
-# Next.js handles routing internally, no redirects needed
-# Netlify will automatically serve Next.js routes correctly
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
 
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
+[build.environment]
+  NODE_VERSION = "20"
+  NPM_FLAGS = "--legacy-peer-deps"
+
+# Environment variables (set in Netlify dashboard)
+# NEXTAUTH_SECRET = "your-secret-here"
+# NEXTAUTH_URL = "https://your-site.netlify.app"
+# DATABASE_URL = "file:./prisma/dev.db"

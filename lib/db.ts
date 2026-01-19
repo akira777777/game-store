@@ -10,11 +10,9 @@ const globalForPrisma = globalThis as unknown as {
 const DATABASE_URL = process.env.DATABASE_URL || 'file:./prisma/dev.db';
 const sqlitePath = DATABASE_URL.replace(/^file:/, '');
 
-// Create SQLite database instance
+// Create SQLite database instance and adapter for Prisma 7
 const sqlite = new Database(sqlitePath);
-
-// Create SQLite adapter for Prisma 7
-const adapter = new PrismaBetterSqlite3(sqlite);
+const adapter = new PrismaBetterSqlite3({ url: sqlitePath });
 
 const db = globalForPrisma.prisma ?? new PrismaClient({
   adapter,
