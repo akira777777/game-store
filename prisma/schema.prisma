@@ -9,7 +9,7 @@ datasource db {
   // Для локального тестирования используем SQLite
   // Для продакшена измените на "postgresql"
   provider = "sqlite"
-  // Prisma 7: URL configured in prisma.config.ts
+  url      = env("DATABASE_URL")
 }
 
 model User {

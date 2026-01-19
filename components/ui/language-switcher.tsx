@@ -11,6 +11,7 @@ import { locales, type Locale } from "@/i18n"
 import { Languages } from "lucide-react"
 import { useLocale } from "next-intl"
 import { usePathname, useRouter } from "next/navigation"
+import { useTransition } from "react"
 
 const localeNames: Record<Locale, string> = {
   en: "English",
@@ -21,14 +22,27 @@ export function LanguageSwitcher() {
   const locale = useLocale() as Locale
   const router = useRouter()
   const pathname = usePathname()
+  const [isPending, startTransition] = useTransition()
 
   const switchLocale = (newLocale: Locale) => {
-    // Remove current locale from pathname (handle both /locale and /locale/)
-    const pathWithoutLocale = pathname.replace(new RegExp(`^/${locale}(/|$)`), "/") || "/"
-    // Add new locale
-    const newPath = pathWithoutLocale === "/" ? `/${newLocale}` : `/${newLocale}${pathWithoutLocale}`
-    router.push(newPath)
-    router.refresh()
+    if (newLocale === locale) return
+    
+    startTransition(() => {
+      // Get current path without locale prefix
+      const segments = pathname.split('/').filter(Boolean)
+      const currentLocaleIndex = locales.indexOf(segments[0] as Locale)
+      
+      // Remove locale from path if present
+      const pathWithoutLocale = currentLocaleIndex !== -1 
+        ? '/' + segments.slice(1).join('/') 
+        : pathname
+      
+      // Build new path with new locale
+      const newPath = `/${newLocale}${pathWithoutLocale === '/' ? '' : pathWithoutLocale}`
+      
+      router.push(newPath)
+      router.refresh()
+    })
   }
 
   return (
@@ -39,6 +53,7 @@ export function LanguageSwitcher() {
           size="icon"
           className="h-10 w-10"
           aria-label="Switch language"
+          disabled={isPending}
         >
           <Languages className="h-5 w-5" aria-hidden="true" />
         </Button>
@@ -48,9 +63,11 @@ export function LanguageSwitcher() {
           <DropdownMenuItem
             key={loc}
             onClick={() => switchLocale(loc)}
+            disabled={isPending || locale === loc}
             className={locale === loc ? "bg-accent" : ""}
           >
             {localeNames[loc]}
+            {locale === loc && " ✓"}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
