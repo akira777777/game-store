@@ -57,7 +57,7 @@ NEXTAUTH_URL=https://your-app.vercel.app
 node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 ```
 
-4. Нажать **Redeploy** в Vercel
+1. Нажать **Redeploy** в Vercel
 
 ### Вариант 3: Очистить Build Cache
 
@@ -110,7 +110,7 @@ https://your-app.vercel.app
 3. Открыть **Build Logs**
 4. Найти точную ошибку (обычно в красном цвете)
 
-### 2. Типичные ошибки в логах:
+### 2. Типичные ошибки в логах
 
 **Ошибка:** `Error: [@next/auth]: NEXTAUTH_SECRET must be provided`
 
@@ -121,6 +121,7 @@ https://your-app.vercel.app
 **Ошибка:** `Error: Can't resolve 'fs'`
 
 **Решение:** Проблема с server/client components. Убедиться что:
+
 - Server components помечены `async`
 - Client components помечены `"use client"`
 
@@ -128,7 +129,8 @@ https://your-app.vercel.app
 
 **Ошибка:** `Module not found: Can't resolve '...'`
 
-**Решение:** 
+**Решение:**
+
 ```bash
 npm install <missing-package>
 git add package.json package-lock.json
@@ -141,6 +143,7 @@ git push
 ## ✅ ИТОГ
 
 **Исправлено:**
+
 - ✅ Добавлен `.node-version` = 20
 - ✅ Добавлен `engines` в `package.json`
 - ✅ Build локально работает
