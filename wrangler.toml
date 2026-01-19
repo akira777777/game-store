@@ -1,11 +1,6 @@
-name = "gamemarket"
+name = "game-store"
 compatibility_date = "2024-01-01"
-pages_build_output_dir = ".next"
+pages_build_output_dir = ".vercel/output/static"
 
-[vars]
+[env.production]
 NODE_VERSION = "20"
-
-[env.production.vars]
-NODE_ENV = "production"
-NODE_VERSION = "20"
-# DATABASE_URL should be set in Cloudflare Pages environment variables, not here
