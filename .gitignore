@@ -61,3 +61,24 @@ Thumbs.db
 DRV_*/
 *Driver*/
 *_driver_*/
+
+# ============================================
+# AI Models and Local Agent (NOT PART OF PROJECT!)
+# ============================================
+Qwen2.5-Coder-7B-Instruct/
+local-agent/
+
+# ============================================
+# Development documentation (not needed for deploy)
+# ============================================
+CLAUDE_COORDINATION_PLAN.md
+LOCAL_AGENT_INTEGRATION.md
+LOCAL_AGENT_SUMMARY.md
+OLLAMA_SETUP.md
+PYTHON_SETUP.md
+
+# Workspace files
+*.code-workspace
+
+# Temporary files
+Untitled
