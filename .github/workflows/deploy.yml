@@ -2,9 +2,8 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+    branches: ['2026-01-18-nf91']
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -12,30 +11,30 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: 'pages'
   cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-
+          
       - name: Install dependencies
         run: npm ci
-
-      - name: Build static site
-        run: npm run build:static
+        
+      - name: Build
+        run: npm run build
         env:
-          DATABASE_URL: "file:./prisma/dev.db"
-
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          NEXTAUTH_URL: https://akira777777.github.io/game-store
+          DATABASE_URL: file:./prisma/dev.db
+        
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
