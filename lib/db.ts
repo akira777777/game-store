@@ -8,13 +8,9 @@ const globalForPrisma = globalThis as unknown as {
 const DATABASE_URL = process.env.DATABASE_URL || 'file:./prisma/dev.db';
 
 // Simple Prisma Client for portfolio demo - no adapters needed
+// DATABASE_URL is automatically read from environment by Prisma
 const db = globalForPrisma.prisma ??
   new PrismaClient({
-    datasources: {
-      db: {
-        url: DATABASE_URL,
-      },
-    },
     log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
     errorFormat: 'pretty',
   });
