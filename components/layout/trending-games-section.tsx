@@ -4,9 +4,10 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ArrowRight, Flame, Star, TrendingUp } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
 
-// Mock data - replace with real data from your DB
+// Mock data with working placeholder images
 const trendingGames = [
   {
     id: 1,
@@ -15,7 +16,7 @@ const trendingGames = [
     price: 2999,
     discountPrice: 1499,
     discount: 50,
-    image: "/games/cyberpunk.jpg",
+    image: "https://images.unsplash.com/photo-1600861194942-f883de0dfe96?w=800&h=450&fit=crop&q=80",
     rating: 4.5,
     reviews: 45230,
     tags: ["RPG", "Open World", "Sci-Fi"],
@@ -28,7 +29,7 @@ const trendingGames = [
     price: 3499,
     discountPrice: null,
     discount: 0,
-    image: "/games/bg3.jpg",
+    image: "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=800&h=450&fit=crop&q=80",
     rating: 4.9,
     reviews: 89450,
     tags: ["RPG", "Turn-Based", "Fantasy"],
@@ -41,7 +42,7 @@ const trendingGames = [
     price: 4299,
     discountPrice: 2999,
     discount: 30,
-    image: "/games/starfield.jpg",
+    image: "https://images.unsplash.com/photo-1614732414444-096e5f1122d5?w=800&h=450&fit=crop&q=80",
     rating: 4.2,
     reviews: 34560,
     tags: ["RPG", "Space", "Exploration"],
@@ -54,7 +55,7 @@ const trendingGames = [
     price: 3799,
     discountPrice: null,
     discount: 0,
-    image: "/games/hogwarts.jpg",
+    image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&h=450&fit=crop&q=80",
     rating: 4.6,
     reviews: 56780,
     tags: ["Action", "Adventure", "Magic"],
@@ -67,7 +68,7 @@ const trendingGames = [
     price: 2999,
     discountPrice: 1999,
     discount: 33,
-    image: "/games/elden.jpg",
+    image: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&h=450&fit=crop&q=80",
     rating: 4.8,
     reviews: 123450,
     tags: ["Souls-like", "RPG", "Fantasy"],
@@ -139,8 +140,15 @@ export function TrendingGamesSection() {
 
               {/* Image */}
               <div className="relative aspect-video overflow-hidden bg-muted">
+                <Image
+                  src={game.image}
+                  alt={game.title}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  priority={index === 0}
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent z-10" />
-                <div className="absolute inset-0 bg-muted animate-pulse" /> {/* Placeholder */}
                 {/* Trend indicator */}
                 <div className="absolute top-4 right-4 z-20">
                   <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-green-500/90 backdrop-blur-sm">
@@ -237,7 +245,13 @@ export function TrendingGamesSection() {
 
                 {/* Image */}
                 <div className="relative w-32 h-20 rounded-lg overflow-hidden bg-muted shrink-0">
-                  <div className="absolute inset-0 bg-muted animate-pulse" />
+                  <Image
+                    src={game.image}
+                    alt={game.title}
+                    fill
+                    className="object-cover"
+                    sizes="128px"
+                  />
                   {game.discount > 0 && (
                     <Badge className="absolute top-1 right-1 bg-destructive text-destructive-foreground text-xs">
                       -{game.discount}%
