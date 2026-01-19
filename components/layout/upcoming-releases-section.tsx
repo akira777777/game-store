@@ -11,8 +11,7 @@ const upcomingReleases = [
   {
     id: 1,
     title: "GTA VI",
-    releaseDate: "2025-11-15",
-    daysUntil: 300,
+    releaseDate: "2026-11-15",
     preOrder: true,
     price: 5999,
     preOrderDiscount: 10,
@@ -24,8 +23,7 @@ const upcomingReleases = [
   {
     id: 2,
     title: "The Elder Scrolls VI",
-    releaseDate: "2026-03-20",
-    daysUntil: 425,
+    releaseDate: "2027-03-20",
     preOrder: false,
     price: 4999,
     platforms: ["PC", "Xbox"],
@@ -36,8 +34,7 @@ const upcomingReleases = [
   {
     id: 3,
     title: "Fable",
-    releaseDate: "2025-10-10",
-    daysUntil: 264,
+    releaseDate: "2026-10-10",
     preOrder: true,
     price: 3999,
     preOrderDiscount: 15,
@@ -47,6 +44,14 @@ const upcomingReleases = [
     image: "https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=600&h=800&fit=crop&q=80",
   },
 ]
+
+function calculateDaysUntil(releaseDate: string): number {
+  const now = new Date()
+  const release = new Date(releaseDate)
+  const diffTime = release.getTime() - now.getTime()
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  return diffDays > 0 ? diffDays : 0
+}
 
 function formatDate(dateString: string) {
   const date = new Date(dateString)
@@ -101,7 +106,7 @@ export function UpcomingReleasesSection() {
                 <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent z-10" />
                 <div className="absolute bottom-4 left-4 right-4 z-20 p-4 rounded-lg bg-background/90 backdrop-blur-md border border-border/50">
                   <p className="text-xs text-muted-foreground mb-1">До релиза:</p>
-                  <p className="text-2xl font-bold text-primary">{game.daysUntil} дней</p>
+                  <p className="text-2xl font-bold text-primary">{calculateDaysUntil(game.releaseDate)} дней</p>
                 </div>
                 {game.preOrder && (
                   <Badge className="absolute top-4 right-4 z-20 bg-green-500 text-white">Предзаказ</Badge>
