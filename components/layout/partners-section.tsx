@@ -89,7 +89,7 @@ export function PartnersSection() {
             >
               {/* Card glow effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" aria-hidden="true" />
-              
+
               <div className="relative z-10">
                 {/* Logo */}
                 <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300 animate-float" style={{ animationDelay: `${index * 0.2}s` }} aria-hidden="true">

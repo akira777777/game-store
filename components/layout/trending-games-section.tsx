@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ArrowRight, Flame, Star, TrendingUp } from "lucide-react"
-import Image from "next/image"
 import Link from "next/link"
 
 // Mock data - replace with real data from your DB
@@ -125,11 +124,10 @@ export function TrendingGamesSection() {
             >
               {/* Rank Badge */}
               <div className="absolute top-4 left-4 z-20 flex items-center gap-2">
-                <div className={`flex h-12 w-12 items-center justify-center rounded-xl font-bold text-lg shadow-lg ${
-                  game.rank === 1 ? 'bg-gradient-to-br from-yellow-500 to-yellow-600 text-white' :
-                  game.rank === 2 ? 'bg-gradient-to-br from-gray-300 to-gray-400 text-gray-900' :
-                  'bg-gradient-to-br from-orange-600 to-orange-700 text-white'
-                }`}>
+                <div className={`flex h-12 w-12 items-center justify-center rounded-xl font-bold text-lg shadow-lg ${game.rank === 1 ? 'bg-gradient-to-br from-yellow-500 to-yellow-600 text-white' :
+                    game.rank === 2 ? 'bg-gradient-to-br from-gray-300 to-gray-400 text-gray-900' :
+                      'bg-gradient-to-br from-orange-600 to-orange-700 text-white'
+                  }`}>
                   #{game.rank}
                 </div>
                 {game.discount > 0 && (
@@ -158,7 +156,7 @@ export function TrendingGamesSection() {
                   <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors line-clamp-1">
                     {game.title}
                   </h3>
-                  
+
                   {/* Tags */}
                   <div className="flex flex-wrap gap-2 mb-3">
                     {game.tags.slice(0, 3).map((tag) => (

@@ -1,4 +1,4 @@
-import { Gamepad2, Headphones, Mail, Phone, ShieldCheck, Facebook, Twitter, Instagram, Youtube, Github, MessageCircle } from "lucide-react"
+import { Facebook, Gamepad2, Headphones, Instagram, Mail, MessageCircle, Phone, ShieldCheck, Twitter, Youtube } from "lucide-react"
 import Link from "next/link"
 
 const footerLinks = {
@@ -12,25 +12,25 @@ const footerLinks = {
   ],
   account: [
     { label: "Корзина", href: "/cart" },
-    { label: "Профиль", href: "/profile" },
-    { label: "История заказов", href: "/orders" },
-    { label: "Список желаний", href: "/wishlist" },
+    { label: "Профиль", href: "#" }, // TODO: Create /profile page
+    { label: "История заказов", href: "#" }, // TODO: Create /orders page
+    { label: "Список желаний", href: "#" }, // TODO: Create /wishlist page
     { label: "Войти", href: "/login" },
     { label: "Регистрация", href: "/register" },
   ],
   company: [
-    { label: "О компании", href: "/about" },
-    { label: "Вакансии", href: "/careers" },
-    { label: "Блог", href: "/blog" },
-    { label: "Партнёрам", href: "/partners" },
-    { label: "Пресс-центр", href: "/press" },
+    { label: "О компании", href: "#" }, // TODO: Create /about page
+    { label: "Вакансии", href: "#" }, // TODO: Create /careers page
+    { label: "Блог", href: "#" }, // TODO: Create /blog page
+    { label: "Партнёрам", href: "#" }, // TODO: Create /partners page
+    { label: "Пресс-центр", href: "#" }, // TODO: Create /press page
   ],
   legal: [
-    { label: "Пользовательское соглашение", href: "/terms" },
-    { label: "Политика конфиденциальности", href: "/privacy" },
-    { label: "Политика возврата", href: "/refund" },
-    { label: "Cookie", href: "/cookies" },
-    { label: "GDPR", href: "/gdpr" },
+    { label: "Пользовательское соглашение", href: "#" }, // TODO: Create /terms page
+    { label: "Политика конфиденциальности", href: "#" }, // TODO: Create /privacy page
+    { label: "Политика возврата", href: "#" }, // TODO: Create /refund page
+    { label: "Cookie", href: "#" }, // TODO: Create /cookies page
+    { label: "GDPR", href: "#" }, // TODO: Create /gdpr page
   ],
 }
 
@@ -67,7 +67,7 @@ export function Footer() {
               <ShieldCheck className="h-4 w-4 text-primary flex-shrink-0 group-hover:scale-110 transition-transform duration-300" aria-hidden="true" />
               <span className="group-hover:text-foreground transition-colors">Платежи защищены SSL</span>
             </div>
-            
+
             {/* Social Links */}
             <div className="space-y-3">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground">
@@ -312,7 +312,7 @@ export function Footer() {
               <Link href="/sitemap" className="hover:text-primary transition-colors">Карта сайта</Link>
             </div>
           </div>
-          
+
           {/* Additional Info */}
           <div className="text-center text-xs text-muted-foreground/70 space-y-1">
             <p>

@@ -3,8 +3,7 @@
  * Tests for all sections and their functionality
  */
 
-import { render, screen } from '@testing-library/react'
-import { describe, it, expect } from '@jest/globals'
+import { describe, expect, it } from '@jest/globals'
 
 describe('Homepage Sections', () => {
   it('should render all main sections', () => {
@@ -22,7 +21,7 @@ describe('Homepage Sections', () => {
       'NewsletterSection',
       'CTASection'
     ]
-    
+
     expect(sections.length).toBeGreaterThan(8)
   })
 

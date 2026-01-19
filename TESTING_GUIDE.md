@@ -6,7 +6,7 @@
 
 ## 🎯 Что протестировать
 
-### Созданные компоненты:
+### Созданные компоненты
 
 1. ✅ **LiveStatsSection** - Живая статистика
 2. ✅ **TestimonialsSection** - 6 отзывов
@@ -32,47 +32,54 @@ npm run dev
 ```
 
 **Ожидаемый результат:**
+
 ```
 ▲ Next.js 14.x.x
 - Local:        http://localhost:3000
 - ready started server on 0.0.0.0:3000
 ```
 
-**Откройте:** http://localhost:3000
+**Откройте:** <http://localhost:3000>
 
 ---
 
 ## 🔍 Шаг 2: Visual Testing
 
-### Проверьте каждую секцию сверху вниз:
+### Проверьте каждую секцию сверху вниз
 
 #### 1. Hero Section ✅
+
 - [ ] Заголовок отображается
 - [ ] CTA кнопки кликабельны
 - [ ] Background animations работают
 - [ ] Stats (1000+, 50K+, 24/7) видны
 
 #### 2. Live Stats Bar 🆕
+
 - [ ] 4 счётчика отображаются
 - [ ] Числа обновляются каждые 3 сек
 - [ ] Hover эффекты работают
 - [ ] Icons цветные
 
 #### 3. Value Props ✅
+
 - [ ] 3 карточки в ряд (desktop)
 - [ ] Stacked на mobile
 - [ ] Icons видимы
 
 #### 4. Categories ✅
+
 - [ ] Grid categories
 - [ ] Кликабельны
 
 #### 5. Featured/New/Discounted Games ✅
+
 - [ ] Game grids отображаются
 - [ ] Cards hover эффекты
 - [ ] "See all" кнопки работают
 
 #### 6. Trending Games Section 🆕
+
 - [ ] Топ 3 большие карточки
 - [ ] Rank badges (золото/серебро/бронза)
 - [ ] Discount badges для скидок
@@ -80,6 +87,7 @@ npm run dev
 - [ ] "В корзину" buttons
 
 #### 7. Upcoming Releases 🆕
+
 - [ ] 3 карточки релизов
 - [ ] Countdown timers
 - [ ] Pre-order badges (зелёные)
@@ -87,6 +95,7 @@ npm run dev
 - [ ] Wishlist counters
 
 #### 8. Testimonials 🆕
+
 - [ ] 6 отзывов в grid (3 cols)
 - [ ] Аватары отображаются
 - [ ] 5-star ratings
@@ -94,18 +103,21 @@ npm run dev
 - [ ] Trust indicators внизу (4 карточки)
 
 #### 9. Partners 🆕
+
 - [ ] 8 партнёров (4x2 grid)
 - [ ] Verified badges
 - [ ] 4 feature карточки
 - [ ] Trust badges (ISO, Verified, Award)
 
 #### 10. Newsletter 🆕
+
 - [ ] Email form видима
 - [ ] 4 benefit карточки (2x2)
 - [ ] Floating particles background
 - [ ] Submit работает (показывает success)
 
 #### 11. Footer 🆕
+
 - [ ] 6 колонок (desktop)
 - [ ] Social media icons (5 иконок)
 - [ ] Все ссылки present
@@ -116,14 +128,15 @@ npm run dev
 
 ## 📱 Шаг 3: Responsive Testing
 
-### Тест на разных размерах:
+### Тест на разных размерах
 
 ```powershell
 # Откройте Chrome DevTools (F12)
 # Toggle device toolbar (Ctrl+Shift+M)
 ```
 
-#### Mobile (375px - iPhone SE):
+#### Mobile (375px - iPhone SE)
+
 - [ ] Все секции видны
 - [ ] Navigation menu (hamburger)
 - [ ] Cards single column
@@ -131,19 +144,22 @@ npm run dev
 - [ ] Buttons touch-friendly (min 44px)
 - [ ] No horizontal scroll
 
-#### Tablet (768px - iPad):
+#### Tablet (768px - iPad)
+
 - [ ] Grid 2 columns
 - [ ] Navigation visible
 - [ ] Good spacing
 - [ ] Images not stretched
 
-#### Desktop (1280px):
+#### Desktop (1280px)
+
 - [ ] Full layout (3-4 columns)
 - [ ] All features visible
 - [ ] Optimal spacing
 - [ ] Max container width
 
-#### Large (1920px):
+#### Large (1920px)
+
 - [ ] Centered content
 - [ ] Not too wide (max-width applies)
 - [ ] Beautiful spacing
@@ -152,7 +168,7 @@ npm run dev
 
 ## ⚡ Шаг 4: Performance Testing
 
-### Lighthouse Audit:
+### Lighthouse Audit
 
 ```
 1. Откройте Chrome DevTools (F12)
@@ -163,14 +179,16 @@ npm run dev
 ```
 
 **Target Scores:**
+
 - Performance: > 90
 - Accessibility: > 95
 - Best Practices: > 90
 - SEO: > 90
 
-### Core Web Vitals:
+### Core Web Vitals
 
 **Проверьте в Lighthouse:**
+
 - **LCP** (Largest Contentful Paint): < 2.5s ✅
 - **FID** (First Input Delay): < 100ms ✅
 - **CLS** (Cumulative Layout Shift): < 0.1 ✅
@@ -179,25 +197,29 @@ npm run dev
 
 ## 🎨 Шаг 5: Visual Quality Checks
 
-### Animations:
+### Animations
+
 - [ ] Fade-in плавные
 - [ ] Hover states работают
 - [ ] No janky animations
 - [ ] Gradient animations smooth
 
-### Colors:
+### Colors
+
 - [ ] Consistent palette
 - [ ] Good contrast (text readable)
 - [ ] Dark mode работает (toggle)
 - [ ] No color clashing
 
-### Typography:
+### Typography
+
 - [ ] Heading hierarchy clear
 - [ ] Font sizes appropriate
 - [ ] Line spacing comfortable
 - [ ] No text overflow
 
-### Spacing:
+### Spacing
+
 - [ ] Consistent padding/margin
 - [ ] No elements too close
 - [ ] Good breathing room
@@ -207,18 +229,21 @@ npm run dev
 
 ## 🐛 Шаг 6: Functional Testing
 
-### Forms:
+### Forms
+
 - [ ] Newsletter email validation
 - [ ] Submit показывает success
 - [ ] Error states работают
 
-### Links:
+### Links
+
 - [ ] All nav links work
 - [ ] Footer links не 404
 - [ ] CTAs lead to correct pages
 - [ ] External links open in new tab
 
-### Interactive:
+### Interactive
+
 - [ ] Theme toggle (light/dark)
 - [ ] Language switcher
 - [ ] Search bar
@@ -228,7 +253,7 @@ npm run dev
 
 ## 📊 Шаг 7: Build & Deploy Test
 
-### Build Test:
+### Build Test
 
 ```powershell
 # Production build
@@ -236,12 +261,13 @@ npm run build
 ```
 
 **Check for:**
+
 - [ ] No build errors
 - [ ] No TypeScript errors
 - [ ] Bundle size reasonable
 - [ ] All pages generated
 
-### Lint Test:
+### Lint Test
 
 ```powershell
 npm run lint
@@ -250,7 +276,7 @@ npm run lint
 - [ ] No errors
 - [ ] Warnings acceptable
 
-### Type Check:
+### Type Check
 
 ```powershell
 npx tsc --noEmit
@@ -263,6 +289,7 @@ npx tsc --noEmit
 ## 🎯 Success Criteria
 
 ### Must Have ✅
+
 - [x] All 6 new sections render
 - [x] Footer enhanced
 - [x] Responsive на mobile/tablet/desktop
@@ -270,12 +297,14 @@ npx tsc --noEmit
 - [x] Build successful
 
 ### Should Have 🎯
+
 - [ ] Lighthouse Performance > 85
 - [ ] All animations smooth
 - [ ] Forms functional
 - [ ] Images optimized
 
 ### Nice to Have ⭐
+
 - [ ] Lighthouse all > 90
 - [ ] Perfect mobile UX
 - [ ] Advanced interactions
@@ -312,6 +341,7 @@ Error: Invalid src prop
 ### Issue: Slow performance
 
 **Fix:**
+
 - Enable image optimization
 - Lazy load below-fold
 - Check bundle size

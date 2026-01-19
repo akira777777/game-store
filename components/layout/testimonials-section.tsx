@@ -10,7 +10,7 @@ const testimonials = [
     id: 1,
     name: "Алексей Морозов",
     role: "Pro Gamer",
-    avatar: "/avatars/user1.jpg",
+    avatar: "https://ui-avatars.com/api/?name=Алексей+Морозов&background=8b5cf6&color=fff&size=128",
     rating: 5,
     text: "Лучший магазин игр! Мгновенная доставка ключей, отличные цены и всегда актуальные новинки. Покупаю здесь уже больше года!",
     game: "Cyberpunk 2077"
@@ -19,7 +19,7 @@ const testimonials = [
     id: 2,
     name: "Мария Соколова",
     role: "Стример",
-    avatar: "/avatars/user2.jpg",
+    avatar: "https://ui-avatars.com/api/?name=Мария+Соколова&background=ec4899&color=fff&size=128",
     rating: 5,
     text: "Невероятный сервис! Техподдержка отвечает моментально, а каталог игр просто огромный. Рекомендую всем своим подписчикам!",
     game: "Baldur's Gate 3"
@@ -28,7 +28,7 @@ const testimonials = [
     id: 3,
     name: "Дмитрий Волков",
     role: "Casual Player",
-    avatar: "/avatars/user3.jpg",
+    avatar: "https://ui-avatars.com/api/?name=Дмитрий+Волков&background=3b82f6&color=fff&size=128",
     rating: 5,
     text: "Приятные скидки и акции каждую неделю. Купил несколько AAA-игр со скидкой до 70%. Очень доволен!",
     game: "Starfield"
@@ -37,7 +37,7 @@ const testimonials = [
     id: 4,
     name: "Екатерина Петрова",
     role: "Коллекционер игр",
-    avatar: "/avatars/user4.jpg",
+    avatar: "https://ui-avatars.com/api/?name=Екатерина+Петрова&background=10b981&color=fff&size=128",
     rating: 5,
     text: "Огромный выбор! От инди-игр до блокбастеров. Интерфейс удобный, поиск работает отлично. 10/10!",
     game: "Hollow Knight"
@@ -46,7 +46,7 @@ const testimonials = [
     id: 5,
     name: "Иван Кузнецов",
     role: "Game Developer",
-    avatar: "/avatars/user5.jpg",
+    avatar: "https://ui-avatars.com/api/?name=Иван+Кузнецов&background=f59e0b&color=fff&size=128",
     rating: 5,
     text: "Как разработчик игр, ценю качественные площадки. Game Store - один из лучших. Быстро, надёжно, безопасно!",
     game: "Unity Assets"
@@ -55,7 +55,7 @@ const testimonials = [
     id: 6,
     name: "Анна Смирнова",
     role: "Esports Player",
-    avatar: "/avatars/user6.jpg",
+    avatar: "https://ui-avatars.com/api/?name=Анна+Смирнова&background=ef4444&color=fff&size=128",
     rating: 5,
     text: "Покупаю все игры для тренировок здесь. Никаких проблем, всё работает как часы. Лучший выбор для геймеров!",
     game: "CS:GO Prime"
@@ -111,7 +111,7 @@ export function TestimonialsSection() {
             >
               {/* Card glow effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" aria-hidden="true" />
-              
+
               {/* Decorative quote mark */}
               <div className="absolute top-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
                 <Quote className="h-16 w-16 text-primary" aria-hidden="true" />
@@ -139,11 +139,10 @@ export function TestimonialsSection() {
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star
                       key={i}
-                      className={`h-4 w-4 ${
-                        i < testimonial.rating
+                      className={`h-4 w-4 ${i < testimonial.rating
                           ? "fill-yellow-500 text-yellow-500"
                           : "text-gray-300"
-                      } transition-transform group-hover:scale-110`}
+                        } transition-transform group-hover:scale-110`}
                       style={{ transitionDelay: `${i * 50}ms` }}
                       aria-hidden="true"
                     />

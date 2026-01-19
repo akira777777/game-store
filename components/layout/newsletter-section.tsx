@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Bell, Check, Gift, Mail, Sparkles, Star } from "lucide-react"
-import Link from "next/link"
 import { useState } from "react"
 
 export function NewsletterSection() {
@@ -41,7 +40,7 @@ export function NewsletterSection() {
         <div className="max-w-4xl mx-auto">
           <div className="relative p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-background/95 to-background/80 backdrop-blur-xl border border-primary/20 shadow-2xl">
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-            
+
             <div className="relative z-10 text-center space-y-8">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/30 to-primary/10 shadow-lg animate-float">
                 <Mail className="h-8 w-8 text-primary" />

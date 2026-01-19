@@ -6,7 +6,8 @@
 
 ## ✅ Что уже сделано
 
-### Design & Code:
+### Design & Code
+
 - [x] 6 новых секций созданы
 - [x] Footer расширен (6 колонок)
 - [x] Styles улучшены (animations, gradients)
@@ -31,6 +32,7 @@ git diff
 ```
 
 **Проверьте:**
+
 - [ ] Нет sensitive data (API keys, secrets)
 - [ ] .env в .gitignore
 - [ ] Mock data marked for replacement
@@ -58,6 +60,7 @@ npm run build
 ```
 
 **Expected output:**
+
 ```
 ✓ Compiled successfully
 ✓ Collecting page data
@@ -90,6 +93,7 @@ npm run format
 ### Option 1: Vercel (Recommended) ⭐
 
 **Почему Vercel:**
+
 - Создатели Next.js
 - Zero-config deployment
 - Automatic HTTPS
@@ -111,6 +115,7 @@ vercel --prod
 
 **Environment Variables:**
 В Vercel Dashboard → Settings → Environment Variables:
+
 - `DATABASE_URL`
 - `NEXTAUTH_SECRET`
 - `NEXTAUTH_URL`
@@ -135,6 +140,7 @@ netlify deploy --prod
 ### Option 3: Custom VPS (Advanced)
 
 **Requires:**
+
 - Node.js 18+
 - PM2 для process management
 - Nginx reverse proxy
@@ -144,7 +150,7 @@ netlify deploy --prod
 
 ## 🔧 Environment Setup
 
-### Production .env:
+### Production .env
 
 ```bash
 # Database
@@ -159,7 +165,7 @@ NEXT_PUBLIC_SITE_URL="https://yourdomain.com"
 ANALYTICS_ID="your_analytics_id"
 ```
 
-### Database Migration:
+### Database Migration
 
 ```powershell
 # Run migrations on production DB
@@ -177,14 +183,14 @@ npx prisma db seed
 
 **Visit your deployed site and check:**
 
-- [ ] Homepage loads (https://yourdomain.com)
+- [ ] Homepage loads (<https://yourdomain.com>)
 - [ ] All 13 sections visible:
   - [ ] Hero
   - [ ] Live Stats
   - [ ] Value Props
   - [ ] Categories
   - [ ] Featured Games
-  - [ ] New Games  
+  - [ ] New Games
   - [ ] Discounted Games
   - [ ] Trending (NEW)
   - [ ] Upcoming Releases (NEW)
@@ -220,11 +226,13 @@ curl https://yourdomain.com/api/health
 ### 4. Mobile Test (10 min)
 
 **Test on real devices:**
+
 - [ ] iPhone (Safari)
 - [ ] Android (Chrome)
 - [ ] Tablet
 
 **Or use browser DevTools:**
+
 - [ ] iPhone SE (375px)
 - [ ] iPad (768px)
 - [ ] Desktop (1920px)
@@ -233,27 +241,31 @@ curl https://yourdomain.com/api/health
 
 ## 🎯 Production Checklist
 
-### Security:
+### Security
+
 - [ ] HTTPS enabled (автоматически на Vercel/Netlify)
 - [ ] Security headers configured
 - [ ] CSP (Content Security Policy)
 - [ ] No exposed secrets
 - [ ] Database за firewall
 
-### Performance:
+### Performance
+
 - [ ] Images optimized
 - [ ] Caching configured
 - [ ] CDN активен
 - [ ] Compression (gzip/brotli)
 
-### SEO:
+### SEO
+
 - [ ] Meta tags на всех pages
 - [ ] Sitemap generated
 - [ ] robots.txt correct
 - [ ] OpenGraph tags
 - [ ] Analytics configured
 
-### Monitoring:
+### Monitoring
+
 - [ ] Error tracking (Sentry)
 - [ ] Analytics (GA/Plausible)
 - [ ] Uptime monitoring
@@ -263,13 +275,15 @@ curl https://yourdomain.com/api/health
 
 ## 📈 Success Metrics
 
-### Launch Day:
+### Launch Day
+
 - Site accessible ✅
 - No critical errors ✅
 - Page load < 3s ✅
 - Mobile responsive ✅
 
-### Week 1:
+### Week 1
+
 - Lighthouse scores stable
 - No downtime
 - User feedback positive
@@ -279,7 +293,7 @@ curl https://yourdomain.com/api/health
 
 ## 🆘 Rollback Plan
 
-### If something goes wrong:
+### If something goes wrong
 
 ```powershell
 # Vercel - rollback to previous deployment
@@ -295,11 +309,13 @@ git push
 
 ## 📞 Support Contacts
 
-### Hosting Issues:
-- Vercel: https://vercel.com/support
-- Netlify: https://www.netlify.com/support
+### Hosting Issues
 
-### Code Issues:
+- Vercel: <https://vercel.com/support>
+- Netlify: <https://www.netlify.com/support>
+
+### Code Issues
+
 - Check logs in hosting dashboard
 - Review error tracking (Sentry)
 - Contact development team

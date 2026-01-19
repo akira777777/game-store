@@ -16,11 +16,13 @@ try {
     npm run build
     if ($LASTEXITCODE -eq 0) {
         Write-Host "  ✓ Build successful" -ForegroundColor Green
-    } else {
+    }
+    else {
         Write-Host "  ✗ Build failed" -ForegroundColor Red
         exit 1
     }
-} catch {
+}
+catch {
     Write-Host "  ✗ Build error: $_" -ForegroundColor Red
     exit 1
 }
@@ -33,10 +35,12 @@ try {
     npm run lint
     if ($LASTEXITCODE -eq 0) {
         Write-Host "  ✓ Lint passed" -ForegroundColor Green
-    } else {
+    }
+    else {
         Write-Host "  ⚠ Lint warnings (non-critical)" -ForegroundColor Yellow
     }
-} catch {
+}
+catch {
     Write-Host "  ⚠ Lint check skipped" -ForegroundColor Yellow
 }
 
@@ -60,7 +64,8 @@ $allExist = $true
 foreach ($component in $requiredComponents) {
     if (Test-Path $component) {
         Write-Host "  ✓ $component" -ForegroundColor Green
-    } else {
+    }
+    else {
         Write-Host "  ✗ Missing: $component" -ForegroundColor Red
         $allExist = $false
     }
@@ -78,18 +83,19 @@ Write-Host "[4/6] Checking styles..." -ForegroundColor Yellow
 
 if (Test-Path "app/globals.css") {
     $cssContent = Get-Content "app/globals.css" -Raw
-    
+
     $checks = @{
-        "@tailwind" = $cssContent -match "@tailwind"
-        "animations" = $cssContent -match "@keyframes"
-        "dark mode" = $cssContent -match "\.dark"
+        "@tailwind"        = $cssContent -match "@tailwind"
+        "animations"       = $cssContent -match "@keyframes"
+        "dark mode"        = $cssContent -match "\.dark"
         "custom utilities" = $cssContent -match "@layer utilities"
     }
-    
+
     foreach ($check in $checks.GetEnumerator()) {
         if ($check.Value) {
             Write-Host "  ✓ $($check.Key) present" -ForegroundColor Green
-        } else {
+        }
+        else {
             Write-Host "  ⚠ $($check.Key) missing" -ForegroundColor Yellow
         }
     }
@@ -114,10 +120,12 @@ try {
     npx tsc --noEmit
     if ($LASTEXITCODE -eq 0) {
         Write-Host "  ✓ No type errors" -ForegroundColor Green
-    } else {
+    }
+    else {
         Write-Host "  ⚠ Type warnings present (check output)" -ForegroundColor Yellow
     }
-} catch {
+}
+catch {
     Write-Host "  ⚠ Type check skipped" -ForegroundColor Yellow
 }
 
