@@ -1,4 +1,4 @@
-import { Gamepad2, Headphones, Mail, Phone, ShieldCheck } from "lucide-react"
+import { Gamepad2, Headphones, Mail, Phone, ShieldCheck, Facebook, Twitter, Instagram, Youtube, Github, MessageCircle } from "lucide-react"
 import Link from "next/link"
 
 const footerLinks = {
@@ -6,13 +6,31 @@ const footerLinks = {
     { label: "Каталог игр", href: "/games" },
     { label: "Рекомендуемые", href: "/games?featured=true" },
     { label: "Новинки", href: "/games?sort=newest" },
-    { label: "Сначала дешевле", href: "/games?sort=price_asc" },
+    { label: "Со скидкой", href: "/games?sort=price_asc" },
+    { label: "Предзаказы", href: "/games?preorder=true" },
+    { label: "Топ продаж", href: "/games?sort=popular" },
   ],
   account: [
     { label: "Корзина", href: "/cart" },
     { label: "Профиль", href: "/profile" },
+    { label: "История заказов", href: "/orders" },
+    { label: "Список желаний", href: "/wishlist" },
     { label: "Войти", href: "/login" },
     { label: "Регистрация", href: "/register" },
+  ],
+  company: [
+    { label: "О компании", href: "/about" },
+    { label: "Вакансии", href: "/careers" },
+    { label: "Блог", href: "/blog" },
+    { label: "Партнёрам", href: "/partners" },
+    { label: "Пресс-центр", href: "/press" },
+  ],
+  legal: [
+    { label: "Пользовательское соглашение", href: "/terms" },
+    { label: "Политика конфиденциальности", href: "/privacy" },
+    { label: "Политика возврата", href: "/refund" },
+    { label: "Cookie", href: "/cookies" },
+    { label: "GDPR", href: "/gdpr" },
   ],
 }
 
@@ -31,8 +49,9 @@ export function Footer() {
       </div>
 
       <div className="container mx-auto px-4 py-12 sm:py-16 relative z-10">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="space-y-5">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-6">
+          {/* Company Info */}
+          <div className="lg:col-span-2 space-y-5">
             <Link href="/" className="flex items-center gap-2 text-lg font-semibold transition-all duration-300 hover:text-primary hover:scale-105 group">
               <div className="relative">
                 <Gamepad2 className="h-5 w-5 text-primary transition-transform duration-300 group-hover:rotate-12 relative z-10" aria-hidden="true" />
@@ -42,11 +61,36 @@ export function Footer() {
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Современный маркетплейс видеоигр с быстрым доступом к цифровым копиям
-              и проверенными релизами.
+              и проверенными релизами. Более 50,000 довольных геймеров!
             </p>
             <div className="flex items-center gap-2 text-sm text-muted-foreground p-3 rounded-lg bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 hover:border-primary/30 transition-all duration-300 hover:shadow-md group">
               <ShieldCheck className="h-4 w-4 text-primary flex-shrink-0 group-hover:scale-110 transition-transform duration-300" aria-hidden="true" />
-              <span className="group-hover:text-foreground transition-colors">Платежи защищены и обрабатываются мгновенно</span>
+              <span className="group-hover:text-foreground transition-colors">Платежи защищены SSL</span>
+            </div>
+            
+            {/* Social Links */}
+            <div className="space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground">
+                Мы в соцсетях
+              </p>
+              <div className="flex gap-3">
+                {[
+                  { icon: Facebook, href: "#", label: "Facebook", color: "hover:text-blue-500" },
+                  { icon: Twitter, href: "#", label: "Twitter", color: "hover:text-sky-500" },
+                  { icon: Instagram, href: "#", label: "Instagram", color: "hover:text-pink-500" },
+                  { icon: Youtube, href: "#", label: "YouTube", color: "hover:text-red-500" },
+                  { icon: MessageCircle, href: "#", label: "Discord", color: "hover:text-indigo-500" },
+                ].map((social) => (
+                  <Link
+                    key={social.label}
+                    href={social.href}
+                    className={`flex h-10 w-10 items-center justify-center rounded-lg bg-secondary/50 text-muted-foreground transition-all duration-300 hover:scale-110 hover:shadow-lg group ${social.color}`}
+                    aria-label={social.label}
+                  >
+                    <social.icon className="h-5 w-5" />
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -90,6 +134,44 @@ export function Footer() {
 
           <div className="space-y-4">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground">
+              Компания
+            </p>
+            <ul className="space-y-3 text-sm">
+              {footerLinks.company.map((item) => (
+                <li key={item.label}>
+                  <Link
+                    href={item.href}
+                    className="text-muted-foreground hover:text-primary transition-all duration-300 inline-block hover:translate-x-1 group relative"
+                  >
+                    {item.label}
+                    <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-primary group-hover:w-full transition-all duration-300" aria-hidden="true" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="space-y-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground">
+              Документы
+            </p>
+            <ul className="space-y-3 text-sm">
+              {footerLinks.legal.map((item) => (
+                <li key={item.label}>
+                  <Link
+                    href={item.href}
+                    className="text-muted-foreground hover:text-primary transition-all duration-300 inline-block hover:translate-x-1 group relative"
+                  >
+                    {item.label}
+                    <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-primary group-hover:w-full transition-all duration-300" aria-hidden="true" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="space-y-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground">
               Поддержка
             </p>
             <ul className="space-y-3 text-sm">
@@ -98,8 +180,8 @@ export function Footer() {
                   <Mail className="h-4 w-4 text-primary flex-shrink-0 transition-transform duration-300 group-hover:scale-110 relative z-10" aria-hidden="true" />
                   <div className="absolute inset-0 bg-primary/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full" aria-hidden="true" />
                 </div>
-                <a href="mailto:artemmikhailov20031001@gmail.com" className="text-muted-foreground hover:text-primary transition-colors duration-300 relative group/link">
-                  artemmikhailov20031001@gmail.com
+                <a href="mailto:artemmikhailov20031001@gmail.com" className="text-muted-foreground hover:text-primary transition-colors duration-300 relative group/link break-all">
+                  support@gamestore.com
                   <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-primary group-hover/link:w-full transition-all duration-300" aria-hidden="true" />
                 </a>
               </li>
@@ -108,7 +190,7 @@ export function Footer() {
                   <Phone className="h-4 w-4 text-primary flex-shrink-0 transition-transform duration-300 group-hover:scale-110 relative z-10" aria-hidden="true" />
                   <div className="absolute inset-0 bg-primary/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full" aria-hidden="true" />
                 </div>
-                <a href="tel:+78005553535" className="text-muted-foreground hover:text-primary transition-colors duration-300 relative group/link">
+                <a href="tel:+420737500587" className="text-muted-foreground hover:text-primary transition-colors duration-300 relative group/link">
                   +420 737 500 587
                   <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-primary group-hover/link:w-full transition-all duration-300" aria-hidden="true" />
                 </a>
@@ -118,7 +200,12 @@ export function Footer() {
                   <Headphones className="h-4 w-4 text-primary flex-shrink-0 transition-transform duration-300 group-hover:scale-110 relative z-10" aria-hidden="true" />
                   <div className="absolute inset-0 bg-primary/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full" aria-hidden="true" />
                 </div>
-                <span className="text-muted-foreground group-hover:text-primary transition-colors duration-300">Круглосуточная помощь</span>
+                <span className="text-muted-foreground group-hover:text-primary transition-colors duration-300">24/7 Онлайн чат</span>
+              </li>
+              <li className="pt-2">
+                <Link href="/help" className="text-primary hover:underline text-sm font-medium">
+                  Центр помощи →
+                </Link>
               </li>
             </ul>
           </div>
@@ -211,9 +298,30 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col gap-3 border-t border-border/50 pt-8 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <p className="font-medium">© {year} Game Store. Все права защищены.</p>
-          <p>Публичная оферта и политика возврата доступны через поддержку.</p>
+        {/* Bottom Bar */}
+        <div className="mt-12 flex flex-col gap-4 border-t border-border/50 pt-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+            <p className="font-medium text-center sm:text-left">
+              © {year} Game Store. Все права защищены.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Link href="/terms" className="hover:text-primary transition-colors">Условия использования</Link>
+              <span className="text-border">•</span>
+              <Link href="/privacy" className="hover:text-primary transition-colors">Конфиденциальность</Link>
+              <span className="text-border">•</span>
+              <Link href="/sitemap" className="hover:text-primary transition-colors">Карта сайта</Link>
+            </div>
+          </div>
+          
+          {/* Additional Info */}
+          <div className="text-center text-xs text-muted-foreground/70 space-y-1">
+            <p>
+              Game Store является зарегистрированной торговой маркой. Все торговые марки принадлежат их владельцам.
+            </p>
+            <p>
+              Цифровые ключи предоставляются официальными издателями и дистрибьюторами.
+            </p>
+          </div>
         </div>
       </div>
     </footer>

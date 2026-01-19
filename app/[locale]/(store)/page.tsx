@@ -3,6 +3,12 @@ import { CategoriesSection } from "@/components/layout/categories-section"
 import { CtaSection } from "@/components/layout/cta-section"
 import { HeroSection } from "@/components/layout/hero-section"
 import { ValuePropsSection } from "@/components/layout/value-props-section"
+import { TestimonialsSection } from "@/components/layout/testimonials-section"
+import { PartnersSection } from "@/components/layout/partners-section"
+import { TrendingGamesSection } from "@/components/layout/trending-games-section"
+import { UpcomingReleasesSection } from "@/components/layout/upcoming-releases-section"
+import { NewsletterSection } from "@/components/layout/newsletter-section"
+import { LiveStatsSection } from "@/components/layout/live-stats-section"
 import { Button } from "@/components/ui/button"
 import { ErrorBoundary } from "@/components/ui/error-boundary"
 import { db } from "@/lib/db"
@@ -97,6 +103,9 @@ export default async function HomePage({
       <ErrorBoundary>
         <div className="flex flex-col">
           <HeroSection />
+
+          {/* Live Statistics Bar */}
+          <LiveStatsSection />
 
           <main className="container mx-auto px-4 py-12 space-y-16" role="main">
             <ValuePropsSection />
@@ -197,9 +206,19 @@ export default async function HomePage({
                 <GameGrid games={discountedGames.slice(0, 8)} />
               </section>
             )}
-
-            <CtaSection />
           </main>
+
+          {/* New Full-Width Sections */}
+          <TrendingGamesSection />
+          <UpcomingReleasesSection />
+          <TestimonialsSection />
+          <PartnersSection />
+          <NewsletterSection />
+
+          {/* Final CTA */}
+          <div className="container mx-auto px-4 py-12">
+            <CtaSection />
+          </div>
         </div>
       </ErrorBoundary>
     )

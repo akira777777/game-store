@@ -10,7 +10,15 @@
  * in your .env file (see .env.example)
  */
 import bcrypt from 'bcryptjs'
-import { db } from '../lib/db'
+
+// Load environment variables if not already present (for independent script execution)
+if (process.env.NODE_ENV !== 'production' && !process.env.DATABASE_URL && typeof process.loadEnvFile === 'function') {
+  try {
+    process.loadEnvFile();
+  } catch (e) {
+    console.warn('⚠️  Could not load .env file:', e);
+  }
+}
 
 interface GameSeedData {
   title: string
@@ -618,6 +626,7 @@ const staticGames: GameSeedData[] = [
 ]
 
 async function main() {
+  const { db } = await import('../lib/db');
   console.log('🌱 Starting database seeding...')
 
   // Create admin user
@@ -938,6 +947,102 @@ async function main() {
       publisher: 'Valve',
       releaseDate: new Date('2023-09-27'),
     },
+    // New Additions
+    {
+      title: 'The Last of Us Part I',
+      slug: 'the-last-of-us-part-i',
+      description: 'Переживите эмоциональное повествование и незабываемых персонажей в «Одни из нас», лауреате более 200 наград «Игра года».',
+      price: 59.99,
+      discountPrice: null,
+      images: JSON.stringify([
+        'https://images.igdb.com/igdb/image/upload/t_cover_big/co5xex.jpg',
+        'https://images.igdb.com/igdb/image/upload/t_screenshot_big/sc9.jpg'
+      ]),
+      platforms: JSON.stringify(['PC', 'PLAYSTATION']),
+      genres: JSON.stringify(['ACTION', 'ADVENTURE']),
+      featured: true,
+      inStock: true,
+      stockQuantity: 100,
+      developer: 'Naughty Dog',
+      publisher: 'PlayStation PC LLC',
+      releaseDate: new Date('2022-09-02'),
+    },
+    {
+      title: "Marvel's Spider-Man Remastered",
+      slug: 'marvels-spider-man-remastered',
+      description: 'В Marvel\'s Spider-Man Remastered миры Питера Паркера и Человека-паука сталкиваются в оригинальной остросюжетной истории. Играйте за опытного Питера Паркера.',
+      price: 59.99,
+      discountPrice: 35.99,
+      images: JSON.stringify([
+        'https://images.igdb.com/igdb/image/upload/t_cover_big/co50kk.jpg',
+        'https://images.igdb.com/igdb/image/upload/t_screenshot_big/sc8.jpg'
+      ]),
+      platforms: JSON.stringify(['PC', 'PLAYSTATION']),
+      genres: JSON.stringify(['ACTION', 'ADVENTURE']),
+      featured: true,
+      inStock: true,
+      stockQuantity: 120,
+      developer: 'Insomniac Games',
+      publisher: 'PlayStation PC LLC',
+      releaseDate: new Date('2022-08-12'),
+    },
+    {
+      title: 'God of War Ragnarök',
+      slug: 'god-of-war-ragnarok',
+      description: 'Кратос и Атрей должны отправиться в каждое из Девяти миров в поисках ответов, пока они готовятся к предсказанной битве, которая погубит мир.',
+      price: 69.99,
+      discountPrice: null,
+      images: JSON.stringify([
+        'https://images.igdb.com/igdb/image/upload/t_cover_big/co5s5v.jpg',
+        'https://images.igdb.com/igdb/image/upload/t_screenshot_big/sc7.jpg'
+      ]),
+      platforms: JSON.stringify(['PLAYSTATION']),
+      genres: JSON.stringify(['ACTION', 'ADVENTURE']),
+      featured: true,
+      inStock: true,
+      stockQuantity: 80,
+      developer: 'Santa Monica Studio',
+      publisher: 'Sony Interactive Entertainment',
+      releaseDate: new Date('2022-11-09'),
+    },
+    {
+      title: 'Horizon Forbidden West',
+      slug: 'horizon-forbidden-west',
+      description: 'Исследуйте далекие земли, сражайтесь с более крупными и внушающими трепет машинами и встречайте удивительные новые племена.',
+      price: 59.99,
+      discountPrice: 39.99,
+      images: JSON.stringify([
+        'https://images.igdb.com/igdb/image/upload/t_cover_big/co49wp.jpg',
+        'https://images.igdb.com/igdb/image/upload/t_screenshot_big/sc5.jpg'
+      ]),
+      platforms: JSON.stringify(['PLAYSTATION', 'PC']),
+      genres: JSON.stringify(['ACTION', 'RPG']),
+      featured: true,
+      inStock: true,
+      stockQuantity: 90,
+      developer: 'Guerrilla Games',
+      publisher: 'Sony Interactive Entertainment',
+      releaseDate: new Date('2022-02-18'),
+    },
+    {
+      title: "Ghost of Tsushima DIRECTOR'S CUT",
+      slug: 'ghost-of-tsushima-directors-cut',
+      description: 'В конце 13 века монгольская империя опустошила целые народы во время своей кампании по завоеванию Востока. Остров Цусима — это все, что стоит между материковой Японией и огромным флотом вторжения.',
+      price: 59.99,
+      discountPrice: 29.99,
+      images: JSON.stringify([
+        'https://images.igdb.com/igdb/image/upload/t_cover_big/co3wls.jpg',
+        'https://images.igdb.com/igdb/image/upload/t_screenshot_big/sc4.jpg'
+      ]),
+      platforms: JSON.stringify(['PLAYSTATION', 'PC']),
+      genres: JSON.stringify(['ACTION', 'ADVENTURE']),
+      featured: true,
+      inStock: true,
+      stockQuantity: 110,
+      developer: 'Sucker Punch Productions',
+      publisher: 'Sony Interactive Entertainment',
+      releaseDate: new Date('2021-08-20'),
+    },
   ]
 
   for (const game of games) {
@@ -958,5 +1063,10 @@ main()
     process.exit(1)
   })
   .finally(async () => {
-    await db.$disconnect()
+    try {
+      const { db } = await import('../lib/db');
+      await db.$disconnect()
+    } catch {
+      // Ignore if db wasn't initialized
+    }
   })
