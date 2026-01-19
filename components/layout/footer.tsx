@@ -214,9 +214,14 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-12 flex flex-col gap-4 border-t border-border/50 pt-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
-            <p className="font-medium text-center sm:text-left">
-              © {year} Game Store. Все права защищены.
-            </p>
+            <div className="flex flex-col gap-2 text-center sm:text-left">
+              <p className="font-medium">
+                © {year} Game Store. Все права защищены.
+              </p>
+              <p className="text-xs">
+                Created by <span className="font-semibold text-primary">Artem Mikhailov</span>
+              </p>
+            </div>
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Link href="/terms" className="hover:text-primary transition-colors">Условия использования</Link>
               <span className="text-border">•</span>
