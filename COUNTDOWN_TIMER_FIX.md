@@ -10,12 +10,14 @@
 **Где:** `components/layout/upcoming-releases-section.tsx`
 
 **Симптом:**
+
 - Значения "До релиза: X дней" были захардкожены в mock data
 - Счетчик показывал неверные данные (300, 425, 264 дня)
 - Даты некоторых игр уже прошли (GTA VI: 2025-11-15, Fable: 2025-10-10)
 - Счетчик никогда не пересчитывался динамически
 
 **Пример проблемы:**
+
 ```tsx
 // Hardcoded values ❌
 const upcomingReleases = [
@@ -55,6 +57,7 @@ function calculateDaysUntil(releaseDate: string): number {
 ```
 
 **Логика:**
+
 - Получает текущую дату
 - Вычисляет разницу с датой релиза в миллисекундах
 - Конвертирует в дни (округление вверх)
@@ -111,7 +114,7 @@ function calculateDaysUntil(releaseDate: string): number {
    - Примерно: **264 дня** ✅
    - Точный расчет: от текущей даты до 10 октября 2026
 
-### Команда для проверки:
+### Команда для проверки
 
 ```bash
 npm run dev
@@ -157,8 +160,8 @@ const isVeryClose = days < 7
 
 <p className={cn(
   "text-2xl font-bold",
-  isVeryClose ? "text-red-500 animate-pulse" : 
-  isComingSoon ? "text-orange-500" : 
+  isVeryClose ? "text-red-500 animate-pulse" :
+  isComingSoon ? "text-orange-500" :
   "text-primary"
 )}>
   {calculateDaysUntil(game.releaseDate)} дней
@@ -202,6 +205,7 @@ return diffDays > 0 ? diffDays : 0
 ### Пересчет при каждом рендере
 
 Функция `calculateDaysUntil` вызывается при каждом рендере компонента:
+
 - ✅ Всегда актуальные данные
 - ✅ Автоматически обновляется при изменении даты
 - ⚠️ Минимальный overhead (простой расчет)
@@ -221,9 +225,11 @@ return diffDays > 0 ? diffDays : 0
 ---
 
 **Файл изменен:**
+
 - `components/layout/upcoming-releases-section.tsx`
 
 **Изменений:**
+
 - Удалено 3 строки (hardcoded `daysUntil`)
 - Добавлена 1 функция (`calculateDaysUntil`)
 - Обновлено 3 даты релизов

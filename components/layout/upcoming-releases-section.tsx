@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Calendar, Bell, Star, ArrowRight, TrendingUp } from "lucide-react"
+import { ArrowRight, Bell, Calendar } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
