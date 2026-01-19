@@ -1,7 +1,7 @@
 # 🚀 Game Store - Production Deployment Guide
 
-**Version:** 1.0  
-**Date:** 2026-01-19  
+**Version:** 1.0
+**Date:** 2026-01-19
 **Status:** ✅ Ready for Production
 
 ---
@@ -9,6 +9,7 @@
 ## 📋 Pre-Deployment Checklist
 
 ### ✅ Code Quality
+
 - [x] `npm run build` passes ✅
 - [x] No TypeScript errors
 - [x] No console errors
@@ -16,15 +17,18 @@
 - [x] Removed dev files (LLM models, local-agent)
 
 ### ✅ Environment Setup
+
 - [x] `.env.example` exists and is documented
 - [ ] All production env vars prepared
 
 ### ✅ Database
+
 - [x] Prisma schema is valid
 - [x] Migrations created
 - [ ] Production database URL ready
 
 ### ✅ Security
+
 - [x] No hardcoded secrets
 - [x] `.env` in .gitignore
 - [ ] NEXTAUTH_SECRET generated
@@ -38,22 +42,23 @@
 
 **Best for:** Full-featured production deployment
 
-#### Steps:
+#### Steps
 
 1. **Push to GitHub:**
+
 ```bash
 git add .
 git commit -m "chore: clean up project for production deployment"
 git push origin main
 ```
 
-2. **Import to Vercel:**
+1. **Import to Vercel:**
    - Go to [vercel.com](https://vercel.com)
    - Click "New Project"
    - Import your GitHub repository
    - Vercel will auto-detect Next.js
 
-3. **Configure Environment Variables:**
+2. **Configure Environment Variables:**
 
 In Vercel dashboard → Settings → Environment Variables:
 
@@ -66,21 +71,22 @@ STRIPE_PUBLISHABLE_KEY=pk_live_...
 STRIPE_WEBHOOK_SECRET=whsec_...
 ```
 
-4. **Deploy:**
+1. **Deploy:**
    - Click "Deploy"
    - Wait ~2-3 minutes
    - Done! ✅
 
-5. **Configure Stripe Webhook:**
+2. **Configure Stripe Webhook:**
    - Go to Stripe Dashboard → Webhooks
    - Add endpoint: `https://your-domain.vercel.app/api/webhooks/stripe`
    - Select event: `checkout.session.completed`
    - Copy webhook secret → Update `STRIPE_WEBHOOK_SECRET` in Vercel
 
-#### Database Recommendations for Vercel:
-- **Neon** (Serverless PostgreSQL): https://neon.tech ✅ FREE tier
-- **Supabase**: https://supabase.com ✅ FREE tier
-- **PlanetScale**: https://planetscale.com
+#### Database Recommendations for Vercel
+
+- **Neon** (Serverless PostgreSQL): <https://neon.tech> ✅ FREE tier
+- **Supabase**: <https://supabase.com> ✅ FREE tier
+- **PlanetScale**: <https://planetscale.com>
 
 ---
 
@@ -88,24 +94,27 @@ STRIPE_WEBHOOK_SECRET=whsec_...
 
 **Best for:** Simpler deployments
 
-#### Steps:
+#### Steps
 
 1. **Install Netlify CLI:**
+
 ```bash
 npm install -g netlify-cli
 ```
 
-2. **Build:**
+1. **Build:**
+
 ```bash
 npm run build
 ```
 
-3. **Deploy:**
+1. **Deploy:**
+
 ```bash
 netlify deploy --prod
 ```
 
-4. **Configure:**
+1. **Configure:**
    - Build command: `npm run build`
    - Publish directory: `.next`
    - Add environment variables in Netlify UI
@@ -118,19 +127,22 @@ netlify deploy --prod
 
 **Best for:** Edge deployment
 
-#### Steps:
+#### Steps
 
 1. **Install Wrangler:**
+
 ```bash
 npm install -g wrangler
 ```
 
-2. **Login:**
+1. **Login:**
+
 ```bash
 wrangler login
 ```
 
-3. **Deploy:**
+1. **Deploy:**
+
 ```bash
 npm run build
 wrangler pages deploy .next
@@ -157,7 +169,7 @@ node scripts/generate-secret.js
 
 ### 2. Get Stripe Keys
 
-1. Go to https://stripe.com/dashboard
+1. Go to <https://stripe.com/dashboard>
 2. **For Testing:** Switch to "Test mode"
    - Copy "Publishable key" (pk_test_...)
    - Copy "Secret key" (sk_test_...)
@@ -169,17 +181,19 @@ node scripts/generate-secret.js
 
 #### Option A: Neon (Recommended)
 
-1. Go to https://neon.tech
+1. Go to <https://neon.tech>
 2. Create new project
 3. Copy connection string:
+
    ```
    postgresql://user:pass@ep-xxx.us-east-2.aws.neon.tech/neondb?sslmode=require
    ```
+
 4. Add to `DATABASE_URL`
 
 #### Option B: Supabase
 
-1. Go to https://supabase.com
+1. Go to <https://supabase.com>
 2. Create new project
 3. Go to Settings → Database
 4. Copy "Connection string" (Transaction mode)
@@ -189,11 +203,13 @@ node scripts/generate-secret.js
 ### 4. Configure Stripe Webhook
 
 **Production webhook URL format:**
+
 ```
 https://your-domain.com/api/webhooks/stripe
 ```
 
 **Events to select:**
+
 - `checkout.session.completed`
 
 After creating webhook, copy the `Signing secret` (whsec_...) to `STRIPE_WEBHOOK_SECRET`.
@@ -202,7 +218,7 @@ After creating webhook, copy the `Signing secret` (whsec_...) to `STRIPE_WEBHOOK
 
 ## 🗄️ Database Migration
 
-### First Deployment:
+### First Deployment
 
 ```bash
 # 1. Set DATABASE_URL in .env
@@ -215,7 +231,7 @@ npm run db:migrate:deploy
 npm run db:seed
 ```
 
-### Subsequent Deployments:
+### Subsequent Deployments
 
 Migrations run automatically during build (`npm run build`).
 
@@ -224,6 +240,7 @@ Migrations run automatically during build (`npm run build`).
 ## ✅ Post-Deployment Verification
 
 ### 1. Basic Functionality
+
 - [ ] Homepage loads
 - [ ] Games catalog displays
 - [ ] Game details page works
@@ -231,24 +248,28 @@ Migrations run automatically during build (`npm run build`).
 - [ ] Internationalization (EN/RU) works
 
 ### 2. Authentication
+
 - [ ] Register new user
 - [ ] Login works
 - [ ] Logout works
 - [ ] Session persists
 
 ### 3. Shopping Flow
+
 - [ ] Add game to cart
 - [ ] Cart displays correctly
 - [ ] Checkout page loads
 - [ ] Payment form appears
 
 ### 4. Admin Panel
+
 - [ ] Login as admin
 - [ ] Admin dashboard accessible
 - [ ] Can create/edit games
 - [ ] Can view orders
 
 ### 5. Stripe Integration
+
 - [ ] Test payment succeeds
 - [ ] Webhook received
 - [ ] Order created in database
@@ -268,6 +289,7 @@ Migrations run automatically during build (`npm run build`).
 ### Custom Monitoring
 
 Consider adding:
+
 - **Sentry** (error tracking)
 - **LogRocket** (session replay)
 - **Google Analytics** (user analytics)
@@ -279,6 +301,7 @@ Consider adding:
 ### Build Fails
 
 **Error:** `Cannot find module 'prisma'`
+
 ```bash
 npm install
 npm run db:generate
@@ -286,12 +309,14 @@ npm run build
 ```
 
 **Error:** `NEXTAUTH_SECRET is not defined`
+
 - Add `NEXTAUTH_SECRET` to environment variables
 - Redeploy
 
 ### Database Connection Issues
 
 **Error:** `Can't reach database server`
+
 - Verify `DATABASE_URL` is correct
 - Check database is running
 - For Neon/Supabase: verify SSL mode (`?sslmode=require`)
@@ -315,6 +340,7 @@ npm run build
 ### 1. Enable Caching
 
 In `next.config.mjs`:
+
 ```javascript
 images: {
   minimumCacheTTL: 60,
@@ -324,6 +350,7 @@ images: {
 ### 2. Optimize Images
 
 All images should be:
+
 - WebP format
 - Optimized size
 - Lazy loaded (Next.js does this automatically)
@@ -337,6 +364,7 @@ All images should be:
 ### 4. Prisma Connection Pooling
 
 For serverless (Vercel), use:
+
 ```prisma
 datasource db {
   provider = "postgresql"
@@ -401,21 +429,24 @@ jobs:
 ## 📞 Support
 
 ### Documentation
+
 - `README.md` - Project overview
 - `ENV_SETUP.md` - Environment setup
 - `TROUBLESHOOTING.md` - Common issues
 
 ### External Resources
-- **Next.js Docs:** https://nextjs.org/docs
-- **Prisma Docs:** https://www.prisma.io/docs
-- **Stripe Docs:** https://stripe.com/docs
-- **Vercel Docs:** https://vercel.com/docs
+
+- **Next.js Docs:** <https://nextjs.org/docs>
+- **Prisma Docs:** <https://www.prisma.io/docs>
+- **Stripe Docs:** <https://stripe.com/docs>
+- **Vercel Docs:** <https://vercel.com/docs>
 
 ---
 
 **🎉 Your Game Store is ready for production!**
 
 **Quick Deploy to Vercel:**
+
 ```bash
 git add .
 git commit -m "chore: prepare for production deployment"
