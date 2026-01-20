@@ -56,13 +56,21 @@ function createPrismaClient() {
   }
 }
 
-const db = globalForPrisma.prisma ?? createPrismaClient();
-
-export { db };
-
-if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = db
+// Lazy initialization to avoid build-time initialization
+function getDb() {
+  if (!globalForPrisma.prisma) {
+    globalForPrisma.prisma = createPrismaClient();
+  }
+  return globalForPrisma.prisma;
 }
+
+// Export a Proxy that lazily initializes on first access
+export const db = new Proxy({} as PrismaClient, {
+  get(target, prop) {
+    const client = getDb();
+    return (client as any)[prop];
+  }
+});
 
 // Graceful shutdown
 if (typeof process !== 'undefined') {
