@@ -8,15 +8,15 @@
 
 ## Последний шаг: Обновить NEXTAUTH_URL
 
-### Ваш текущий URL:
+### Ваш текущий URL
 
 ```
 https://steady-meringue-53f621.netlify.app
 ```
 
-### Что сделать:
+### Что сделать
 
-1. Открыть Netlify: https://app.netlify.com/
+1. Открыть Netlify: <https://app.netlify.com/>
 2. Выбрать проект `game-store`
 3. **Site settings** → **Environment variables**
 4. Найти `NEXTAUTH_URL`
@@ -26,16 +26,17 @@ https://steady-meringue-53f621.netlify.app
 https://steady-meringue-53f621.netlify.app
 ```
 
-6. Сохранить
-7. **Deploys** → **Trigger deploy** → **Deploy site**
+1. Сохранить
+2. **Deploys** → **Trigger deploy** → **Deploy site**
 
 ---
 
-## После обновления:
+## После обновления
 
-Auth ошибки исчезнут! 
+Auth ошибки исчезнут!
 
 Сайт будет полностью работать для портфолио:
+
 - ✅ Верстка
 - ✅ Изображения
 - ✅ Навигация
