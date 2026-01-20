@@ -23,10 +23,7 @@ export async function GameCard({ game }: GameCardProps) {
   const genres = parseJsonArrayOrString(game.genres)
 
   return (
-    <Card className="relative overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-[1.03] hover:-translate-y-2 group border-border/50 bg-gradient-to-br from-background/80 to-background/60 backdrop-blur-sm">
-      {/* Decorative gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" aria-hidden="true" />
-
+    <Card className="relative overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group border-border/50 bg-card/80 backdrop-blur-sm">
       <Link href={`/games/${game.slug}`} aria-label={t("detailsAria", { title: game.title })}>
         <div className="relative aspect-video w-full bg-muted overflow-hidden">
           {images.length > 0 ? (
@@ -35,13 +32,11 @@ export async function GameCard({ game }: GameCardProps) {
                 src={images[0]}
                 alt={t("coverAlt", { title: game.title })}
                 fill
-                className="object-cover transition-transform duration-700 group-hover:scale-110"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              {/* Shine effect on hover */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" aria-hidden="true" />
+              {/* ✅ ОПТИМИЗИРОВАНО: Убраны shine effect и gradient overlay */}
             </>
           ) : (
             <div className="w-full h-full flex items-center justify-center text-muted-foreground bg-gradient-to-br from-muted to-muted/50" aria-hidden="true">
@@ -50,18 +45,17 @@ export async function GameCard({ game }: GameCardProps) {
           )}
           {hasDiscount && discountPercent > 0 && (
             <Badge
-              className="absolute top-3 right-3 shadow-lg animate-pulse z-10 border-2 border-background/50"
+              className="absolute top-3 right-3 shadow-lg z-10 border-2 border-background/50"
               variant="destructive"
               aria-label={t("discountAria", { percent: discountPercent })}
             >
-              <span className="relative z-10">{t("discount", { percent: discountPercent })}</span>
-              <div className="absolute inset-0 bg-destructive/50 blur-md -z-10 animate-pulse" aria-hidden="true" />
+              {t("discount", { percent: discountPercent })}
             </Badge>
           )}
         </div>
       </Link>
       <CardHeader className="pb-3 relative z-10">
-        <CardTitle className="line-clamp-2 text-lg group-hover:text-primary transition-colors duration-300 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text group-hover:from-primary group-hover:to-primary/80">
+        <CardTitle className="line-clamp-2 text-lg group-hover:text-primary transition-colors duration-300">
           {game.title}
         </CardTitle>
         {genres.length > 0 && (
@@ -71,7 +65,7 @@ export async function GameCard({ game }: GameCardProps) {
                 key={genre}
                 variant="secondary"
                 role="listitem"
-                className="text-xs group-hover:bg-primary/10 group-hover:text-primary transition-colors duration-300"
+                className="text-xs"
               >
                 {genre}
               </Badge>
@@ -103,13 +97,12 @@ export async function GameCard({ game }: GameCardProps) {
         </div>
       </CardContent>
       <CardFooter className="pt-0 relative z-10">
-        <Link href={`/games/${game.slug}`} className="w-full group" aria-label={t("detailsAriaButton", { title: game.title })}>
+        <Link href={`/games/${game.slug}`} className="w-full" aria-label={t("detailsAriaButton", { title: game.title })}>
           <Button
-            className="w-full group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-primary/90 group-hover:text-primary-foreground transition-all duration-300 shadow-md hover:shadow-xl hover:scale-105 relative overflow-hidden"
+            className="w-full shadow-md hover:shadow-lg transition-all duration-300"
             aria-label={t("detailsAriaButton", { title: game.title })}
           >
-            <span className="relative z-10">{t("details")}</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" aria-hidden="true" />
+            {t("details")}
           </Button>
         </Link>
       </CardFooter>

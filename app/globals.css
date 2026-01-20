@@ -116,52 +116,22 @@
     @apply bg-primary/20 text-primary-foreground;
   }
 
-  /* Smooth transitions for interactive elements and theme changes */
-  a,
-  button {
-    @apply transition-colors duration-300 ease-in-out;
-  }
-
-  /* Плавные переходы только для интерактивных элементов */
+  /* ✅ ОПТИМИЗИРОВАНО: Transitions только для интерактивных элементов */
   button,
   a,
   input,
   textarea,
   select,
   [role="button"],
-  [class*="Button"],
-  [class*="Card"]:hover,
-  nav,
-  .theme-transition {
-    transition-property: background-color, border-color, color, fill, stroke, box-shadow, opacity;
+  [class*="Button"] {
+    transition-property: background-color, border-color, color, opacity, transform;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 300ms;
   }
 
-  /* Исключаем элементы, которые не должны анимироваться */
-  svg:not([class*="transition"]),
-  img,
-  video,
-  canvas,
-  iframe,
-  [data-no-transition],
-  script,
-  style {
-    transition: none !important;
-  }
-
-  /* Специальные переходы для карточек и контейнеров */
-  [class*="card"],
-  [class*="Card"],
-  nav,
-  header,
-  footer,
-  main,
-  section,
-  div[class*="container"],
-  article {
-    transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-      color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+  /* Оптимизированные переходы для карточек (только при hover) */
+  [class*="Card"]:hover {
+    transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
       border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 

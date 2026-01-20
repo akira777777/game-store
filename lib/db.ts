@@ -1,20 +1,22 @@
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
 import Database from 'better-sqlite3';
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
+import { Pool } from 'pg';
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
+  pool?: Pool
 }
 
 function createPrismaClient() {
-  // For portfolio/demo - use SQLite with adapter (required for Prisma 7)
   const DATABASE_URL = process.env.DATABASE_URL || 'file:./prisma/dev.db';
-  
+
   // Check if it's a SQLite database
   const isSQLite = DATABASE_URL.startsWith('file:');
-  
+
   if (isSQLite) {
     let sqlitePath = DATABASE_URL.replace(/^file:/, '');
 
@@ -39,8 +41,15 @@ function createPrismaClient() {
       errorFormat: 'pretty',
     });
   } else {
-    // PostgreSQL or other database - use without adapter
+    // PostgreSQL - use pg adapter (required for Prisma 7)
+    const pool = new Pool({ connectionString: DATABASE_URL });
+    const adapter = new PrismaPg(pool);
+
+    // Store pool for cleanup
+    globalForPrisma.pool = pool;
+
     return new PrismaClient({
+      adapter,
       log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
       errorFormat: 'pretty',
     });
@@ -59,6 +68,10 @@ if (process.env.NODE_ENV !== 'production') {
 if (typeof process !== 'undefined') {
   const shutdown = async () => {
     await db.$disconnect()
+    // Close pg pool if it exists
+    if (globalForPrisma.pool) {
+      await globalForPrisma.pool.end()
+    }
   }
 
   process.on('beforeExit', shutdown)
