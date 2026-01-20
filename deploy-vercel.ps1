@@ -50,7 +50,8 @@ if ($choice -eq "2") {
     Write-Host "🚀 Deploying to PRODUCTION..." -ForegroundColor Green
     Write-Host ""
     vercel --prod
-} else {
+}
+else {
     Write-Host ""
     Write-Host "🔍 Deploying PREVIEW..." -ForegroundColor Cyan
     Write-Host ""

@@ -28,7 +28,7 @@ vercel --prod
 
 ### Add Environment Variables in Vercel Dashboard
 
-1. Go to: https://vercel.com/dashboard
+1. Go to: <https://vercel.com/dashboard>
 2. Select your project
 3. Settings -> Environment Variables
 4. Add:
@@ -39,7 +39,7 @@ NEXTAUTH_SECRET=f8a7c3e9d2b1f4a6e8c7d9b3f2a5e1c4d6b8f7a9c3e5d2b4f6a8c1e3d5b7f9a2
 NEXTAUTH_URL=https://your-app.vercel.app
 ```
 
-5. Redeploy:
+1. Redeploy:
 
 ```powershell
 vercel --prod
@@ -49,7 +49,7 @@ vercel --prod
 
 ## Get Free Database (Neon)
 
-1. Go to: https://neon.tech
+1. Go to: <https://neon.tech>
 2. Sign up (free)
 3. Create new project
 4. Copy DATABASE_URL (Pooled connection)
@@ -103,6 +103,7 @@ npm run build
 ### Database Connection Error
 
 Make sure:
+
 1. DATABASE_URL is correct
 2. Database is running (Neon auto-pause is normal)
 3. Prisma is generated: `npx prisma generate`
@@ -122,5 +123,6 @@ Make sure:
 ---
 
 **Need help? Check full guides:**
+
 - `VERCEL_QUICK_DEPLOY.md` (detailed Vercel guide)
 - `RAILWAY_DEPLOY_INSTRUCTIONS.md` (Railway guide)
