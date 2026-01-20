@@ -6,10 +6,9 @@ generator client {
 }
 
 datasource db {
-  // Для локального тестирования используем SQLite
-  // Для продакшена измените на "postgresql"
-  provider = "sqlite"
+  // Using PostgreSQL for production (Neon)
   // Prisma 7: URL configured in prisma.config.ts
+  provider = "postgresql"
 }
 
 model User {

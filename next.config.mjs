@@ -4,9 +4,8 @@ const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
+  // Removed 'output: export' - incompatible with API routes and NextAuth
   images: {
-    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -18,10 +17,7 @@ const nextConfig = {
       },
     ],
   },
-  // Disable features not supported in static export
-  experimental: {
-    serverActions: false,
-  },
+  // Server Actions are enabled by default in Next.js 14
 };
 
 export default withNextIntl(nextConfig);

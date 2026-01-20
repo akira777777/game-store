@@ -122,13 +122,20 @@
     @apply transition-colors duration-300 ease-in-out;
   }
 
-  /* Плавные переходы для всех элементов при смене темы */
-  *,
-  *::before,
-  *::after {
+  /* Плавные переходы только для интерактивных элементов */
+  button,
+  a,
+  input,
+  textarea,
+  select,
+  [role="button"],
+  [class*="Button"],
+  [class*="Card"]:hover,
+  nav,
+  .theme-transition {
     transition-property: background-color, border-color, color, fill, stroke, box-shadow, opacity;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 400ms;
+    transition-duration: 300ms;
   }
 
   /* Исключаем элементы, которые не должны анимироваться */
@@ -154,8 +161,8 @@
   div[class*="container"],
   article {
     transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   /* Улучшенная читаемость текста в темной теме */
@@ -284,7 +291,7 @@
     @apply relative overflow-hidden;
   }
 
-  section + section {
+  section+section {
     @apply mt-0;
   }
 
@@ -373,6 +380,7 @@
       opacity: 0;
       transform: translateX(-20px);
     }
+
     to {
       opacity: 1;
       transform: translateX(0);
@@ -389,6 +397,7 @@
       opacity: 0;
       transform: translateX(20px);
     }
+
     to {
       opacity: 1;
       transform: translateX(0);
@@ -405,6 +414,7 @@
       opacity: 0;
       transform: scale(0.9);
     }
+
     to {
       opacity: 1;
       transform: scale(1);
@@ -417,9 +427,12 @@
 
   /* Float animation */
   @keyframes float {
-    0%, 100% {
+
+    0%,
+    100% {
       transform: translateY(0px);
     }
+
     50% {
       transform: translateY(-10px);
     }
@@ -434,6 +447,7 @@
     0% {
       background-position: -1000px 0;
     }
+
     100% {
       background-position: 1000px 0;
     }
@@ -441,12 +455,10 @@
 
   .animate-shimmer {
     animation: shimmer 2s infinite;
-    background: linear-gradient(
-      to right,
-      transparent 0%,
-      rgba(255, 255, 255, 0.1) 50%,
-      transparent 100%
-    );
+    background: linear-gradient(to right,
+        transparent 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 100%);
     background-size: 1000px 100%;
   }
 
