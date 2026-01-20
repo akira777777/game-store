@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
+import { Link } from "@/lib/navigation"
 import { ArrowRight, Gamepad2, Headset, ShieldCheck, Sparkles, Star, Users, Zap } from "lucide-react"
 import { getTranslations } from "next-intl/server"
-import { Link } from "@/lib/navigation"
 
 export async function HeroSection() {
   const t = await getTranslations("hero")

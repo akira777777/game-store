@@ -1,11 +1,11 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { parseJsonArrayOrString, formatPrice } from "@/lib/game-utils"
-import { Game } from "@prisma/client"
-import Image from "next/image"
+import { formatPrice, parseJsonArrayOrString } from "@/lib/game-utils"
 import { Link } from "@/lib/navigation"
+import { Game } from "@prisma/client"
 import { getTranslations } from "next-intl/server"
+import Image from "next/image"
 
 interface GameCardProps {
   game: Game
