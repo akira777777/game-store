@@ -1,7 +1,7 @@
-import { auth } from "@/lib/auth"
-import { db } from "@/lib/db"
-import { stripe } from "@/lib/stripe"
-import { NextRequest, NextResponse } from "next/server"
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { stripe } from "@/lib/stripe";
+import { NextRequest, NextResponse } from "next/server";
 
 // Force Node.js runtime for SQLite compatibility
 export const runtime = 'nodejs';
