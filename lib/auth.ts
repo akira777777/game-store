@@ -48,64 +48,80 @@ try {
           password: { label: "Password", type: "password" },
         },
         async authorize(credentials) {
-          // Lazy import db only when authorize() is called (not in middleware/Edge Runtime)
-          const { db } = await import("@/lib/db");
+          try {
+            // Lazy import db only when authorize() is called (not in middleware/Edge Runtime)
+            const { db } = await import("@/lib/db");
 
-          if (!credentials?.email || !credentials?.password) {
-            throw new Error("Invalid credentials")
-          }
+            if (!credentials?.email || !credentials?.password) {
+              return null;
+            }
 
-          // Normalize email to lowercase for case-insensitive comparison
-          const email = (credentials.email as string).toLowerCase().trim()
-          const password = credentials.password as string
+            // Normalize email to lowercase for case-insensitive comparison
+            const email = (credentials.email as string).toLowerCase().trim()
+            const password = credentials.password as string
 
-          const user = await db.user.findUnique({
-            where: {
-              email: email,
-            },
-          })
+            const user = await db.user.findUnique({
+              where: {
+                email: email,
+              },
+            })
 
-          if (!user || !user.password) {
-            throw new Error("Invalid credentials")
-          }
+            if (!user || !user.password) {
+              return null;
+            }
 
-          // Dynamic import bcryptjs only when needed (not in Edge Runtime)
-          if (!bcrypt) {
-            bcrypt = (await import("bcryptjs")).default;
-          }
-          const isPasswordValid = await bcrypt.compare(
-            password,
-            user.password
-          )
+            // Dynamic import bcryptjs only when needed (not in Edge Runtime)
+            if (!bcrypt) {
+              bcrypt = (await import("bcryptjs")).default;
+            }
+            const isPasswordValid = await bcrypt.compare(
+              password,
+              user.password
+            )
 
-          if (!isPasswordValid) {
-            throw new Error("Invalid credentials")
-          }
+            if (!isPasswordValid) {
+              return null;
+            }
 
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            role: user.role as Role,
+            return {
+              id: user.id,
+              email: user.email,
+              name: user.name,
+              role: user.role as Role,
+            }
+          } catch (error) {
+            // For portfolio/demo: gracefully handle DB errors (SQLite doesn't work in serverless)
+            console.error("Auth error (DB unavailable - expected for demo):", error);
+            return null;
           }
         },
       }),
     ],
     callbacks: {
       async jwt({ token, user }: { token: any; user?: any }) {
-        if (user) {
-          token.id = user.id
-          // User interface extends with role property via module declaration
-          token.role = user.role
+        try {
+          if (user) {
+            token.id = user.id
+            // User interface extends with role property via module declaration
+            token.role = user.role
+          }
+          return token
+        } catch (error) {
+          console.error("JWT callback error:", error);
+          return token;
         }
-        return token
       },
       async session({ session, token }: { session: any; token: any }) {
-        if (session.user) {
-          session.user.id = token.id as string
-          session.user.role = (token.role as Role) || "CUSTOMER"
+        try {
+          if (session.user) {
+            session.user.id = token.id as string
+            session.user.role = (token.role as Role) || "CUSTOMER"
+          }
+          return session
+        } catch (error) {
+          console.error("Session callback error:", error);
+          return session;
         }
-        return session
       },
     },
     // Support both AUTH_SECRET (preferred in v5) and NEXTAUTH_SECRET (legacy)
