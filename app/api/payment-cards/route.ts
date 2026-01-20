@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { Prisma } from "@prisma/client"
 
 export const dynamic = "force-dynamic"
+export const runtime = 'nodejs';
 
 export async function GET(request: NextRequest) {
   try {

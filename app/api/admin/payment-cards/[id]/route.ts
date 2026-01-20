@@ -3,6 +3,9 @@ import { db } from "@/lib/db"
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 
+// Force Node.js runtime for SQLite compatibility
+export const runtime = 'nodejs';
+
 const paymentCardSchema = z.object({
   title: z.string().min(1).optional(),
   slug: z.string().min(1).optional(),

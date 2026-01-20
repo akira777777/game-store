@@ -4,6 +4,9 @@ import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
 import { z } from "zod"
 
+// Force Node.js runtime for SQLite compatibility
+export const runtime = 'nodejs';
+
 const gameSchema = z.object({
   title: z.string().min(1).optional(),
   slug: z.string().min(1).optional(),

@@ -3,6 +3,7 @@ import { logger } from "@/lib/logger"
 import { NextRequest, NextResponse } from "next/server"
 
 export const revalidate = 3600 // Revalidate every hour
+export const runtime = 'nodejs';
 
 export async function GET(
   _request: NextRequest,

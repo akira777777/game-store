@@ -4,6 +4,9 @@ import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
 import Stripe from "stripe"
 
+// Force Node.js runtime for SQLite compatibility
+export const runtime = 'nodejs';
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.text()

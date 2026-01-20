@@ -5,6 +5,9 @@ import bcrypt from "bcryptjs"
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 
+// Force Node.js runtime for SQLite compatibility
+export const runtime = 'nodejs';
+
 const registerSchema = z.object({
   email: z.string().email("Invalid email address").toLowerCase().trim(),
   password: z.string().min(6, "Password must be at least 6 characters").max(128, "Password must be at most 128 characters"),

@@ -2,6 +2,9 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
+// Force Node.js runtime for SQLite compatibility
+export const runtime = 'nodejs';
+
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
