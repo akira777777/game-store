@@ -1,0 +1,70 @@
+# Vercel Ignore File
+# Don't upload these to Vercel
+
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build outputs
+.next
+out
+build
+dist
+
+# Development
+.env
+.env.local
+.env*.local
+
+# Database
+prisma/dev.db
+prisma/dev.db-journal
+*.db
+*.db-journal
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Git
+.git
+.gitignore
+
+# Testing
+coverage
+.nyc_output
+
+# Misc
+*.tsbuildinfo
+.eslintcache
+
+# Large files that shouldn't be uploaded
+Qwen2.5-Coder-7B-Instruct/
+local-agent/
+*.md
+!README.md
+
+# Deployment scripts
+deploy-*.ps1
+scripts/
+
+# Documentation (except README)
+DEPLOY*.md
+*_DEPLOY*.md
+*INSTRUCTIONS*.md
+PROJECT_AUDIT*.md
+LAYOUT_OPTIMIZATION.md
