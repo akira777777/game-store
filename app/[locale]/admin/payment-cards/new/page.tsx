@@ -1,81 +1,33 @@
 "use client"
 
 import { ImageArrayInput } from "@/components/admin/image-array-input"
-import { MultiSelectButtons } from "@/components/admin/multi-select-buttons"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { parseJsonArrayOrString } from "@/lib/game-utils"
-import { useParams, useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 
-const platforms: string[] = ["PC", "PLAYSTATION", "XBOX", "NINTENDO_SWITCH", "MOBILE"]
-const genres: string[] = ["ACTION", "ADVENTURE", "RPG", "STRATEGY", "SPORTS", "RACING", "SHOOTER", "SIMULATION", "INDIE", "PUZZLE"]
-
-export default function EditGamePage() {
+export default function NewPaymentCardPage() {
   const router = useRouter()
-  const params = useParams()
-  const gameId = params.id as string
-  const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState("")
-  
+
   const [formData, setFormData] = useState({
     title: "",
     slug: "",
     description: "",
+    cardType: "",
+    region: "",
+    currency: "",
+    denomination: "",
     price: "",
     discountPrice: "",
     images: [] as string[],
-    releaseDate: "",
-    developer: "",
-    publisher: "",
-    platforms: [] as string[],
-    genres: [] as string[],
     featured: false,
     inStock: true,
     stockQuantity: "0",
   })
-
-  useEffect(() => {
-    const fetchGame = async () => {
-      try {
-        const response = await fetch(`/api/admin/games/${gameId}`)
-        if (!response.ok) {
-          throw new Error("Failed to fetch game")
-        }
-        const data = await response.json()
-        const game = data.game
-        
-        setFormData({
-          title: game.title,
-          slug: game.slug,
-          description: game.description,
-          price: game.price.toString(),
-          discountPrice: game.discountPrice?.toString() || "",
-          images: parseJsonArrayOrString(game.images),
-          releaseDate: game.releaseDate ? new Date(game.releaseDate).toISOString().split("T")[0] : "",
-          developer: game.developer || "",
-          publisher: game.publisher || "",
-          platforms: parseJsonArrayOrString(game.platforms),
-          genres: parseJsonArrayOrString(game.genres),
-          featured: game.featured,
-          inStock: game.inStock,
-          stockQuantity: game.stockQuantity.toString(),
-        })
-      } catch (error) {
-        console.error("Error fetching game:", error)
-        setError("Ошибка загрузки игры")
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    if (gameId) {
-      fetchGame()
-    }
-  }, [gameId])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -83,33 +35,31 @@ export default function EditGamePage() {
     setIsSubmitting(true)
 
     try {
-      const response = await fetch(`/api/admin/games/${gameId}`, {
-        method: "PUT",
+      const response = await fetch("/api/admin/payment-cards", {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
+          denomination: formData.denomination ? parseFloat(formData.denomination) : null,
           price: parseFloat(formData.price),
           discountPrice: formData.discountPrice ? parseFloat(formData.discountPrice) : null,
           images: JSON.stringify(formData.images.filter(img => img.trim() !== "")),
-          platforms: JSON.stringify(formData.platforms),
-          genres: JSON.stringify(formData.genres),
           stockQuantity: parseInt(formData.stockQuantity) || 0,
-          releaseDate: formData.releaseDate || null,
         }),
       })
 
       const data = await response.json()
 
       if (!response.ok) {
-        setError(data.error || "Ошибка обновления игры")
+        setError(data.error || "Ошибка создания карты")
         return
       }
 
-      router.push("/admin/games")
+      router.push("/admin/payment-cards")
       router.refresh()
     } catch (error) {
-      console.error("Error updating game:", error)
-      setError("Произошла ошибка при обновлении игры")
+      console.error("Error creating payment card:", error)
+      setError("Произошла ошибка при создании карты")
     } finally {
       setIsSubmitting(false)
     }
@@ -117,11 +67,11 @@ export default function EditGamePage() {
 
   return (
     <div>
-      <h1 className="text-4xl font-bold mb-8">Редактировать игру</h1>
+      <h1 className="text-4xl font-bold mb-8">Создать платежную карту</h1>
 
       <Card>
         <CardHeader>
-          <CardTitle>Информация об игре</CardTitle>
+          <CardTitle>Информация о карте</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -149,18 +99,59 @@ export default function EditGamePage() {
                   value={formData.slug}
                   onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                   required
-                  placeholder="game-title"
+                  placeholder="payment-card-title"
                 />
               </div>
 
               <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="description">Описание *</Label>
+                <Label htmlFor="description">Описание</Label>
                 <textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="cardType">Тип карты *</Label>
+                <Input
+                  id="cardType"
+                  value={formData.cardType}
+                  onChange={(e) => setFormData({ ...formData, cardType: e.target.value })}
                   required
+                  placeholder="Visa, Steam, etc."
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="region">Регион</Label>
+                <Input
+                  id="region"
+                  value={formData.region}
+                  onChange={(e) => setFormData({ ...formData, region: e.target.value })}
+                  placeholder="Global, US, EU"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="currency">Валюта</Label>
+                <Input
+                  id="currency"
+                  value={formData.currency}
+                  onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
+                  placeholder="USD, EUR"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="denomination">Номинал</Label>
+                <Input
+                  id="denomination"
+                  type="number"
+                  step="0.01"
+                  value={formData.denomination}
+                  onChange={(e) => setFormData({ ...formData, denomination: e.target.value })}
                 />
               </div>
 
@@ -187,42 +178,6 @@ export default function EditGamePage() {
                 />
               </div>
 
-              <div className="space-y-2 md:col-span-2">
-                <Label>Изображения</Label>
-                <ImageArrayInput
-                  values={formData.images}
-                  onChange={(images) => setFormData({ ...formData, images })}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="releaseDate">Дата выхода</Label>
-                <Input
-                  id="releaseDate"
-                  type="date"
-                  value={formData.releaseDate}
-                  onChange={(e) => setFormData({ ...formData, releaseDate: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="developer">Разработчик</Label>
-                <Input
-                  id="developer"
-                  value={formData.developer}
-                  onChange={(e) => setFormData({ ...formData, developer: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="publisher">Издатель</Label>
-                <Input
-                  id="publisher"
-                  value={formData.publisher}
-                  onChange={(e) => setFormData({ ...formData, publisher: e.target.value })}
-                />
-              </div>
-
               <div className="space-y-2">
                 <Label htmlFor="stockQuantity">Количество на складе</Label>
                 <Input
@@ -232,21 +187,15 @@ export default function EditGamePage() {
                   onChange={(e) => setFormData({ ...formData, stockQuantity: e.target.value })}
                 />
               </div>
+
+              <div className="space-y-2 md:col-span-2">
+                <Label>Изображения</Label>
+                <ImageArrayInput
+                  values={formData.images}
+                  onChange={(images) => setFormData({ ...formData, images })}
+                />
+              </div>
             </div>
-
-            <MultiSelectButtons
-              label="Платформы"
-              options={platforms}
-              selected={formData.platforms}
-              onChange={(platforms) => setFormData({ ...formData, platforms })}
-            />
-
-            <MultiSelectButtons
-              label="Жанры"
-              options={genres}
-              selected={formData.genres}
-              onChange={(genres) => setFormData({ ...formData, genres })}
-            />
 
             <div className="flex items-center gap-4">
               <input
@@ -256,7 +205,7 @@ export default function EditGamePage() {
                 onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
                 className="h-4 w-4"
               />
-              <Label htmlFor="featured">Рекомендуемая игра</Label>
+              <Label htmlFor="featured">Популярная</Label>
             </div>
 
             <div className="flex items-center gap-4">
@@ -272,7 +221,7 @@ export default function EditGamePage() {
 
             <div className="flex gap-4">
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Сохранение..." : "Сохранить изменения"}
+                {isSubmitting ? "Создание..." : "Создать карту"}
               </Button>
               <Button
                 type="button"

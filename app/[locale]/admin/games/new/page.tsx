@@ -1,5 +1,7 @@
 "use client"
 
+import { ImageArrayInput } from "@/components/admin/image-array-input"
+import { MultiSelectButtons } from "@/components/admin/multi-select-buttons"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -21,7 +23,7 @@ export default function NewGamePage() {
     description: "",
     price: "",
     discountPrice: "",
-    images: "",
+    images: [] as string[],
     releaseDate: "",
     developer: "",
     publisher: "",
@@ -45,7 +47,7 @@ export default function NewGamePage() {
           ...formData,
           price: parseFloat(formData.price),
           discountPrice: formData.discountPrice ? parseFloat(formData.discountPrice) : null,
-          images: formData.images ? JSON.stringify(formData.images.split(",").map((img) => img.trim())) : "[]",
+          images: JSON.stringify(formData.images.filter(img => img.trim() !== "")),
           platforms: JSON.stringify(formData.platforms),
           genres: JSON.stringify(formData.genres),
           stockQuantity: parseInt(formData.stockQuantity) || 0,
@@ -67,24 +69,6 @@ export default function NewGamePage() {
     } finally {
       setIsSubmitting(false)
     }
-  }
-
-  const togglePlatform = (platform: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      platforms: prev.platforms.includes(platform)
-        ? prev.platforms.filter((p) => p !== platform)
-        : [...prev.platforms, platform],
-    }))
-  }
-
-  const toggleGenre = (genre: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      genres: prev.genres.includes(genre)
-        ? prev.genres.filter((g) => g !== genre)
-        : [...prev.genres, genre],
-    }))
   }
 
   return (
@@ -159,13 +143,11 @@ export default function NewGamePage() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="images">URL изображений (через запятую)</Label>
-                <Input
-                  id="images"
-                  value={formData.images}
-                  onChange={(e) => setFormData({ ...formData, images: e.target.value })}
-                  placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg"
+              <div className="space-y-2 md:col-span-2">
+                <Label>Изображения</Label>
+                <ImageArrayInput
+                  values={formData.images}
+                  onChange={(images) => setFormData({ ...formData, images })}
                 />
               </div>
 
@@ -208,37 +190,19 @@ export default function NewGamePage() {
               </div>
             </div>
 
-            <div className="space-y-4">
-              <Label>Платформы</Label>
-              <div className="flex flex-wrap gap-2">
-                {platforms.map((platform) => (
-                  <Button
-                    key={platform}
-                    type="button"
-                    variant={formData.platforms.includes(platform) ? "default" : "outline"}
-                    onClick={() => togglePlatform(platform)}
-                  >
-                    {platform}
-                  </Button>
-                ))}
-              </div>
-            </div>
+            <MultiSelectButtons
+              label="Платформы"
+              options={platforms}
+              selected={formData.platforms}
+              onChange={(platforms) => setFormData({ ...formData, platforms })}
+            />
 
-            <div className="space-y-4">
-              <Label>Жанры</Label>
-              <div className="flex flex-wrap gap-2">
-                {genres.map((genre) => (
-                  <Button
-                    key={genre}
-                    type="button"
-                    variant={formData.genres.includes(genre) ? "default" : "outline"}
-                    onClick={() => toggleGenre(genre)}
-                  >
-                    {genre}
-                  </Button>
-                ))}
-              </div>
-            </div>
+            <MultiSelectButtons
+              label="Жанры"
+              options={genres}
+              selected={formData.genres}
+              onChange={(genres) => setFormData({ ...formData, genres })}
+            />
 
             <div className="flex items-center gap-4">
               <input
