@@ -51,11 +51,59 @@ export async function POST(request: NextRequest) {
       if (event.type === "checkout.session.completed") {
         const session = event.data.object as Stripe.Checkout.Session
 
-        // Update order status
+        // Update order status and get order items
         const order = await db.order.update({
           where: { stripeSessionId: session.id },
           data: { status: "PAID" },
+          include: {
+            items: {
+              include: {
+                game: true,
+                paymentCard: true,
+              },
+            },
+          },
         })
+
+        // Decrement stock for purchased items
+        for (const item of order.items) {
+          try {
+            if (item.gameId && item.game) {
+              await db.game.update({
+                where: { id: item.gameId },
+                data: { 
+                  stockQuantity: { 
+                    decrement: item.quantity 
+                  } 
+                },
+              })
+              logger.info("Decremented game stock", {
+                gameId: item.gameId,
+                quantity: item.quantity,
+                orderId: order.id,
+              })
+            } else if (item.paymentCardId && item.paymentCard) {
+              await db.paymentCard.update({
+                where: { id: item.paymentCardId },
+                data: { 
+                  stockQuantity: { 
+                    decrement: item.quantity 
+                  } 
+                },
+              })
+              logger.info("Decremented payment card stock", {
+                paymentCardId: item.paymentCardId,
+                quantity: item.quantity,
+                orderId: order.id,
+              })
+            }
+          } catch (stockError) {
+            logger.error("Error updating stock", stockError, {
+              orderId: order.id,
+              itemId: item.id,
+            })
+          }
+        }
 
         // Clear user's cart
         if (session.metadata?.userId) {

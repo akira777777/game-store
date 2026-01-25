@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
+import { logger } from "@/lib/logger"
 import { stripe } from "@/lib/stripe"
 import { NextRequest, NextResponse } from "next/server"
 
@@ -138,7 +139,7 @@ export async function POST(request: NextRequest) {
       url: stripeSession.url,
     })
   } catch (error) {
-    console.error("Error creating checkout session:", error)
+    logger.error("Error creating checkout session:", error)
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

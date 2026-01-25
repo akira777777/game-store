@@ -1,4 +1,5 @@
 import { db } from "@/lib/db"
+import { logger } from "@/lib/logger"
 import { Prisma } from "@prisma/client"
 import { NextRequest, NextResponse } from "next/server"
 
@@ -40,17 +41,25 @@ export async function GET(request: NextRequest) {
       inStock: true,
     }
 
-    // Filter by genre using PostgreSQL JSON contains
+    // Filter by genre using JSON contains (sanitized to prevent injection)
     if (genre) {
-      whereConditions.genres = {
-        contains: `"${genre}"`,
+      // Sanitize genre input by escaping special characters and ensuring it's a valid string
+      const sanitizedGenre = genre.replace(/["\\\0\n\r]/g, '').trim()
+      if (sanitizedGenre) {
+        whereConditions.genres = {
+          contains: `"${sanitizedGenre}"`,
+        }
       }
     }
 
-    // Filter by platform using PostgreSQL JSON contains
+    // Filter by platform using JSON contains (sanitized to prevent injection)
     if (platform) {
-      whereConditions.platforms = {
-        contains: `"${platform}"`,
+      // Sanitize platform input by escaping special characters and ensuring it's a valid string
+      const sanitizedPlatform = platform.replace(/["\\\0\n\r]/g, '').trim()
+      if (sanitizedPlatform) {
+        whereConditions.platforms = {
+          contains: `"${sanitizedPlatform}"`,
+        }
       }
     }
 
@@ -134,7 +143,7 @@ export async function GET(request: NextRequest) {
 
     return response
   } catch (error) {
-    console.error("Error fetching games:", error)
+    logger.error("Error fetching games:", error)
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
