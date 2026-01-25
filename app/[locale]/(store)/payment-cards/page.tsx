@@ -69,8 +69,8 @@ export default async function PaymentCardsPage({
       where: { inStock: true },
       select: { cardType: true, region: true },
     })
-    const cardTypes = Array.from(new Set(allCards.map(c => c.cardType).filter(Boolean)))
-    const regions = Array.from(new Set(allCards.map(c => c.region).filter(Boolean)))
+    const cardTypes = Array.from(new Set(allCards.map(c => c.cardType).filter(Boolean))) as string[]
+    const regions = Array.from(new Set(allCards.map(c => c.region).filter(Boolean))) as string[]
 
     return (
       <main className="container mx-auto px-4 py-8" role="main">

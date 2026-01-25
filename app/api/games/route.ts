@@ -63,20 +63,20 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Filter by search in title or description (case-insensitive)
+    // Filter by search in title or description (case-insensitive for PostgreSQL, case-sensitive for SQLite)
     if (search) {
+      const databaseUrl = process.env.DATABASE_URL?.trim() || ''
+      const isSQLite = databaseUrl.startsWith('file:')
+      const searchCondition = isSQLite
+        ? { contains: search }
+        : { contains: search, mode: 'insensitive' as const }
+      
       whereConditions.OR = [
         {
-          title: {
-            contains: search,
-            mode: 'insensitive',
-          },
+          title: searchCondition,
         },
         {
-          description: {
-            contains: search,
-            mode: 'insensitive',
-          },
+          description: searchCondition,
         },
       ]
     }

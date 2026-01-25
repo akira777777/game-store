@@ -50,20 +50,20 @@ export function buildGameWhereConditions(
     }
   }
 
-  // Filter by search in title or description (case-insensitive)
+  // Filter by search in title or description (database-specific case-sensitivity)
   if (params.search?.trim()) {
+    const databaseUrl = process.env.DATABASE_URL?.trim() || ''
+    const isSQLite = databaseUrl.startsWith('file:')
+    const searchCondition = isSQLite
+      ? { contains: params.search.trim() }
+      : { contains: params.search.trim(), mode: 'insensitive' as const }
+    
     whereConditions.OR = [
       {
-        title: {
-          contains: params.search.trim(),
-          mode: 'insensitive',
-        },
+        title: searchCondition,
       },
       {
-        description: {
-          contains: params.search.trim(),
-          mode: 'insensitive',
-        },
+        description: searchCondition,
       },
     ]
   }
