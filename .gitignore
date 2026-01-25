@@ -61,3 +61,7 @@ Thumbs.db
 DRV_*/
 *Driver*/
 *_driver_*/
+
+# Python
+__pycache__/
+*.pyc
