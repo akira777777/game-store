@@ -6,6 +6,7 @@ import asyncio
 import json
 import logging
 import sqlite3
+import aiosqlite
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Union
 from dataclasses import dataclass, asdict
@@ -37,15 +38,15 @@ class MemoryManager:
         """
         self.db_path = db_path
         self.vector_store_path = vector_store_path
-        self.conn: Optional[sqlite3.Connection] = None
+        self.conn: Optional[aiosqlite.Connection] = None
         self.vector_store = None
         
     async def initialize(self):
         """Initialize memory storage"""
         try:
             # Initialize SQLite database
-            self.conn = sqlite3.connect(self.db_path)
-            self._create_tables()
+            self.conn = await aiosqlite.connect(self.db_path)
+            await self._create_tables()
             
             # Initialize vector store if path provided
             if self.vector_store_path:
@@ -57,30 +58,29 @@ class MemoryManager:
             logger.error(f"Failed to initialize memory manager: {e}")
             raise
     
-    def _create_tables(self):
+    async def _create_tables(self):
         """Create necessary database tables"""
         if not self.conn:
             return
         
-        cursor = self.conn.cursor()
-        
-        # Create memories table
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS memories (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-                content TEXT NOT NULL,
-                metadata TEXT,
-                embedding TEXT
-            )
-        ''')
-        
-        # Create index for faster queries
-        cursor.execute('''
-            CREATE INDEX IF NOT EXISTS idx_memories_timestamp ON memories(timestamp)
-        ''')
-        
-        self.conn.commit()
+        async with self.conn.cursor() as cursor:
+            # Create memories table
+            await cursor.execute('''
+                CREATE TABLE IF NOT EXISTS memories (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    content TEXT NOT NULL,
+                    metadata TEXT,
+                    embedding TEXT
+                )
+            ''')
+
+            # Create index for faster queries
+            await cursor.execute('''
+                CREATE INDEX IF NOT EXISTS idx_memories_timestamp ON memories(timestamp)
+            ''')
+
+            await self.conn.commit()
     
     async def _initialize_vector_store(self):
         """Initialize vector store for semantic search"""
@@ -130,20 +130,19 @@ class MemoryManager:
             await self.initialize()
         
         try:
-            cursor = self.conn.cursor()
-            
-            # Insert into SQLite
-            cursor.execute('''
-                INSERT INTO memories (content, metadata, embedding)
-                VALUES (?, ?, ?)
-            ''', (
-                content,
-                json.dumps(metadata) if metadata else None,
-                json.dumps(embedding) if embedding else None
-            ))
-            
-            memory_id = cursor.lastrowid
-            self.conn.commit()
+            async with self.conn.cursor() as cursor:
+                # Insert into SQLite
+                await cursor.execute('''
+                    INSERT INTO memories (content, metadata, embedding)
+                    VALUES (?, ?, ?)
+                ''', (
+                    content,
+                    json.dumps(metadata) if metadata else None,
+                    json.dumps(embedding) if embedding else None
+                ))
+
+                memory_id = cursor.lastrowid
+                await self.conn.commit()
             
             # Add to vector store if available
             if self.vector_store and embedding:
@@ -187,16 +186,14 @@ class MemoryManager:
             # Get recent memories from SQLite
             cutoff_time = datetime.now() - timedelta(hours=time_window_hours)
             
-            cursor = self.conn.cursor()
-            cursor.execute('''
+            async with self.conn.execute('''
                 SELECT content, metadata, embedding
                 FROM memories
                 WHERE timestamp > ?
                 ORDER BY timestamp DESC
                 LIMIT ?
-            ''', (cutoff_time, limit * 2))  # Get more to filter
-            
-            recent_memories = cursor.fetchall()
+            ''', (cutoff_time, limit * 2)) as cursor:
+                recent_memories = await cursor.fetchall()
             
             # If we have vector store, use semantic search
             if self.vector_store and self.collection:
@@ -255,18 +252,18 @@ class MemoryManager:
         try:
             cutoff_time = datetime.now() - timedelta(hours=time_window_hours)
             
-            cursor = self.conn.cursor()
-            cursor.execute('''
+            async with self.conn.execute('''
                 SELECT content, metadata
                 FROM memories
                 WHERE timestamp > ?
                 AND (metadata IS NULL OR json_extract(metadata, '$.type') = 'conversation')
                 ORDER BY timestamp DESC
                 LIMIT ?
-            ''', (cutoff_time, limit))
+            ''', (cutoff_time, limit)) as cursor:
+                rows = await cursor.fetchall()
             
             messages = []
-            for content, metadata_str in cursor.fetchall():
+            for content, metadata_str in rows:
                 metadata = json.loads(metadata_str) if metadata_str else {}
                 messages.append({
                     "content": content,
@@ -288,14 +285,14 @@ class MemoryManager:
         try:
             cutoff_date = datetime.now() - timedelta(days=days)
             
-            cursor = self.conn.cursor()
-            cursor.execute('''
-                DELETE FROM memories
-                WHERE timestamp < ?
-            ''', (cutoff_date,))
-            
-            deleted_count = cursor.rowcount
-            self.conn.commit()
+            async with self.conn.cursor() as cursor:
+                await cursor.execute('''
+                    DELETE FROM memories
+                    WHERE timestamp < ?
+                ''', (cutoff_date,))
+
+                deleted_count = cursor.rowcount
+                await self.conn.commit()
             
             logger.info(f"Cleared {deleted_count} old memories")
             
@@ -332,7 +329,7 @@ class MemoryManager:
     async def cleanup(self):
         """Clean up resources"""
         if self.conn:
-            self.conn.close()
+            await self.conn.close()
             self.conn = None
         
         if self.vector_store:
