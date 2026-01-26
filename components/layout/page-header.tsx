@@ -23,7 +23,7 @@ export function PageHeader({
           <Button
             variant="ghost"
             size="sm"
-            className="mb-2 -ml-2"
+            className="mb-2 -ml-2 rounded-full px-3"
             aria-label="Вернуться назад"
           >
             <ArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" />
@@ -36,7 +36,7 @@ export function PageHeader({
           {title}
         </h1>
         {description && (
-          <p className="mt-2 text-muted-foreground text-lg">
+          <p className="mt-2 text-muted-foreground text-base sm:text-lg leading-relaxed">
             {description}
           </p>
         )}

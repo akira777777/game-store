@@ -160,7 +160,7 @@ export default function CartPage() {
   }, 0)
 
   return (
-    <main className="container mx-auto px-4 py-8" role="main">
+    <main className="container mx-auto px-4 py-8 max-w-6xl space-y-6" role="main">
       <PageHeader
         title="Корзина"
         description="Товары, которые вы добавили в корзину"
@@ -168,16 +168,19 @@ export default function CartPage() {
       />
 
       {items.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground mb-4">
-              Ваша корзина пуста
-            </p>
-            <Link href="/games">
-              <Button>Перейти в каталог</Button>
-            </Link>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col items-center justify-center text-center py-12 rounded-xl border bg-muted/40">
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary text-xl font-bold">
+            🛒
+          </div>
+          <p className="text-muted-foreground mb-4 text-lg">
+            Ваша корзина пуста
+          </p>
+          <Link href="/games">
+            <Button size="lg" className="shadow-sm">
+              Перейти в каталог
+            </Button>
+          </Link>
+        </div>
       ) : (
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
           <div className="xl:col-span-2 space-y-4">
@@ -192,7 +195,6 @@ export default function CartPage() {
               const finalPrice = discountValue && discountValue > 0 ? discountValue : basePrice
               const hasDiscount = discountValue !== null && discountValue > 0 && basePrice > finalPrice
               const images = normalizeJsonArray(product.images)
-              const itemId = item.gameId || item.paymentCardId || ""
               const productSlug = product.slug || "#"
               const productUrl = item.gameId
                 ? `/games/${productSlug}`
@@ -201,11 +203,11 @@ export default function CartPage() {
                   : "#"
 
               return (
-                <Card key={item.id}>
+                <Card key={item.id} className="shadow-sm border-border/60">
                   <CardContent className="p-6">
-                    <div className="flex gap-4">
+                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                       <Link href={productUrl} aria-label={`Перейти к товару ${product.title}`}>
-                        <div className="relative w-24 h-24 bg-muted rounded-md overflow-hidden flex-shrink-0">
+                        <div className="relative w-full sm:w-28 h-40 sm:h-28 bg-muted rounded-lg overflow-hidden ring-1 ring-border/60">
                           {images.length > 0 ? (
                             <Image
                               src={images[0]}
@@ -223,13 +225,13 @@ export default function CartPage() {
                         </div>
                       </Link>
 
-                      <div className="flex-1">
+                      <div className="flex-1 space-y-3">
                         <Link href={productUrl} aria-label={`Подробнее о товаре ${product.title}`}>
-                          <h3 className="font-semibold text-lg mb-2 hover:underline">
+                          <h3 className="font-semibold text-lg sm:text-xl hover:underline leading-tight">
                             {product.title}
                           </h3>
                         </Link>
-                        <div className="flex items-center gap-4 mb-4">
+                        <div className="flex items-center gap-4">
                           {hasDiscount ? (
                             <div>
                               <span className="text-lg font-bold text-destructive">
@@ -245,8 +247,8 @@ export default function CartPage() {
                             </span>
                           )}
                         </div>
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                          <div className="flex items-center gap-2">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                          <div className="flex items-center gap-2 bg-muted/50 rounded-md px-3 py-2">
                             <label htmlFor={`quantity-${item.id}`} className="text-sm">Количество:</label>
                             <Input
                               id={`quantity-${item.id}`}
@@ -275,8 +277,8 @@ export default function CartPage() {
                         </div>
                       </div>
 
-                      <div className="text-right">
-                        <p className="text-lg font-bold">
+                      <div className="text-left sm:text-right">
+                        <p className="text-lg font-bold text-primary">
                           {formatCurrency(finalPrice * item.quantity)}
                         </p>
                       </div>
@@ -287,8 +289,8 @@ export default function CartPage() {
             })}
           </div>
 
-          <div>
-            <Card>
+          <div className="xl:sticky xl:top-24">
+            <Card className="shadow-sm border-border/60">
               <CardHeader>
                 <CardTitle>Итого</CardTitle>
               </CardHeader>

@@ -74,7 +74,7 @@ export default async function PaymentCardsPage({
     const regions = Array.from(new Set(allCards.map(c => c.region).filter(Boolean)))
 
     return (
-      <main className="container mx-auto px-4 py-8" role="main">
+      <main className="container mx-auto px-4 py-8 max-w-6xl space-y-6" role="main">
         <PageHeader
           title="Платежные карты"
           description="Покупайте платежные карты различных типов и регионов"
@@ -82,8 +82,8 @@ export default async function PaymentCardsPage({
         />
 
         {/* Filters */}
-        <PaymentCardFilters 
-          cardTypes={cardTypes} 
+        <PaymentCardFilters
+          cardTypes={cardTypes}
           regions={regions}
           currentCardType={searchParams.cardType}
           currentRegion={searchParams.region}
@@ -93,14 +93,14 @@ export default async function PaymentCardsPage({
 
         {/* Pagination */}
         {total > limit && (
-          <div className="mt-8 flex justify-center gap-2">
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-3 rounded-lg border bg-muted/30 px-4 py-3 text-sm">
             {page > 1 && (
               <a
                 href={`?${new URLSearchParams({
                   ...searchParams,
                   page: String(page - 1),
                 }).toString()}`}
-                className="px-4 py-2 border rounded-md hover:bg-accent"
+                className="px-4 py-2 border rounded-md hover:bg-accent bg-background shadow-sm"
               >
                 Назад
               </a>
@@ -114,7 +114,7 @@ export default async function PaymentCardsPage({
                   ...searchParams,
                   page: String(page + 1),
                 }).toString()}`}
-                className="px-4 py-2 border rounded-md hover:bg-accent"
+                className="px-4 py-2 border rounded-md hover:bg-accent bg-background shadow-sm"
               >
                 Вперед
               </a>
