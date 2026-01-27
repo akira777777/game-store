@@ -4,11 +4,11 @@ import { memo } from "react"
 import { GameCard } from "./game-card"
 
 interface GameGridProps {
-  games: Game[]
+  games?: Game[] | null
   isLoading?: boolean
 }
 
-function GameGridComponent({ games, isLoading = false }: GameGridProps) {
+function GameGridComponent({ games = [], isLoading = false }: GameGridProps) {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -28,7 +28,7 @@ function GameGridComponent({ games, isLoading = false }: GameGridProps) {
     )
   }
 
-  if (games.length === 0) {
+  if (!games || games.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center sm:py-20">
         <div className="mb-4 rounded-full bg-muted p-4">

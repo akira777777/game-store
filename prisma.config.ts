@@ -1,7 +1,17 @@
-import "dotenv/config";
 import { defineConfig, env } from "prisma/config";
 
-const databaseUrl = env("DATABASE_URL");
+// Load environment variables from .env.local or .env
+let databaseUrl = process.env.DATABASE_URL;
+
+if (!databaseUrl) {
+  // Try to use a default local SQLite path if DATABASE_URL is not set
+  if (process.env.NODE_ENV !== 'production') {
+    databaseUrl = 'file:./prisma/dev.db';
+    console.warn('DATABASE_URL not set, using default SQLite: ./prisma/dev.db');
+  } else {
+    throw new Error('DATABASE_URL environment variable must be set in production');
+  }
+}
 
 // Определяем тип базы данных
 const isPostgreSQL = /^postgres(ql)?:\/\/.+/.test(databaseUrl);

@@ -42,6 +42,13 @@
     "userMenu": "User menu",
     "skipToContent": "Skip to main content"
   },
+  "home": {
+    "title": "Game Store - Buy Video Games Online",
+    "description": "Modern online store with the best games for all platforms. Exclusive discounts and instant delivery of digital copies.",
+    "featured": "Featured Games",
+    "featured_desc": "Check out our best-selling and most popular games",
+    "view_all": "View All Games"
+  },
   "hero": {
     "badge": "New games every day",
     "title": "Discover the world",
