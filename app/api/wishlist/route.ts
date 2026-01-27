@@ -1,0 +1,253 @@
+import { auth } from "@/lib/auth"
+import { db } from "@/lib/db"
+import { logger } from "@/lib/logger"
+import { NextRequest, NextResponse } from "next/server"
+
+export const dynamic = "force-dynamic"
+
+/**
+ * GET /api/wishlist - Get current user's wishlist
+ */
+export async function GET(request: NextRequest) {
+  try {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ items: [] })
+    }
+
+    const items = await db.wishlistItem.findMany({
+      where: { userId: session.user.id },
+      include: {
+        game: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            price: true,
+            discountPrice: true,
+            images: true,
+            inStock: true,
+            platforms: true,
+            genres: true,
+          },
+        },
+        paymentCard: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            price: true,
+            discountPrice: true,
+            images: true,
+            inStock: true,
+            cardType: true,
+            region: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    })
+
+    return NextResponse.json({ items })
+  } catch (error) {
+    logger.error("Error fetching wishlist:", error)
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    )
+  }
+}
+
+/**
+ * POST /api/wishlist - Add item to wishlist
+ */
+export async function POST(request: NextRequest) {
+  try {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      )
+    }
+
+    const body = await request.json()
+    const { gameId, paymentCardId } = body
+
+    // Validate that exactly one ID is provided
+    if (!gameId && !paymentCardId) {
+      return NextResponse.json(
+        { error: "Game ID or Payment Card ID is required" },
+        { status: 400 }
+      )
+    }
+
+    if (gameId && paymentCardId) {
+      return NextResponse.json(
+        { error: "Cannot specify both gameId and paymentCardId" },
+        { status: 400 }
+      )
+    }
+
+    if (gameId) {
+      // Verify game exists
+      const game = await db.game.findUnique({
+        where: { id: gameId },
+      })
+
+      if (!game) {
+        return NextResponse.json(
+          { error: "Game not found" },
+          { status: 404 }
+        )
+      }
+
+      // Add to wishlist (or update if already exists)
+      const item = await db.wishlistItem.upsert({
+        where: {
+          userId_gameId: {
+            userId: session.user.id,
+            gameId: gameId,
+          },
+        },
+        update: {},
+        create: {
+          userId: session.user.id,
+          gameId: gameId,
+        },
+        include: {
+          game: {
+            select: {
+              id: true,
+              title: true,
+              slug: true,
+              price: true,
+              discountPrice: true,
+              images: true,
+              inStock: true,
+            },
+          },
+        },
+      })
+
+      return NextResponse.json({ item })
+    } else if (paymentCardId) {
+      // Verify payment card exists
+      const card = await db.paymentCard.findUnique({
+        where: { id: paymentCardId },
+      })
+
+      if (!card) {
+        return NextResponse.json(
+          { error: "Payment card not found" },
+          { status: 404 }
+        )
+      }
+
+      // Add to wishlist (or update if already exists)
+      const item = await db.wishlistItem.upsert({
+        where: {
+          userId_paymentCardId: {
+            userId: session.user.id,
+            paymentCardId: paymentCardId,
+          },
+        },
+        update: {},
+        create: {
+          userId: session.user.id,
+          paymentCardId: paymentCardId,
+        },
+        include: {
+          paymentCard: {
+            select: {
+              id: true,
+              title: true,
+              slug: true,
+              price: true,
+              discountPrice: true,
+              images: true,
+              inStock: true,
+              cardType: true,
+            },
+          },
+        },
+      })
+
+      return NextResponse.json({ item })
+    }
+
+    return NextResponse.json(
+      { error: "Invalid request" },
+      { status: 400 }
+    )
+  } catch (error) {
+    logger.error("Error adding to wishlist:", error)
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    )
+  }
+}
+
+/**
+ * DELETE /api/wishlist - Remove item from wishlist
+ */
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      )
+    }
+
+    const body = await request.json()
+    const { gameId, paymentCardId } = body
+
+    if (!gameId && !paymentCardId) {
+      return NextResponse.json(
+        { error: "Game ID or Payment Card ID is required" },
+        { status: 400 }
+      )
+    }
+
+    if (gameId && paymentCardId) {
+      return NextResponse.json(
+        { error: "Cannot specify both gameId and paymentCardId" },
+        { status: 400 }
+      )
+    }
+
+    if (gameId) {
+      await db.wishlistItem.delete({
+        where: {
+          userId_gameId: {
+            userId: session.user.id,
+            gameId: gameId,
+          },
+        },
+      })
+    } else if (paymentCardId) {
+      await db.wishlistItem.delete({
+        where: {
+          userId_paymentCardId: {
+            userId: session.user.id,
+            paymentCardId: paymentCardId,
+          },
+        },
+      })
+    }
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    logger.error("Error removing from wishlist:", error)
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    )
+  }
+}

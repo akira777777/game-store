@@ -7,7 +7,14 @@ import { z } from "zod"
 
 const registerSchema = z.object({
   email: z.string().email("Invalid email address").toLowerCase().trim(),
-  password: z.string().min(6, "Password must be at least 6 characters").max(128, "Password must be at most 128 characters"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .max(128, "Password must be at most 128 characters")
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+      "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)"
+    ),
   name: z.string().min(1).max(100).optional(),
 })
 

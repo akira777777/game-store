@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { logger } from "@/lib/logger";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -41,7 +42,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ items: cartItems })
   } catch (error) {
-    console.error("Error fetching cart:", error)
+    logger.error("Error fetching cart:", error)
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -171,9 +172,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ item: cartItem })
     }
 
-    return NextResponse.json({ item: cartItem })
+    // This should never be reached due to validation above
+    return NextResponse.json(
+      { error: "Invalid request" },
+      { status: 400 }
+    )
   } catch (error) {
-    console.error("Error adding to cart:", error)
+    logger.error("Error adding to cart:", error)
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -225,7 +230,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Error removing from cart:", error)
+    logger.error("Error removing from cart:", error)
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -338,9 +343,13 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ item: cartItem })
     }
 
-    return NextResponse.json({ item: cartItem })
+    // This should never be reached due to validation above
+    return NextResponse.json(
+      { error: "Invalid request" },
+      { status: 400 }
+    )
   } catch (error) {
-    console.error("Error updating cart:", error)
+    logger.error("Error updating cart:", error)
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
