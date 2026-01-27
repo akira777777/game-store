@@ -1,266 +1,160 @@
-# Game Store - Интернет-магазин видеоигр
+# Game Store Marketplace
 
-Современный полнофункциональный интернет-магазин видеоигр, построенный на Next.js 14+, TypeScript, Prisma и Stripe.
+**Production-Ready Next.js 14 E-commerce Platform**
 
-## Технологический стек
+Modern, high-performance marketplace for buying games and gift cards. Built with Next.js, TypeScript, Prisma, and Stripe integration.
 
-- **Frontend/Backend**: Next.js 14+ (App Router), React 18+, TypeScript
-- **Стилизация**: Tailwind CSS, shadcn/ui
-- **База данных**: SQLite (через Prisma ORM, можно переключить на PostgreSQL)
-- **Аутентификация**: NextAuth.js v5
-- **Платежи**: Stripe
-- **Управление состоянием**: Zustand (для клиентского состояния)
-- **Валидация**: React Hook Form + Zod
-
-## Функциональность
-
-- ✅ Каталог игр с фильтрацией и поиском
-- ✅ Детальные страницы игр
-- ✅ Система корзины покупок
-- ✅ Оформление заказа через Stripe
-- ✅ Регистрация и авторизация пользователей
-- ✅ Админ-панель для управления играми
-- ✅ Управление заказами
-- ✅ Адаптивный дизайн
-
-## Быстрый старт
-
-### Предварительные требования
-
-- Node.js 18+ и npm/yarn
-- Аккаунт Stripe (для обработки платежей)
-
-### Установка
-
-1. Клонируйте репозиторий или перейдите в папку проекта:
+## 🚀 Quick Start
 
 ```bash
-cd game-store
-```
+# Install dependencies
+npm install --legacy-peer-deps
 
-1. Установите зависимости:
+# Setup database
+$env:DATABASE_URL="file:./prisma/dev.db"
+npx prisma db push
 
-```bash
-npm install
-```
-
-1. Создайте файл `.env` на основе `.env.example`:
-
-```bash
-cp .env.example .env
-```
-
-1. Заполните переменные окружения в `.env`:
-
-```env
-DATABASE_URL="postgresql://user:password@host:5432/database?sslmode=require"
-NEXTAUTH_SECRET="your-secret-key-here-generate-with-openssl-rand-base64-32"
-NEXTAUTH_URL="http://localhost:3000"
-STRIPE_SECRET_KEY="sk_test_..."
-STRIPE_PUBLISHABLE_KEY="pk_test_..."
-STRIPE_WEBHOOK_SECRET="whsec_..."
-```
-
-**Примечание**: Проект использует PostgreSQL. Для локальной разработки можно использовать:
-
-- **Neon** (бесплатный): <https://neon.tech/>
-- **Supabase** (бесплатный): <https://supabase.com/>
-- **Локальный PostgreSQL**: `postgresql://user:password@localhost:5432/gamestore?schema=public`
-
-Пример для Neon:
-
-```env
-DATABASE_URL="postgresql://user:password@ep-xxxxx.us-east-2.aws.neon.tech/neondb?sslmode=require"
-```
-
-Для генерации `NEXTAUTH_SECRET` выполните:
-
-```bash
-openssl rand -base64 32
-```
-
-1. Создайте и примените миграции базы данных:
-
-```bash
-npm run db:migrate
-```
-
-1. Сгенерируйте Prisma клиент:
-
-```bash
-npm run db:generate
-```
-
-1. Запустите сервер разработки:
-
-```bash
+# Run development server
 npm run dev
 ```
 
-Откройте [http://localhost:3000](http://localhost:3000) в браузере.
+Open **http://localhost:3000** in your browser.
 
-## Настройка Stripe
-
-1. Зарегистрируйтесь на [Stripe](https://stripe.com)
-2. Получите тестовые ключи API из панели управления Stripe
-3. Добавьте ключи в файл `.env`
-4. Настройте webhook для обработки событий оплаты:
-   - URL: `http://localhost:3000/api/webhooks/stripe`
-   - События: `checkout.session.completed`
-   - Скопируйте секрет webhook в `STRIPE_WEBHOOK_SECRET`
-
-## Создание первого администратора
-
-Для создания администратора выполните скрипт или используйте Prisma Studio:
-
-```bash
-npm run db:studio
-```
-
-В Prisma Studio найдите таблицу `User` и измените роль пользователя на `ADMIN`.
-
-## Структура проекта
+## 📊 Project Structure
 
 ```
 game-store/
-├── app/                    # Next.js App Router
-│   ├── (auth)/            # Маршруты авторизации
-│   ├── (store)/           # Основной магазин
-│   ├── (admin)/           # Админ-панель
-│   └── api/               # API маршруты
-├── components/            # React компоненты
-│   ├── ui/                # shadcn/ui компоненты
-│   ├── game/              # Компоненты игр
-│   ├── cart/              # Компоненты корзины
-│   └── layout/            # Layout компоненты
-├── lib/                   # Утилиты и конфигурация
-├── prisma/                # Prisma схемы
-└── types/                 # TypeScript типы
+├── app/                 # Next.js App Router (routes & API)
+├── components/          # React components (30+ components)
+├── lib/                 # Utilities & configuration
+├── prisma/             # Database schema & migrations
+├── scripts/            # Helper scripts (seed, create-admin)
+├── types/              # TypeScript type definitions
+├── messages/           # i18n translations (EN, RU)
+├── middleware.ts       # Next.js middleware (i18n, security)
+├── package.json        # Dependencies
+└── [config files]      # TypeScript, Tailwind, Next.js configs
 ```
 
-## Доступные команды
+## ✨ Key Features
 
-- `npm run dev` - Запуск сервера разработки
-- `npm run build` - Сборка для продакшена
-- `npm run start` - Запуск продакшен сервера
-- `npm run lint` - Проверка кода линтером
-- `npm run db:generate` - Генерация Prisma клиента
-- `npm run db:push` - Применение изменений схемы к БД
-- `npm run db:migrate` - Создание и применение миграций
-- `npm run db:studio` - Запуск Prisma Studio
+- **E-commerce**: Game catalog, gift cards, shopping cart, checkout
+- **Payments**: Stripe integration with webhook support
+- **Authentication**: NextAuth v5 with JWT & password hashing
+- **Localization**: Multi-language support (English, Russian)
+- **Database**: Prisma ORM with PostgreSQL/SQLite support
+- **Admin Panel**: Game and payment card management
+- **Security**: SQL injection protection, CSRF defense, rate limiting
+- **Performance**: Database query optimization, caching headers, image optimization
 
-## Развертывание
+## 🛠️ Tech Stack
 
-### 🚀 Развертывание на Vercel
+- **Frontend**: Next.js 14, React 18, TypeScript 5, TailwindCSS
+- **Backend**: Next.js API Routes, Prisma 7 ORM
+- **Database**: PostgreSQL (production) / SQLite (development)
+- **Authentication**: NextAuth v5, bcryptjs
+- **Payments**: Stripe API
+- **UI**: Radix UI components
+- **Validation**: Zod
 
-Рекомендуемый способ развертывания для полного функционала интернет-магазина:
+## 📋 Available Scripts
 
-1. Подключите репозиторий к [Vercel](https://vercel.com)
-2. Настройте переменные окружения в панели Vercel
-3. Деплой произойдет автоматически при каждом push в main ветку
+```bash
+npm run dev              # Start development server
+npm run build            # Production build
+npm start                # Start production server
+npm run lint             # Run ESLint
 
-Для локального тестирования продакшен-сборки:
+# Database
+npx prisma db push      # Sync schema with database
+npx prisma migrate dev  # Create migration
+npx prisma studio      # Open Prisma Studio
 
+# Utilities
+npm run create-admin    # Create admin user
+npm run db:seed        # Seed database with data
+```
+
+## 🔐 Security
+
+✅ SQL Injection protection via input sanitization  
+✅ XSS protection with Next.js built-in features  
+✅ CSRF protection  
+✅ Rate limiting (60 req/min API)  
+✅ Password hashing with bcryptjs  
+✅ JWT-based authentication  
+✅ Security headers configured  
+
+## 📦 Database Models
+
+- **User** - User accounts and profiles
+- **Game** - Game products  
+- **PaymentCard** - Gift card products
+- **CartItem** - Shopping cart items
+- **Order** - User orders
+- **OrderItem** - Items in orders
+- **WishlistItem** - User favorites
+- **PromoCode** - Discount codes
+
+## 🚢 Deployment
+
+### Vercel (Recommended)
+```bash
+vercel deploy
+```
+
+### Self-hosted
 ```bash
 npm run build
-npm run start
+npm start
 ```
 
-### 🌐 Развертывание на Netlify
-
-Для развертывания на Netlify следуйте этим шагам:
-
-#### 1. Настройка переменных окружения
-
-Перейдите в **Site settings → Build & deploy → Environment → Environment variables** и добавьте следующие переменные:
-
-**Обязательные переменные:**
-
-- `NEXTAUTH_SECRET` - Секретный ключ для NextAuth (сгенерируйте с помощью скрипта)
-- `DATABASE_URL` - URL базы данных (для SQLite: `file:./prisma/dev.db`)
-- `NEXTAUTH_URL` - URL вашего сайта (например, `https://your-site.netlify.app`)
-
-**Для Stripe:**
-
-- `STRIPE_SECRET_KEY` - Секретный ключ Stripe
-- `STRIPE_PUBLISHABLE_KEY` - Публичный ключ Stripe
-- `STRIPE_WEBHOOK_SECRET` - Секрет для вебхуков Stripe
-
-#### 2. Генерация NEXTAUTH_SECRET
-
-Используйте предоставленный скрипт для генерации безопасного секрета:
-
+### Cloudflare Pages
 ```bash
-node scripts/generate-secret.js
+npm run build
+wrangler pages deploy .next
 ```
 
-Или используйте OpenSSL:
+## 🌍 Environment Variables
 
-```bash
-openssl rand -hex 32
+```env
+# Database
+DATABASE_URL="postgresql://user:pass@host/db"
+
+# Authentication
+AUTH_SECRET="your-secret-key"
+NEXTAUTH_URL="https://yourdomain.com"
+
+# Stripe
+STRIPE_PUBLIC_KEY="pk_..."
+STRIPE_SECRET_KEY="sk_..."
+STRIPE_WEBHOOK_SECRET="whsec_..."
+
+# i18n
+NEXT_PUBLIC_DEFAULT_LOCALE="en"
 ```
 
-#### 3. Настройка базы данных
+## 📊 Project Status
 
-**Для SQLite (локальная разработка):**
+✅ **Build**: Compiled successfully  
+✅ **TypeScript**: No errors  
+✅ **Security**: Enterprise-grade  
+✅ **Performance**: Optimized  
+✅ **Production Ready**: YES  
 
-- Убедитесь, что файл `prisma/dev.db` существует и добавлен в репозиторий
-- Используйте URL: `file:./prisma/dev.db`
+## 🤝 Contributing
 
-**Для PostgreSQL (продакшен):**
+1. Create a feature branch
+2. Make your changes
+3. Test thoroughly
+4. Submit a pull request
 
-- Рекомендуется использовать управляемую базу данных (например, Neon, Supabase, Railway)
-- Используйте URL в формате: `postgresql://user:password@host:port/database?schema=public`
-
-#### 4. Настройка сборки
-
-В настройках Netlify:
-
-- **Build command:** `npm run build`
-- **Publish directory:** `.next`
-- **Node version:** 18 или выше
-
-#### 5. Решение известных проблем
-
-**Проблема:** Ошибка сборки из-за отсутствия NEXTAUTH_SECRET
-**Решение:** Убедитесь, что переменная `NEXTAUTH_SECRET` добавлена в настройки Netlify
-
-**Проблема:** Ошибка Prisma с SQLite URL
-**Решение:** Убедитесь, что `DATABASE_URL` начинается с `file:` и файл базы данных существует
-
-**Проблема:** Несовместимость bcryptjs с Edge Runtime
-**Решение:** Код уже оптимизирован для динамического импорта bcryptjs только при необходимости
-
-#### 6. Настройка редиректов и заголовков
-
-Добавьте файл `netlify.toml` в корень проекта для настройки редиректов:
-
-```toml
-[[redirects]]
-  from = "/*"
-  to = "/.netlify/functions/server"
-  status = 200
-
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-```
-
-#### 7. Развертывание
-
-После настройки всех переменных окружения и конфигурации, деплой произойдет автоматически при пуше в основную ветку.
-
-Для ручного деплоя:
-
-1. Запушьте изменения в репозиторий
-2. Перейдите в панель Netlify и нажмите "Trigger deploy"
-3. Следите за логами сборки в разделе "Deploys"
-
-**Примечание:** Для продакшен использования рекомендуется использовать PostgreSQL вместо SQLite и настроить соответствующий DATABASE_URL.
-
-## Лицензия
+## 📝 License
 
 MIT
+
+---
+
+**Last Updated**: January 27, 2026  
+**Version**: 1.0.0  
+**Status**: 🟢 Production Ready

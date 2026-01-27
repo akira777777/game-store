@@ -1,4 +1,4 @@
-import { defineConfig, env } from "prisma/config";
+import { defineConfig } from "prisma/config";
 
 // Load environment variables from .env.local or .env
 let databaseUrl = process.env.DATABASE_URL;
@@ -7,13 +7,12 @@ if (!databaseUrl) {
   // Try to use a default local SQLite path if DATABASE_URL is not set
   if (process.env.NODE_ENV !== 'production') {
     databaseUrl = 'file:./prisma/dev.db';
-    console.warn('DATABASE_URL not set, using default SQLite: ./prisma/dev.db');
   } else {
     throw new Error('DATABASE_URL environment variable must be set in production');
   }
 }
 
-// Определяем тип базы данных
+// Determine database type
 const isPostgreSQL = /^postgres(ql)?:\/\/.+/.test(databaseUrl);
 const isSQLite = /^file:/.test(databaseUrl);
 
@@ -24,17 +23,15 @@ if (!isPostgreSQL && !isSQLite) {
     "PostgreSQL format: postgresql://user:password@host:port/database?sslmode=require\n" +
     "SQLite format: file:./prisma/dev.db\n" +
     `Got: ${databaseUrl.substring(0, 50)}...`;
-  console.error(errorMessage);
   throw new Error(errorMessage);
 }
 
-// Check if using pooled connection (Neon pooler) - только для PostgreSQL
+// Check if using pooled connection (Neon pooler) - only for PostgreSQL
 const isPooledConnection = isPostgreSQL && databaseUrl.includes('pooler');
 let directUrl: string | undefined;
 
 if (isPooledConnection) {
   // For pooled connections, migrations need directUrl (non-pooled)
-  // Convert pooled URL to direct URL by modifying only the hostname portion
   try {
     const url = new URL(databaseUrl);
     let hostname = url.hostname;
@@ -42,10 +39,8 @@ if (isPooledConnection) {
     // Remove '-pooler' from hostname (e.g., 'ep-xxx-pooler' -> 'ep-xxx')
     hostname = hostname.replace(/-pooler(?=\.|$)/, '');
 
-    // Replace '.c-' with '.' only in Neon-specific hostname patterns
-    // This matches patterns like 'xxx.c-neon.tech' -> 'xxx.neon.tech'
-    // but avoids false matches in other parts of the URL
-    if (hostname.includes('.c-neon.') || hostname.includes('.c-') && hostname.includes('neon')) {
+    // Replace '.c-' with '.' for Neon URLs
+    if (hostname.includes('.c-neon.') || (hostname.includes('.c-') && hostname.includes('neon'))) {
       hostname = hostname.replace(/\.c-(?=neon\.)/, '.');
     }
 
@@ -53,8 +48,7 @@ if (isPooledConnection) {
     url.hostname = hostname;
     directUrl = url.toString();
   } catch (error) {
-    // If URL parsing fails, fall back to simple string replacement
-    // but only apply to the hostname portion (between @ and /)
+    // Fallback: simple string replacement
     const atIndex = databaseUrl.indexOf('@');
     const slashIndex = databaseUrl.indexOf('/', atIndex);
     if (atIndex !== -1) {
@@ -73,7 +67,6 @@ if (isPooledConnection) {
 
       directUrl = beforeHost + modifiedHost + afterHost;
     } else {
-      // Fallback: simple replacement (less safe but better than nothing)
       directUrl = databaseUrl.replace(/-pooler(?=\.|$)/, '').replace(/\.c-(?=neon\.)/, '.');
     }
   }
@@ -85,7 +78,6 @@ const config = defineConfig({
   datasource: {
     url: databaseUrl,
     // For Neon pooled PostgreSQL connections, migrations need directUrl
-    // SQLite doesn't need directUrl
     ...(isPostgreSQL && directUrl && { directUrl }),
   },
 });
