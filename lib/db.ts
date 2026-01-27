@@ -21,6 +21,7 @@ const dbUrlForPool = databaseUrl.split('#')[0].trim();
 
 let db: PrismaClient;
 let pool: Pool | undefined;
+let isShuttingDown = false;
 
 try {
   if (isPostgreSQL) {
@@ -73,9 +74,20 @@ if (process.env.NODE_ENV !== 'production') {
 // Graceful shutdown for all environments
 if (typeof process !== 'undefined') {
   const shutdown = async () => {
+    // Prevent multiple shutdown calls (can happen during build when routes are evaluated)
+    if (isShuttingDown) return
+    isShuttingDown = true
+
     await db.$disconnect()
     if (pool) {
-      await pool.end()
+      try {
+        await pool.end()
+      } catch (error: any) {
+        // Ignore errors if pool is already ended
+        if (!error?.message?.includes('end on pool more than once')) {
+          console.error('Error closing database pool:', error)
+        }
+      }
     }
   }
 
