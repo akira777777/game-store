@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npx prisma generate && next build",
+    "build": "npx prisma generate && next build && npm run postbuild:fix-manifests",
     "build:static": "cross-env GITHUB_PAGES=true REPO_NAME=game-store next build",
     "start": "next start",
     "lint": "next lint",
@@ -16,6 +16,7 @@
     "db:studio": "npx prisma studio",
     "db:seed": "npx tsx scripts/seed.ts",
     "deploy": "npm run build && wrangler pages deploy .next",
+    "postbuild:fix-manifests": "node scripts/fix-client-manifests.js",
     "deploy:github": "npm run build:static && npm run deploy:github:pages",
     "deploy:github:pages": "gh-pages -d out",
     "preview": "wrangler pages dev .next"
