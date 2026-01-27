@@ -25,11 +25,10 @@ interface PaymentCardsListProps {
 export function PaymentCardsList({ cards, total }: PaymentCardsListProps) {
   if (cards.length === 0) {
     return (
-      <Card>
-        <CardContent className="py-12 text-center">
-          <p className="text-muted-foreground">Платежные карты не найдены</p>
-        </CardContent>
-      </Card>
+      <div className="rounded-2xl border border-dashed border-border/60 bg-muted/30 py-12 text-center">
+        <p className="text-muted-foreground text-lg font-medium">Платежные карты не найдены</p>
+        <p className="text-sm text-muted-foreground mt-2">Попробуйте изменить параметры фильтра</p>
+      </div>
     )
   }
 
