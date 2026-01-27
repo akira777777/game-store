@@ -40,10 +40,6 @@ export default async function AdminPaymentCardsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {cards.map((card) => {
-            const images = typeof card.images === "string"
-              ? JSON.parse(card.images || "[]")
-              : card.images || []
-
             return (
               <Card key={card.id}>
                 <CardHeader>

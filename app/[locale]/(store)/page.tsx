@@ -29,7 +29,8 @@ export default async function HomePage({
 }: {
   params: Promise<{ locale: string }>
 }) {
-  const { locale } = await params
+  const { locale: _locale } = await params
+  void _locale
   const t = await getTranslations("home")
 
   try {

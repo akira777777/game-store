@@ -1,7 +1,6 @@
 "use client"
 
 import { PaymentCard } from "./payment-card"
-import { Card, CardContent } from "@/components/ui/card"
 
 interface PaymentCardsListProps {
   cards: Array<{
@@ -34,6 +33,9 @@ export function PaymentCardsList({ cards, total }: PaymentCardsListProps) {
 
   return (
     <div className="space-y-6">
+      <div className="text-sm text-muted-foreground">
+        Найдено карт: <span className="font-semibold text-foreground">{total}</span>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {cards.map((card) => (
           <PaymentCard key={card.id} card={card} />

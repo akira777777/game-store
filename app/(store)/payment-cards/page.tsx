@@ -2,7 +2,6 @@ import { PaymentCardsList } from "@/components/payment-card/payment-cards-list"
 import { PaymentCardFilters } from "@/components/payment-card/payment-card-filters"
 import { PageHeader } from "@/components/layout/page-header"
 import { db } from "@/lib/db"
-import { CreditCard } from "lucide-react"
 
 export const dynamic = "force-dynamic"
 

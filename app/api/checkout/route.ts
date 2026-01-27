@@ -4,7 +4,7 @@ import { logger } from "@/lib/logger"
 import { stripe } from "@/lib/stripe"
 import { NextRequest, NextResponse } from "next/server"
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     const session = await auth()
 
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Create order
-    const order = await db.order.create({
+    await db.order.create({
       data: {
         userId: session.user.id,
         total: total,

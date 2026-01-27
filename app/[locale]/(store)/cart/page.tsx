@@ -192,7 +192,6 @@ export default function CartPage() {
               const finalPrice = discountValue && discountValue > 0 ? discountValue : basePrice
               const hasDiscount = discountValue !== null && discountValue > 0 && basePrice > finalPrice
               const images = normalizeJsonArray(product.images)
-              const itemId = item.gameId || item.paymentCardId || ""
               const productSlug = product.slug || "#"
               const productUrl = item.gameId 
                 ? `/games/${productSlug}`

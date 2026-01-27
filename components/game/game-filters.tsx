@@ -14,19 +14,11 @@ import {
 import { RangeSlider } from "@/components/ui/slider"
 import { Filter, X } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState } from "react"
 
 // String arrays for SQLite compatibility (enums stored as strings)
 const GENRES = ["ACTION", "ADVENTURE", "RPG", "STRATEGY", "SPORTS", "RACING", "SHOOTER", "SIMULATION", "INDIE", "PUZZLE"] as const
 const PLATFORMS = ["PC", "PLAYSTATION", "XBOX", "NINTENDO_SWITCH", "MOBILE"] as const
-
-type Genre = typeof GENRES[number]
-type Platform = typeof PLATFORMS[number]
-
-interface GameFiltersProps {
-  genres?: string[]
-  platforms?: string[]
-}
 
 export interface FilterState {
   search?: string
@@ -37,7 +29,7 @@ export interface FilterState {
   maxPrice?: number
 }
 
-export function GameFilters({ genres = [], platforms = [] }: GameFiltersProps) {
+export function GameFilters() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const getSortByValue = (): FilterState["sortBy"] => {
