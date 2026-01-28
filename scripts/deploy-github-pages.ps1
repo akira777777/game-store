@@ -50,9 +50,7 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "3. Set Source to 'GitHub Actions'" -ForegroundColor White
     Write-Host "4. The deployment will start automatically" -ForegroundColor White
     Write-Host ""
-    else {
-        Write-Host "❌ Failed to push to GitHub" -ForegroundColor Red
-        exit 1
-    }
+} else {
+    Write-Host "❌ Failed to push to GitHub" -ForegroundColor Red
     exit 1
 }
