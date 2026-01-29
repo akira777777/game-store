@@ -23,7 +23,9 @@ async function benchmark() {
         genreItems: {
           some: {
             OR: [
-              { name: { equals: genre } }, // removing insensitive for benchmark simply to match exact casing from list
+              // SQLite does not support Prisma's mode: 'insensitive'
+              // Using exact match here to match the casing from the genre list
+              { name: { equals: genre } },
               { slug: { equals: genre.toLowerCase() } }
             ]
           }

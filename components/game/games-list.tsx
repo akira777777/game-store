@@ -10,8 +10,8 @@ import { useState } from "react"
 
 interface GamesListProps {
   games: (Game & {
-    genres?: string | string[]
-    platforms?: string | string[]
+    genres?: string[]
+    platforms?: string[]
   })[]
   total: number
 }

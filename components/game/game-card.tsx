@@ -9,8 +9,8 @@ import { memo, useMemo } from "react"
 
 interface GameCardProps {
   game: Game & {
-    genres?: string | string[]
-    platforms?: string | string[]
+    genres?: string[]
+    platforms?: string[]
   }
 }
 

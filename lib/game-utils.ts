@@ -1,6 +1,19 @@
 // Utility functions for working with JSON-stored arrays in the database
 // These functions provide type-safe operations and handle edge cases
 
+/**
+ * Parses a value that might be a JSON string or already an array.
+ * Returns an empty array if the value is null, undefined, or cannot be parsed.
+ * 
+ * Note: When T is string, this accepts either:
+ * - A JSON-encoded string array (e.g., '["item1","item2"]')
+ * - An already-parsed array (e.g., ["item1","item2"])
+ * 
+ * Plain strings that are not JSON will return an empty array.
+ * 
+ * @param value - A JSON string, an array, null, or undefined
+ * @returns A typed array, or an empty array if parsing fails
+ */
 export function parseJsonArray<T = string>(value: string | T[] | null | undefined): T[] {
   if (!value) return []
   if (typeof value !== 'string') {

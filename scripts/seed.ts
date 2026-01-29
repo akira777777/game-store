@@ -11,6 +11,7 @@
  */
 import bcrypt from 'bcryptjs'
 import { db } from '../lib/db'
+import { slugify } from '../lib/slug-utils'
 
 interface GameSeedData {
   title: string
@@ -939,15 +940,6 @@ async function main() {
       releaseDate: new Date('2023-09-27'),
     },
   ]
-
-  // Helper for slug generation
-  const slugify = (text: string) => text
-    .toString()
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w\-]+/g, '')
-    .replace(/\-\-+/g, '-')
 
   for (const game of games) {
     const genreNames = JSON.parse(game.genres) as string[]

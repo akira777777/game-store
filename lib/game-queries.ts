@@ -60,7 +60,9 @@ export function buildGameWhereConditions(
     }
   }
 
-  // Filter by search in title or description (case-insensitive)
+  // Filter by search in title or description
+  // Note: SQLite does not support Prisma's mode: 'insensitive' option,
+  // so searches are case-sensitive when using SQLite
   if (params.search?.trim()) {
     whereConditions.OR = [
       {

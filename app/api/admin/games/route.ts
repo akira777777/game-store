@@ -2,18 +2,9 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
 import { normalizeJsonArray } from "@/lib/game-utils"
+import { slugify } from "@/lib/slug-utils"
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
-
-function slugify(text: string) {
-  return text
-    .toString()
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w\-]+/g, '')
-    .replace(/\-\-+/g, '-')
-}
 
 const gameSchema = z.object({
   title: z.string().min(1),
