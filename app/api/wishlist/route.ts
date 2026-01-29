@@ -223,21 +223,17 @@ export async function DELETE(request: NextRequest) {
     }
 
     if (gameId) {
-      await db.wishlistItem.delete({
+      await db.wishlistItem.deleteMany({
         where: {
-          userId_gameId: {
-            userId: session.user.id,
-            gameId: gameId,
-          },
+          userId: session.user.id,
+          gameId: gameId,
         },
       })
     } else if (paymentCardId) {
-      await db.wishlistItem.delete({
+      await db.wishlistItem.deleteMany({
         where: {
-          userId_paymentCardId: {
-            userId: session.user.id,
-            paymentCardId: paymentCardId,
-          },
+          userId: session.user.id,
+          paymentCardId: paymentCardId,
         },
       })
     }

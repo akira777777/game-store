@@ -27,10 +27,11 @@ function parseJsonArrayOrString(value: string | string[]): string[] {
 export default async function PaymentCardPage({
   params,
 }: {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }) {
+  const { slug } = await params
   const card = await db.paymentCard.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
   })
 
   if (!card) {

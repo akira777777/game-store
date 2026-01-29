@@ -14,10 +14,11 @@ export const dynamic = "force-dynamic"
 export default async function GamePage({
   params,
 }: {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }) {
+  const { slug } = await params
   const game = await db.game.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
   })
 
   if (!game) {

@@ -25,11 +25,12 @@ interface SearchParams {
 export default async function GamesPage({
   searchParams,
 }: {
-  searchParams: SearchParams
+  searchParams: Promise<SearchParams>
 }) {
+  const params = await searchParams
   try {
     // Input validation with limits
-    const page = Math.max(1, parseInt(searchParams.page || "1", 10) || 1)
+    const page = Math.max(1, parseInt(params.page || "1", 10) || 1)
     const limit = 12
     const skip = (page - 1) * limit
 
@@ -39,36 +40,36 @@ export default async function GamesPage({
     }
 
     // Filter by featured
-    if (searchParams.featured === "true") {
+    if (params.featured === "true") {
       whereConditions.featured = true
     }
 
     // Filter by genre using PostgreSQL JSON contains
-    if (searchParams.genre?.trim()) {
+    if (params.genre?.trim()) {
       whereConditions.genres = {
-        contains: `"${searchParams.genre.trim()}"`,
+        contains: `"${params.genre.trim()}"`,
       }
     }
 
     // Filter by platform using PostgreSQL JSON contains
-    if (searchParams.platform?.trim()) {
+    if (params.platform?.trim()) {
       whereConditions.platforms = {
-        contains: `"${searchParams.platform.trim()}"`,
+        contains: `"${params.platform.trim()}"`,
       }
     }
 
     // Filter by search in title or description
-    if (searchParams.search?.trim()) {
+    if (params.search?.trim()) {
       whereConditions.OR = [
         {
           title: {
-            contains: searchParams.search.trim(),
+            contains: params.search.trim(),
             mode: 'insensitive',
           },
         },
         {
           description: {
-            contains: searchParams.search.trim(),
+            contains: params.search.trim(),
             mode: 'insensitive',
           },
         },
@@ -77,8 +78,8 @@ export default async function GamesPage({
 
     // Filter by price range (considering discountPrice when available)
     // Uses finalPrice logic: discountPrice if exists, otherwise price
-    const minPrice = searchParams.minPrice ? parseFloat(searchParams.minPrice) : null
-    const maxPrice = searchParams.maxPrice ? parseFloat(searchParams.maxPrice) : null
+    const minPrice = params.minPrice ? parseFloat(params.minPrice) : null
+    const maxPrice = params.maxPrice ? parseFloat(params.maxPrice) : null
 
     if (minPrice !== null || maxPrice !== null) {
       // Price filtering: (discountPrice IS NOT NULL AND discountPrice >= min) OR (discountPrice IS NULL AND price >= min)
@@ -121,7 +122,7 @@ export default async function GamesPage({
     }
 
     // Determine sort order
-    const sortByParam = searchParams.sort || searchParams.sortBy || "newest"
+    const sortByParam = params.sort || params.sortBy || "newest"
     let orderBy: Record<string, "desc" | "asc"> = { createdAt: "desc" }
 
     if (sortByParam === "newest") {
@@ -228,12 +229,12 @@ export default async function GamesPage({
                     {page > 1 && (
                       <Link
                         href={(() => {
-                          const params = new URLSearchParams()
-                          Object.entries(searchParams).forEach(([key, value]) => {
-                            if (key !== "page" && value) params.set(key, value)
+                          const urlParams = new URLSearchParams()
+                          Object.entries(params).forEach(([key, value]) => {
+                            if (key !== "page" && value) urlParams.set(key, value)
                           })
-                          params.set("page", (page - 1).toString())
-                          return `/games?${params.toString()}`
+                          urlParams.set("page", (page - 1).toString())
+                          return `/games?${urlParams.toString()}`
                         })()}
                       >
                         <Button variant="outline" size="sm" aria-label="Предыдущая страница">
@@ -256,16 +257,16 @@ export default async function GamesPage({
                           pageNum = page - 3 + i
                         }
 
-                        const params = new URLSearchParams()
-                        Object.entries(searchParams).forEach(([key, value]) => {
-                          if (key !== "page" && value) params.set(key, value)
+                        const urlParams = new URLSearchParams()
+                        Object.entries(params).forEach(([key, value]) => {
+                          if (key !== "page" && value) urlParams.set(key, value)
                         })
-                        params.set("page", pageNum.toString())
+                        urlParams.set("page", pageNum.toString())
 
                         return (
                           <Link
                             key={pageNum}
-                            href={`/games?${params.toString()}`}
+                            href={`/games?${urlParams.toString()}`}
                           >
                             <Button
                               variant={page === pageNum ? "default" : "outline"}
@@ -284,12 +285,12 @@ export default async function GamesPage({
                     {page < totalPages && (
                       <Link
                         href={(() => {
-                          const params = new URLSearchParams()
-                          Object.entries(searchParams).forEach(([key, value]) => {
-                            if (key !== "page" && value) params.set(key, value)
+                          const urlParams = new URLSearchParams()
+                          Object.entries(params).forEach(([key, value]) => {
+                            if (key !== "page" && value) urlParams.set(key, value)
                           })
-                          params.set("page", (page + 1).toString())
-                          return `/games?${params.toString()}`
+                          urlParams.set("page", (page + 1).toString())
+                          return `/games?${urlParams.toString()}`
                         })()}
                       >
                         <Button variant="outline" size="sm" aria-label="Следующая страница">
@@ -301,7 +302,8 @@ export default async function GamesPage({
                   </nav>
                 )}
               </>
-            )}
+            )
+          }
           </main>
         </div>
       </div>

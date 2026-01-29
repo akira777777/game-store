@@ -39,7 +39,7 @@ export default function EditPaymentCardPage({
   useEffect(() => {
     const fetchCard = async () => {
       try {
-        const response = await fetch(`/api/admin/payment-cards/${params.id}`)
+        const response = await fetch(`/api/admin/payment-cards/${id}`)
         if (!response.ok) {
           throw new Error("Card not found")
         }
@@ -70,14 +70,14 @@ export default function EditPaymentCardPage({
     }
 
     fetchCard()
-  }, [params.id, router, handleError])
+  }, [id, router, handleError])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
     try {
-      const response = await fetch(`/api/admin/payment-cards/${params.id}`, {
+      const response = await fetch(`/api/admin/payment-cards/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

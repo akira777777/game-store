@@ -14,10 +14,11 @@ interface SearchParams {
 export default async function PaymentCardsPage({
   searchParams,
 }: {
-  searchParams: SearchParams
+  searchParams: Promise<SearchParams>
 }) {
+  const params = await searchParams
   try {
-    const page = Math.max(1, parseInt(searchParams.page || "1", 10) || 1)
+    const page = Math.max(1, parseInt(params.page || "1", 10) || 1)
     const limit = 12
     const skip = (page - 1) * limit
 
@@ -25,18 +26,18 @@ export default async function PaymentCardsPage({
       inStock: true,
     }
 
-    if (searchParams.cardType?.trim()) {
-      whereConditions.cardType = searchParams.cardType.trim()
+    if (params.cardType?.trim()) {
+      whereConditions.cardType = params.cardType.trim()
     }
 
-    if (searchParams.region?.trim()) {
-      whereConditions.region = searchParams.region.trim()
+    if (params.region?.trim()) {
+      whereConditions.region = params.region.trim()
     }
 
-    if (searchParams.search?.trim()) {
+    if (params.search?.trim()) {
       const databaseUrl = process.env.DATABASE_URL?.trim() || ''
       const isSQLite = databaseUrl.startsWith('file:')
-      const searchTerm = searchParams.search.trim()
+      const searchTerm = params.search.trim()
       const searchCondition = isSQLite
         ? { contains: searchTerm }
         : { contains: searchTerm, mode: 'insensitive' as const }
@@ -83,15 +84,15 @@ export default async function PaymentCardsPage({
         <div className="mb-6 flex flex-wrap gap-4">
           <select
             className="px-4 py-2 border rounded-md bg-background"
-            defaultValue={searchParams.cardType || ""}
+            defaultValue={params.cardType || ""}
             onChange={(e) => {
-              const params = new URLSearchParams(window.location.search)
+              const urlParams = new URLSearchParams(window.location.search)
               if (e.target.value) {
-                params.set("cardType", e.target.value)
+                urlParams.set("cardType", e.target.value)
               } else {
-                params.delete("cardType")
+                urlParams.delete("cardType")
               }
-              window.location.search = params.toString()
+              window.location.search = urlParams.toString()
             }}
           >
             <option value="">Все типы</option>
@@ -104,15 +105,15 @@ export default async function PaymentCardsPage({
 
           <select
             className="px-4 py-2 border rounded-md bg-background"
-            defaultValue={searchParams.region || ""}
+            defaultValue={params.region || ""}
             onChange={(e) => {
-              const params = new URLSearchParams(window.location.search)
+              const urlParams = new URLSearchParams(window.location.search)
               if (e.target.value) {
-                params.set("region", e.target.value)
+                urlParams.set("region", e.target.value)
               } else {
-                params.delete("region")
+                urlParams.delete("region")
               }
-              window.location.search = params.toString()
+              window.location.search = urlParams.toString()
             }}
           >
             <option value="">Все регионы</option>
@@ -132,7 +133,7 @@ export default async function PaymentCardsPage({
             {page > 1 && (
               <a
                 href={`?${new URLSearchParams({
-                  ...searchParams,
+                  ...(params as any),
                   page: String(page - 1),
                 }).toString()}`}
                 className="px-4 py-2 border rounded-md hover:bg-accent"
@@ -146,7 +147,7 @@ export default async function PaymentCardsPage({
             {page < Math.ceil(total / limit) && (
               <a
                 href={`?${new URLSearchParams({
-                  ...searchParams,
+                  ...(params as any),
                   page: String(page + 1),
                 }).toString()}`}
                 className="px-4 py-2 border rounded-md hover:bg-accent"
