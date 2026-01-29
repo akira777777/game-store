@@ -56,13 +56,12 @@ export function toDbJsonArray<T>(value: T[] | string | null | undefined): string
   if (!value) return '[]'
   if (typeof value === 'string') {
     // If it's already a JSON string, validate and return
-    if (value.trim().startsWith('[')) {
-      try {
-        JSON.parse(value)
-        return value
-      } catch {
-        return '[]'
+    const trimmed = value.trim()
+    if (trimmed.startsWith('[')) {
+      if (trimmed.endsWith(']')) {
+        return trimmed
       }
+      return '[]'
     }
     // Convert comma-separated to JSON array
     const items = value.split(',').map((s) => s.trim()).filter(Boolean)
