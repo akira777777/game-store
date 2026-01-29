@@ -104,8 +104,12 @@ const authConfig = {
             role: user.role as Role,
           }
         } catch (error) {
-          // Generic error to prevent user enumeration attacks
-          console.error('[Auth] Authorization error:', error instanceof Error ? error.message : 'Unknown error');
+          // If it's our own "Invalid credentials" error, just return null
+          if (error instanceof Error && error.message === "Invalid credentials") {
+            return null;
+          }
+          // Log other unexpected errors
+          console.error('[Auth] Unexpected authorization error:', error);
           return null;
         }
       },

@@ -209,21 +209,17 @@ export async function DELETE(request: NextRequest) {
     }
 
     if (gameId) {
-      await db.cartItem.delete({
+      await db.cartItem.deleteMany({
         where: {
-          userId_gameId: {
-            userId: session.user.id,
-            gameId: gameId,
-          },
+          userId: session.user.id,
+          gameId: gameId,
         },
       })
     } else if (paymentCardId) {
-      await db.cartItem.delete({
+      await db.cartItem.deleteMany({
         where: {
-          userId_paymentCardId: {
-            userId: session.user.id,
-            paymentCardId: paymentCardId,
-          },
+          userId: session.user.id,
+          paymentCardId: paymentCardId,
         },
       })
     }
@@ -272,21 +268,17 @@ export async function PATCH(request: NextRequest) {
     if (validQuantity <= 0) {
       // Delete item if quantity is 0 or less
       if (gameId) {
-        await db.cartItem.delete({
+        await db.cartItem.deleteMany({
           where: {
-            userId_gameId: {
-              userId: session.user.id,
-              gameId: gameId,
-            },
+            userId: session.user.id,
+            gameId: gameId,
           },
         })
       } else if (paymentCardId) {
-        await db.cartItem.delete({
+        await db.cartItem.deleteMany({
           where: {
-            userId_paymentCardId: {
-              userId: session.user.id,
-              paymentCardId: paymentCardId,
-            },
+            userId: session.user.id,
+            paymentCardId: paymentCardId,
           },
         })
       }

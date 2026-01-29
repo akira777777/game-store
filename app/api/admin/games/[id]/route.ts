@@ -23,9 +23,10 @@ const gameSchema = z.object({
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   let session = null
+  const { id } = await params
   try {
     session = await auth()
 
@@ -37,7 +38,7 @@ export async function GET(
     }
 
     const game = await db.game.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!game) {
@@ -50,7 +51,7 @@ export async function GET(
     return NextResponse.json({ game })
   } catch (error) {
     logger.error("Error fetching game", error, {
-      gameId: params.id,
+      gameId: id,
       userId: session?.user?.id,
     })
     return NextResponse.json(
@@ -62,9 +63,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   let session = null
+  const { id } = await params
   try {
     session = await auth()
 
@@ -80,7 +82,7 @@ export async function PUT(
 
     // Check if game exists
     const existingGame = await db.game.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!existingGame) {
@@ -131,7 +133,7 @@ export async function PUT(
     }
 
     const game = await db.game.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
     })
 
@@ -145,7 +147,7 @@ export async function PUT(
     }
 
     logger.error("Error updating game", error, {
-      gameId: params.id,
+      gameId: id,
       userId: session?.user?.id,
     })
     return NextResponse.json(
@@ -157,9 +159,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   let session = null
+  const { id } = await params
   try {
     session = await auth()
 
@@ -171,7 +174,7 @@ export async function DELETE(
     }
 
     const game = await db.game.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!game) {
@@ -182,13 +185,13 @@ export async function DELETE(
     }
 
     await db.game.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json({ success: true })
   } catch (error) {
     logger.error("Error deleting game", error, {
-      gameId: params.id,
+      gameId: id,
       userId: session?.user?.id,
     })
     return NextResponse.json(

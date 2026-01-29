@@ -1,6 +1,7 @@
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
+import Database from 'better-sqlite3';
 import { Pool } from 'pg';
 
 const globalForPrisma = globalThis as unknown as {
@@ -42,12 +43,11 @@ try {
   } else if (isSQLite) {
     // SQLite configuration with adapter (required in Prisma 7 when using prisma.config.ts)
     // Extract file path from file:// URL
-    const sqlitePath = dbUrlForPool.replace(/^file:/, '');
+    const sqlitePath = dbUrlForPool.replace(/^file:/, "");
+    const sqlite = new Database(sqlitePath);
 
-    // Create Prisma adapter for SQLite (constructor takes config object with url)
-    const adapter = new PrismaBetterSqlite3({
-      url: sqlitePath,
-    });
+    // Create Prisma adapter for SQLite
+    const adapter = new PrismaBetterSqlite3(sqlite);
 
     db = globalForPrisma.prisma ??
       new PrismaClient({

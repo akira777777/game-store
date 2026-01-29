@@ -6,11 +6,12 @@ export const revalidate = 3600 // Revalidate every hour
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
+  const { slug } = await params
   try {
     const game = await db.game.findUnique({
-      where: { slug: params.slug },
+      where: { slug },
     })
 
     if (!game) {
@@ -25,7 +26,7 @@ export async function GET(
     return response
   } catch (error) {
     logger.error("Error fetching game by slug", error, {
-      slug: params.slug,
+      slug,
     })
     return NextResponse.json(
       { error: "Internal server error" },

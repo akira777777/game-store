@@ -44,18 +44,6 @@ const nextConfig = {
   reactStrictMode: true,
 
 
-  // Reduce bundle size for Cloudflare Pages
-  modularizeImports: {
-    'lucide-react': {
-      transform: 'lucide-react/{{member}}',
-    },
-    '@radix-ui/react-icons': {
-      transform: '@radix-ui/react-icons/{{member}}',
-    },
-  },
-
-
-
   // Trailing slash for GitHub Pages compatibility
   trailingSlash: isGithubPages,
 
@@ -78,7 +66,7 @@ const nextConfig = {
 
   // Enable ESLint during build to catch errors early
   eslint: {
-    ignoreDuringBuilds: true, // Temporarily disable due to configuration issues
+    ignoreDuringBuilds: false,
   },
 };
 
