@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  role      String   @default("CUSTOMER")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cartItems CartItem[]
+  orders    Order[]
+}
+
+model Game {
+  id            String   @id @default(cuid())
+  title         String
+  slug          String   @unique
+  description   String
+  price         Float
+  discountPrice Float?
+  images        String
+  releaseDate   DateTime?
+  developer     String?
+  publisher     String?
+  platforms     String
+  genres        String
+  featured      Boolean  @default(false)
+  inStock       Boolean  @default(true)
+  stockQuantity Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  cartItems CartItem[]
+  orderItems OrderItem[]
+
+  @@index([inStock])
+  @@index([featured])
+  @@index([createdAt])
+  @@index([title])
+  @@index([price])
+  @@index([discountPrice])
+  @@index([inStock, featured])
+  @@index([inStock, createdAt])
+}
+
+model PaymentCard {
+  id            String   @id @default(cuid())
+  title         String
+  slug          String   @unique
+  description   String?
+  cardType      String
+  region        String?
+  currency      String?
+  denomination  Float?
+  price         Float
+  discountPrice Float?
+  images        String
+  featured      Boolean  @default(false)
+  inStock       Boolean  @default(true)
+  stockQuantity Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  cartItems CartItem[]
+  orderItems OrderItem[]
+
+  @@index([inStock])
+  @@index([featured])
+  @@index([cardType])
+  @@index([createdAt])
+  @@index([title])
+  @@index([price])
+  @@index([inStock, featured])
+}
+
+model CartItem {
+  id            String   @id @default(cuid())
+  userId        String
+  gameId        String?
+  paymentCardId String?
+  quantity      Int      @default(1)
+  createdAt     DateTime @default(now())
+
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game          Game?        @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  paymentCard   PaymentCard? @relation(fields: [paymentCardId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@unique([userId, gameId])
+  @@unique([userId, paymentCardId])
+}
+
+model Order {
+  id              String   @id @default(cuid())
+  userId          String
+  status          String   @default("PENDING")
+  total           Float
+  stripeSessionId String?  @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user       User        @relation(fields: [userId], references: [id])
+  orderItems OrderItem[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([stripeSessionId])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id            String   @id @default(cuid())
+  orderId       String
+  gameId        String?
+  paymentCardId String?
+  quantity      Int
+  price         Float
+
+  order       Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  game        Game?        @relation(fields: [gameId], references: [id])
+  paymentCard PaymentCard? @relation(fields: [paymentCardId], references: [id])
+}
