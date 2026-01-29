@@ -2,6 +2,7 @@ import { AddToCartButton } from "@/components/payment-card/add-to-cart-button"
 import { Badge } from "@/components/ui/badge"
 import { mockPaymentCards } from "@/lib/mock-data"
 import { CreditCard, Globe, DollarSign } from "lucide-react"
+import Image from "next/image"
 import { notFound } from "next/navigation"
 
 interface Props {
@@ -29,12 +30,14 @@ export default async function PaymentCardDetailPage({ params }: Props) {
       <div className="grid md:grid-cols-2 gap-8 mb-12">
         {/* Left Column - Image */}
         <div>
-          <div className="aspect-video bg-muted rounded-lg overflow-hidden">
+          <div className="aspect-video bg-muted rounded-lg overflow-hidden relative">
             {images[0] ? (
-              <img
+              <Image
                 src={images[0]}
                 alt={card.title}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
