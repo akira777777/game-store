@@ -2,12 +2,13 @@ import { CookieConsent } from "@/components/layout/cookie-consent"
 import { ThemeProvider } from "@/components/providers/theme-provider"
 import { ToastProvider } from "@/components/providers/toast-provider"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import localFont from "next/font/local"
 import "./globals.css"
 
-const inter = Inter({
-  subsets: ["latin", "cyrillic"],
+const inter = localFont({
+  src: "./fonts/Inter.woff2",
   variable: "--font-inter",
+  display: "swap",
 })
 
 export const metadata: Metadata = {
