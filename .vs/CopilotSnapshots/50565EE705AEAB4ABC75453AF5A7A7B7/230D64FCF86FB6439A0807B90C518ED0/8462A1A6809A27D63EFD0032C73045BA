@@ -1,4 +1,4 @@
-// Lazy import db to avoid Prisma Client initialization in Edge Runtime (middleware)
+﻿// Lazy import db to avoid Prisma Client initialization in Edge Runtime (middleware)
 // db will only be imported when authorize() is called, which doesn't run in middleware
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -135,6 +135,6 @@ const authConfig = {
   secret: authSecret || (process.env.NODE_ENV === 'development'
     ? 'dev-secret-only-not-for-production-please-set-nexauth-secret-in-env'
     : undefined),
-};
+} as const satisfies Parameters<typeof NextAuth>[0];
 
 export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);

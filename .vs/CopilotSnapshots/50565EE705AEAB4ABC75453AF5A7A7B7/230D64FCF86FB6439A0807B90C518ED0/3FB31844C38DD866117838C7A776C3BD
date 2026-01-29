@@ -1,4 +1,4 @@
-// Lazy import db to avoid Prisma Client initialization in Edge Runtime (middleware)
+﻿// Lazy import db to avoid Prisma Client initialization in Edge Runtime (middleware)
 // db will only be imported when authorize() is called, which doesn't run in middleware
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";

@@ -1,0 +1,5 @@
+﻿// Simple Prisma config - environment determined by DATABASE_URL
+export const config = {
+  // Database URL is read from environment variables
+  // Set in .env.local or system environment
+};

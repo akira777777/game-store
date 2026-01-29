@@ -1,4 +1,4 @@
-import { defineConfig } from "prisma/config";
+﻿import { defineConfig } from "prisma/config";
 
 // Load environment variables from .env.local or .env
 let databaseUrl = process.env.DATABASE_URL;

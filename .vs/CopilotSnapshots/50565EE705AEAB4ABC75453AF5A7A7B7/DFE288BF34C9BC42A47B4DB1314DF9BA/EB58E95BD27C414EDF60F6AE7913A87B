@@ -1,0 +1,171 @@
+﻿// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  // Use PostgreSQL for production, SQLite for development
+  // The actual provider is determined by the DATABASE_URL format
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String         @id @default(cuid())
+  email     String         @unique
+  name      String?
+  password  String // hashed
+  role      String         @default("CUSTOMER")
+  orders    Order[]
+  cart      CartItem[]
+  wishlist  WishlistItem[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+model Game {
+  id            String         @id @default(cuid())
+  title         String
+  slug          String         @unique
+  description   String
+  price         Float
+  discountPrice Float?
+  images        String // JSON массив URL изображений
+  releaseDate   DateTime?
+  developer     String?
+  publisher     String?
+  platforms     String // JSON массив Platform
+  genres        String // JSON массив Genre
+  featured      Boolean        @default(false)
+  inStock       Boolean        @default(true)
+  stockQuantity Int            @default(0)
+  orderItems    OrderItem[]
+  cartItems     CartItem[]
+  wishlistItems WishlistItem[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([inStock])
+  @@index([featured])
+  @@index([createdAt])
+  @@index([title])
+  @@index([price])
+  @@index([discountPrice])
+  @@index([inStock, featured])
+  @@index([inStock, createdAt])
+}
+
+model PaymentCard {
+  id            String         @id @default(cuid())
+  title         String
+  slug          String         @unique
+  description   String?
+  cardType      String // Visa, Mastercard, PayPal, Steam, etc.
+  region        String? // US, EU, Global, etc.
+  currency      String? // USD, EUR, etc.
+  denomination  Float? // Номинал карты (если применимо)
+  price         Float
+  discountPrice Float?
+  images        String // JSON массив URL изображений
+  featured      Boolean        @default(false)
+  inStock       Boolean        @default(true)
+  stockQuantity Int            @default(0)
+  orderItems    OrderItem[]
+  cartItems     CartItem[]
+  wishlistItems WishlistItem[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([inStock])
+  @@index([featured])
+  @@index([cardType])
+  @@index([createdAt])
+  @@index([title])
+  @@index([price])
+  @@index([inStock, featured])
+}
+
+model CartItem {
+  id            String       @id @default(cuid())
+  userId        String
+  gameId        String?
+  paymentCardId String?
+  quantity      Int          @default(1)
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game          Game?        @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  paymentCard   PaymentCard? @relation(fields: [paymentCardId], references: [id], onDelete: Cascade)
+  createdAt     DateTime     @default(now())
+
+  @@unique([userId, gameId])
+  @@unique([userId, paymentCardId])
+  @@index([userId])
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  userId          String
+  status          String      @default("PENDING")
+  total           Float
+  stripeSessionId String?     @unique
+  items           OrderItem[]
+  user            User        @relation(fields: [userId], references: [id])
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([stripeSessionId])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id            String       @id @default(cuid())
+  orderId       String
+  gameId        String?
+  paymentCardId String?
+  quantity      Int
+  price         Float
+  order         Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  game          Game?        @relation(fields: [gameId], references: [id])
+  paymentCard   PaymentCard? @relation(fields: [paymentCardId], references: [id])
+}
+
+model WishlistItem {
+  id            String       @id @default(cuid())
+  userId        String
+  gameId        String?
+  paymentCardId String?
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game          Game?        @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  paymentCard   PaymentCard? @relation(fields: [paymentCardId], references: [id], onDelete: Cascade)
+  createdAt     DateTime     @default(now())
+
+  @@unique([userId, gameId])
+  @@unique([userId, paymentCardId])
+  @@index([userId])
+}
+
+model PromoCode {
+  id              String   @id @default(cuid())
+  code            String   @unique
+  description     String?
+  discountType    String // PERCENTAGE, FIXED
+  discountValue   Float // percentage (0-100) or fixed amount
+  minPurchase     Float? // Minimum purchase amount required
+  maxDiscount     Float? // Maximum discount amount (for percentage type)
+  usageLimit      Int? // Total times it can be used
+  usageCount      Int      @default(0)
+  userLimit       Int? // Times per user
+  validFrom       DateTime @default(now())
+  validUntil      DateTime?
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([code])
+  @@index([active])
+  @@index([validFrom])
+  @@index([validUntil])
+}
