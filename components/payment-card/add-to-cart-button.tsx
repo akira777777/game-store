@@ -1,9 +1,6 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
 import { cn } from "@/lib/utils"
 
 interface AddToCartButtonProps {
@@ -12,36 +9,8 @@ interface AddToCartButtonProps {
 }
 
 export function AddToCartButton({ cardId, className }: AddToCartButtonProps) {
-  const { data: session } = useSession()
-  const router = useRouter()
-  const [isAdding, setIsAdding] = useState(false)
-
-  const handleAddToCart = async () => {
-    if (!session) {
-      router.push("/login")
-      return
-    }
-
-    setIsAdding(true)
-    try {
-      const response = await fetch("/api/cart", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paymentCardId: cardId, quantity: 1 }),
-      })
-
-      if (response.ok) {
-        router.push("/cart")
-        router.refresh()
-      } else {
-        const data = await response.json()
-        alert(data.error || "Ошибка при добавлении в корзину")
-      }
-    } catch {
-      alert("Произошла ошибка")
-    } finally {
-      setIsAdding(false)
-    }
+  const handleAddToCart = () => {
+    alert("Корзина временно недоступна. Функция добавления в корзину будет доступна в полной версии сайта.")
   }
 
   return (
@@ -49,9 +18,8 @@ export function AddToCartButton({ cardId, className }: AddToCartButtonProps) {
       className={cn("w-full", className)}
       size="lg"
       onClick={handleAddToCart}
-      disabled={isAdding}
     >
-      {isAdding ? "Добавление..." : "Добавить в корзину"}
+      Добавить в корзину
     </Button>
   )
 }

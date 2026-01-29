@@ -1,175 +1,146 @@
-import { notFound } from "next/navigation"
-import Image from "next/image"
-import Link from "next/link"
-import { db } from "@/lib/db"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AddToCartButton } from "@/components/game/add-to-cart-button"
-import { GameGrid } from "@/components/game/game-grid"
-import { parseJsonArrayOrString } from "@/lib/game-utils"
+import { GameCard } from "@/components/game/game-card"
+import { ImageGallery } from "@/components/game/image-gallery"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { mockGames } from "@/lib/mock-data"
+import { Calendar, ShoppingCart, Tag } from "lucide-react"
+import Link from "next/link"
+import { notFound } from "next/navigation"
 
-export const dynamic = "force-dynamic"
-
-export default async function GamePage({
-  params,
-}: {
+interface Props {
   params: Promise<{ slug: string }>
-}) {
+}
+
+export default async function GameDetailPage({ params }: Props) {
   const { slug } = await params
-  const game = await db.game.findUnique({
-    where: { slug },
-  })
+  
+  // Find game in mock data
+  const game = mockGames.find(g => g.slug === slug)
 
   if (!game) {
     notFound()
   }
 
+  const images = JSON.parse(game.images)
+  const platforms = JSON.parse(game.platforms)
+  const genres = JSON.parse(game.genres)
   const finalPrice = game.discountPrice || game.price
-  const hasDiscount = !!game.discountPrice
-  const images = parseJsonArrayOrString(game.images)
-  const genres = parseJsonArrayOrString(game.genres)
-  const platforms = parseJsonArrayOrString(game.platforms)
+  const discount = game.discountPrice
+    ? Math.round(((game.price - game.discountPrice) / game.price) * 100)
+    : 0
 
-  // Find related games (same genre, exclude current game)
-  // Use the first genre to find related games
-  const relatedGames = genres.length > 0
-    ? await db.game.findMany({
-        where: {
-          id: { not: game.id },
-          inStock: true,
-          genres: {
-            contains: `"${genres[0]}"`,
-          },
-        },
-        take: 6,
-        orderBy: { createdAt: "desc" },
-      })
-    : []
+  // Get related games (other games with same genre)
+  const relatedGames = mockGames
+    .filter(g => g.id !== game.id && g.inStock)
+    .slice(0, 4)
 
   return (
-    <main className="container mx-auto px-4 py-8" role="main">
-      <article className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="container mx-auto px-4 py-8">
+      <div className="grid md:grid-cols-2 gap-8 mb-12">
+        {/* Left Column - Images */}
         <div>
-          {images.length > 0 ? (
-            <div className="relative aspect-video w-full bg-muted rounded-lg overflow-hidden">
-              <Image
-                src={images[0]}
-                alt={`Обложка игры ${game.title}`}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 50vw"
-                priority
-              />
-            </div>
-          ) : (
-            <div className="aspect-video w-full bg-muted rounded-lg flex items-center justify-center" role="img" aria-label="Изображение недоступно">
-              <p className="text-muted-foreground">Нет изображения</p>
-            </div>
-          )}
+          <ImageGallery images={images} title={game.title} />
         </div>
 
+        {/* Right Column - Details */}
         <div className="space-y-6">
           <div>
-            <h1 className="text-4xl font-bold mb-4">{game.title}</h1>
-            <div className="flex flex-wrap gap-2 mb-4">
-              {genres.map((genre) => (
-                <Badge key={genre} variant="secondary">
+            <h1 className="text-3xl font-bold mb-2">{game.title}</h1>
+            {game.developer && (
+              <p className="text-muted-foreground">
+                от {game.developer}
+              </p>
+            )}
+          </div>
+
+          {/* Price */}
+          <div className="flex items-center gap-4">
+            {game.discountPrice ? (
+              <>
+                <div className="flex items-center gap-2">
+                  <Badge variant="destructive" className="text-lg px-3 py-1">
+                    -{discount}%
+                  </Badge>
+                  <span className="text-2xl font-bold">${finalPrice.toFixed(2)}</span>
+                  <span className="text-lg text-muted-foreground line-through">
+                    ${game.price.toFixed(2)}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <span className="text-2xl font-bold">${game.price.toFixed(2)}</span>
+            )}
+          </div>
+
+          {/* Platforms */}
+          <div>
+            <h3 className="font-semibold mb-2">Платформы:</h3>
+            <div className="flex flex-wrap gap-2">
+              {platforms.map((platform: string) => (
+                <Badge key={platform} variant="secondary">
+                  {platform}
+                </Badge>
+              ))}
+            </div>
+          </div>
+
+          {/* Genres */}
+          <div>
+            <h3 className="font-semibold mb-2">Жанры:</h3>
+            <div className="flex flex-wrap gap-2">
+              {genres.map((genre: string) => (
+                <Badge key={genre} variant="outline">
+                  <Tag className="h-3 w-3 mr-1" />
                   {genre}
                 </Badge>
               ))}
-              {platforms.map((platform) => (
-                <Badge key={platform}>{platform}</Badge>
-              ))}
             </div>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Цена</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                {hasDiscount ? (
-                  <div>
-                    <span className="text-4xl font-bold text-destructive">
-                      ${finalPrice.toString()}
-                    </span>
-                    <span className="ml-3 text-xl line-through text-muted-foreground">
-                      ${game.price.toString()}
-                    </span>
-                  </div>
-                ) : (
-                  <span className="text-4xl font-bold">
-                    ${finalPrice.toString()}
-                  </span>
-                )}
-              </div>
-              {game.inStock ? (
-                <AddToCartButton gameId={game.id} />
-              ) : (
-                <Button className="w-full" size="lg" disabled>
-                  Нет в наличии
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-
-          {game.developer && (
-            <div>
-              <p className="text-sm text-muted-foreground">Разработчик</p>
-              <p className="font-medium">{game.developer}</p>
-            </div>
-          )}
-
-          {game.publisher && (
-            <div>
-              <p className="text-sm text-muted-foreground">Издатель</p>
-              <p className="font-medium">{game.publisher}</p>
-            </div>
-          )}
-
+          {/* Release Date */}
           {game.releaseDate && (
-            <div>
-              <p className="text-sm text-muted-foreground">Дата выхода</p>
-              <p className="font-medium">
-                {new Date(game.releaseDate).toLocaleDateString("ru-RU")}
-              </p>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Calendar className="h-4 w-4" />
+              Дата выхода: {new Date(game.releaseDate).toLocaleDateString()}
             </div>
           )}
-        </div>
-      </article>
 
-      <div className="mt-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Описание</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="whitespace-pre-wrap">{game.description}</p>
-          </CardContent>
-        </Card>
+          {/* Stock Status */}
+          <div>
+            {game.inStock ? (
+              <Badge variant="default" className="bg-green-600">
+                В наличии
+              </Badge>
+            ) : (
+              <Badge variant="destructive">
+                Нет в наличии
+              </Badge>
+            )}
+          </div>
+
+          {/* Add to Cart */}
+          {game.inStock && <AddToCartButton gameId={game.id} />}
+        </div>
       </div>
 
-      {relatedGames.length > 0 && (
-        <section className="mt-12 space-y-6" aria-labelledby="related-games-heading">
-          <div>
-            <h2 id="related-games-heading" className="text-2xl font-bold mb-2">
-              Похожие игры
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Игры в том же жанре, которые могут вас заинтересовать
-            </p>
-          </div>
-          <GameGrid games={relatedGames} />
-        </section>
-      )}
+      {/* Description */}
+      <div className="mb-12">
+        <h2 className="text-2xl font-bold mb-4">Описание</h2>
+        <p className="text-muted-foreground leading-relaxed">{game.description}</p>
+      </div>
 
-      <nav className="mt-8" aria-label="Навигация">
-        <Link href="/games">
-          <Button variant="outline" aria-label="Вернуться к каталогу игр">← Вернуться к каталогу</Button>
-        </Link>
-      </nav>
-    </main>
+      {/* Related Games */}
+      {relatedGames.length > 0 && (
+        <div>
+          <h2 className="text-2xl font-bold mb-6">Похожие игры</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {relatedGames.map((relatedGame) => (
+              <GameCard key={relatedGame.id} game={relatedGame} />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   )
 }

@@ -1,5 +1,4 @@
 import { CookieConsent } from "@/components/layout/cookie-consent"
-import { SessionProvider } from "@/components/providers/session-provider"
 import { ThemeProvider } from "@/components/providers/theme-provider"
 import { ToastProvider } from "@/components/providers/toast-provider"
 import type { Metadata } from "next"
@@ -74,12 +73,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange={false}
         >
-          <SessionProvider>
-            <ToastProvider>
-              {children}
-              <CookieConsent />
-            </ToastProvider>
-          </SessionProvider>
+          <ToastProvider>
+            {children}
+            <CookieConsent />
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>

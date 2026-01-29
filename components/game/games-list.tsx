@@ -3,7 +3,7 @@
 import { GameCard } from "@/components/game/game-card"
 import { ViewToggle } from "@/components/game/view-toggle"
 import { parseJsonArrayOrString } from "@/lib/game-utils"
-import { Game } from "@prisma/client"
+import { Game } from "@/lib/mock-data"
 import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"

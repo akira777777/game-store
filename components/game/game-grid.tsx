@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton"
-import { Game } from "@prisma/client"
+import { Game } from "@/lib/mock-data"
 import { memo } from "react"
 import { GameCard } from "./game-card"
 

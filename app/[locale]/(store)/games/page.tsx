@@ -1,13 +1,8 @@
 import { GameCard } from "@/components/game/game-card"
-import { GameFilters } from "@/components/game/game-filters"
+import { mockGames } from "@/lib/mock-data"
 import { Button } from "@/components/ui/button"
-import { db } from "@/lib/db"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
-import type { Prisma } from "@prisma/client"
-
-export const dynamic = "force-dynamic"
-export const revalidate = 3600 // Revalidate every hour
 
 interface SearchParams {
   genre?: string
@@ -28,285 +23,87 @@ export default async function GamesPage({
   searchParams: Promise<SearchParams>
 }) {
   const params = await searchParams
-  try {
-    // Input validation with limits
-    const page = Math.max(1, parseInt(params.page || "1", 10) || 1)
-    const limit = 12
-    const skip = (page - 1) * limit
 
-    // Build where clause for PostgreSQL JSON queries
-    const whereConditions: Prisma.GameWhereInput = {
-      inStock: true,
-    }
+  // Use mock data
+  let games = [...mockGames]
 
-    // Filter by featured
-    if (params.featured === "true") {
-      whereConditions.featured = true
-    }
-
-    // Filter by genre using PostgreSQL JSON contains
-    if (params.genre?.trim()) {
-      whereConditions.genres = {
-        contains: `"${params.genre.trim()}"`,
-      }
-    }
-
-    // Filter by platform using PostgreSQL JSON contains
-    if (params.platform?.trim()) {
-      whereConditions.platforms = {
-        contains: `"${params.platform.trim()}"`,
-      }
-    }
-
-    // Filter by search in title or description
-    if (params.search?.trim()) {
-      whereConditions.OR = [
-        {
-          title: {
-            contains: params.search.trim(),
-          },
-        },
-        {
-          description: {
-            contains: params.search.trim(),
-          },
-        },
-      ]
-    }
-
-    // Filter by price range (considering discountPrice when available)
-    // Uses finalPrice logic: discountPrice if exists, otherwise price
-    const minPrice = params.minPrice ? parseFloat(params.minPrice) : null
-    const maxPrice = params.maxPrice ? parseFloat(params.maxPrice) : null
-
-    if (minPrice !== null || maxPrice !== null) {
-      // Price filtering: (discountPrice IS NOT NULL AND discountPrice >= min) OR (discountPrice IS NULL AND price >= min)
-      const priceFilters: Prisma.GameWhereInput[] = []
-
-      if (minPrice !== null) {
-        priceFilters.push({
-          OR: [
-            { discountPrice: { gte: minPrice } },
-            {
-              AND: [
-                { discountPrice: null },
-                { price: { gte: minPrice } }
-              ]
-            }
-          ]
-        })
-      }
-
-      if (maxPrice !== null) {
-        priceFilters.push({
-          OR: [
-            { discountPrice: { lte: maxPrice } },
-            {
-              AND: [
-                { discountPrice: null },
-                { price: { lte: maxPrice } }
-              ]
-            }
-          ]
-        })
-      }
-
-      // Add price filters to AND array (Prisma will AND these with any existing OR conditions)
-      if (priceFilters.length > 0) {
-        const existingAND = whereConditions.AND;
-        const andArray = Array.isArray(existingAND) ? existingAND : existingAND ? [existingAND] : [];
-        whereConditions.AND = [...andArray, ...priceFilters]
-      }
-    }
-
-    // Determine sort order
-    const sortByParam = params.sort || params.sortBy || "newest"
-    let orderBy: Record<string, "desc" | "asc"> = { createdAt: "desc" }
-
-    if (sortByParam === "newest") {
-      orderBy = { createdAt: "desc" }
-    } else if (sortByParam === "oldest") {
-      orderBy = { createdAt: "asc" }
-    } else if (sortByParam === "price_asc") {
-      orderBy = { price: "asc" }
-    } else if (sortByParam === "price_desc") {
-      orderBy = { price: "desc" }
-    }
-
-    // Execute query with filters at database level
-    const [games, total] = await Promise.all([
-      db.game.findMany({
-        where: whereConditions,
-        orderBy,
-        skip,
-        take: limit,
-      }),
-      db.game.count({
-        where: whereConditions,
-      }),
-    ])
-
-    // Post-process sorting for price (when sorting by price, need to consider discountPrice)
-    // Note: For better performance with large datasets, consider using raw SQL with COALESCE
-    if (sortByParam === "price_asc" || sortByParam === "price_desc") {
-      games.sort((a, b) => {
-        const finalPriceA = a.discountPrice ?? a.price
-        const finalPriceB = b.discountPrice ?? b.price
-        return sortByParam === "price_asc"
-          ? finalPriceA - finalPriceB
-          : finalPriceB - finalPriceA
-      })
-    }
-
-    const totalPages = Math.ceil(total / limit)
-
-    return (
-      <div className="container mx-auto px-4 py-8 sm:py-12">
-        <header className="mb-8 sm:mb-12">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
-              Каталог игр
-            </h1>
-          </div>
-          <p className="text-muted-foreground text-sm sm:text-base max-w-2xl">
-            Найдите свою следующую любимую игру среди тысяч доступных вариантов
-          </p>
-        </header>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
-          <aside className="lg:col-span-1" aria-label="Фильтры каталога игр">
-            <GameFilters />
-          </aside>
-
-          <main className="lg:col-span-3" role="main">
-            {games.length === 0 ? (
-              <div className="text-center py-16 sm:py-20 rounded-2xl border border-dashed border-border/50 bg-muted/30" role="status" aria-live="polite">
-                <div className="mb-4 inline-flex items-center justify-center rounded-full bg-muted p-4">
-                  <svg className="h-8 w-8 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-                <p className="text-muted-foreground text-lg font-medium mb-2">
-                  Игры не найдены
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Попробуйте изменить параметры фильтрации
-                </p>
-              </div>
-            ) : (
-              <>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 p-4 rounded-lg bg-muted/30 border border-border/50">
-                  <p className="text-sm text-muted-foreground">
-                    Найдено игр: <span className="font-semibold text-foreground text-base">{total}</span>
-                  </p>
-                  {totalPages > 1 && (
-                    <p className="text-sm text-muted-foreground">
-                      Страница <span className="font-semibold text-foreground">{page}</span> из <span className="font-semibold text-foreground">{totalPages}</span>
-                    </p>
-                  )}
-                </div>
-                <div
-                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10"
-                  role="list"
-                  aria-label={`Список игр, найдено ${games.length}`}
-                >
-                  {games.map((game) => (
-                    <article key={game.id} role="listitem">
-                      <GameCard game={game} />
-                    </article>
-                  ))}
-                </div>
-
-                {totalPages > 1 && (
-                  <nav aria-label="Пагинация страниц" className="flex items-center justify-center gap-2 flex-wrap">
-                    {page > 1 && (
-                      <Link
-                        href={(() => {
-                          const urlParams = new URLSearchParams()
-                          Object.entries(params).forEach(([key, value]) => {
-                            if (key !== "page" && value) urlParams.set(key, value)
-                          })
-                          urlParams.set("page", (page - 1).toString())
-                          return `/games?${urlParams.toString()}`
-                        })()}
-                      >
-                        <Button variant="outline" size="sm" aria-label="Предыдущая страница">
-                          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
-                          Назад
-                        </Button>
-                      </Link>
-                    )}
-
-                    <div className="flex gap-2">
-                      {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
-                        let pageNum: number
-                        if (totalPages <= 7) {
-                          pageNum = i + 1
-                        } else if (page <= 4) {
-                          pageNum = i + 1
-                        } else if (page >= totalPages - 3) {
-                          pageNum = totalPages - 6 + i
-                        } else {
-                          pageNum = page - 3 + i
-                        }
-
-                        const urlParams = new URLSearchParams()
-                        Object.entries(params).forEach(([key, value]) => {
-                          if (key !== "page" && value) urlParams.set(key, value)
-                        })
-                        urlParams.set("page", pageNum.toString())
-
-                        return (
-                          <Link
-                            key={pageNum}
-                            href={`/games?${urlParams.toString()}`}
-                          >
-                            <Button
-                              variant={page === pageNum ? "default" : "outline"}
-                              size="sm"
-                              className={page === pageNum ? "font-semibold" : ""}
-                              aria-label={`Страница ${pageNum}`}
-                              aria-current={page === pageNum ? "page" : undefined}
-                            >
-                              {pageNum}
-                            </Button>
-                          </Link>
-                        )
-                      })}
-                    </div>
-
-                    {page < totalPages && (
-                      <Link
-                        href={(() => {
-                          const urlParams = new URLSearchParams()
-                          Object.entries(params).forEach(([key, value]) => {
-                            if (key !== "page" && value) urlParams.set(key, value)
-                          })
-                          urlParams.set("page", (page + 1).toString())
-                          return `/games?${urlParams.toString()}`
-                        })()}
-                      >
-                        <Button variant="outline" size="sm" aria-label="Следующая страница">
-                          Вперед
-                          <ChevronRight className="h-4 w-4" aria-hidden="true" />
-                        </Button>
-                      </Link>
-                    )}
-                  </nav>
-                )}
-              </>
-            )
-          }
-          </main>
-        </div>
-      </div>
-    )
-  } catch (error) {
-    throw error
+  // Simple filtering based on search params
+  if (params.featured === "true") {
+    games = games.filter(game => game.featured)
   }
+
+  if (params.search?.trim()) {
+    const search = params.search.trim().toLowerCase()
+    games = games.filter(game => 
+      game.title.toLowerCase().includes(search) ||
+      game.description.toLowerCase().includes(search)
+    )
+  }
+
+  const page = Math.max(1, parseInt(params.page || "1", 10) || 1)
+  const limit = 12
+  const total = games.length
+  const totalPages = Math.ceil(total / limit)
+  const start = (page - 1) * limit
+  const paginatedGames = games.slice(start, start + limit)
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-2">Каталог игр</h1>
+        <p className="text-muted-foreground">
+          Демо-режим: показываются примеры игр. Полный функционал доступен с подключенной базой данных.
+        </p>
+      </div>
+
+      {paginatedGames.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-lg text-muted-foreground">
+            Игры не найдены
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+            {paginatedGames.map((game) => (
+              <GameCard key={game.id} game={game} />
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center gap-2 mt-8">
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                disabled={page <= 1}
+              >
+                <Link href={`/games?page=${page - 1}`}>
+                  <ChevronLeft className="h-4 w-4 mr-2" />
+                  Назад
+                </Link>
+              </Button>
+
+              <span className="text-sm text-muted-foreground">
+                Страница {page} из {totalPages}
+              </span>
+
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                disabled={page >= totalPages}
+              >
+                <Link href={`/games?page=${page + 1}`}>
+                  Вперед
+                  <ChevronRight className="h-4 w-4 ml-2" />
+                </Link>
+              </Button>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  )
 }

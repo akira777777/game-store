@@ -1,178 +1,130 @@
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { PageHeader } from "@/components/layout/page-header"
 import { AddToCartButton } from "@/components/payment-card/add-to-cart-button"
-import { db } from "@/lib/db"
-import { formatCurrency } from "@/lib/utils"
-import { CreditCard } from "lucide-react"
-import Image from "next/image"
+import { Badge } from "@/components/ui/badge"
+import { mockPaymentCards } from "@/lib/mock-data"
+import { CreditCard, Globe, DollarSign } from "lucide-react"
 import { notFound } from "next/navigation"
 
-export const dynamic = "force-dynamic"
-
-function parseJsonArrayOrString(value: string | string[]): string[] {
-  if (Array.isArray(value)) return value
-  if (typeof value === "string") {
-    try {
-      const parsed = JSON.parse(value)
-      return Array.isArray(parsed) ? parsed : [parsed].filter(Boolean)
-    } catch {
-      return value ? [value] : []
-    }
-  }
-  return []
+interface Props {
+  params: Promise<{ slug: string }>
 }
 
-export default async function PaymentCardPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}) {
+export default async function PaymentCardDetailPage({ params }: Props) {
   const { slug } = await params
-  const card = await db.paymentCard.findUnique({
-    where: { slug },
-  })
+  
+  // Find card in mock data
+  const card = mockPaymentCards.find(c => c.slug === slug)
 
   if (!card) {
     notFound()
   }
 
-  const finalPrice = card.discountPrice ?? card.price
-  const hasDiscount = card.discountPrice !== null && card.discountPrice < card.price
-  const images = parseJsonArrayOrString(card.images)
-
-  // Find related cards (same type, exclude current card)
-  const relatedCards = await db.paymentCard.findMany({
-    where: {
-      id: { not: card.id },
-      inStock: true,
-      cardType: card.cardType,
-    },
-    take: 6,
-    orderBy: { createdAt: "desc" },
-  })
+  const images = JSON.parse(card.images)
+  const finalPrice = card.discountPrice || card.price
+  const discount = card.discountPrice
+    ? Math.round(((card.price - card.discountPrice) / card.price) * 100)
+    : 0
 
   return (
-    <main className="container mx-auto px-4 py-8" role="main">
-      <PageHeader
-        title={card.title}
-        description={card.description || undefined}
-        backUrl="/payment-cards"
-      />
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Image Gallery */}
-        <div className="space-y-4">
-          <Card>
-            <CardContent className="p-0">
-              <div className="relative aspect-video w-full bg-muted rounded-lg overflow-hidden">
-                {images.length > 0 ? (
-                  <Image
-                    src={images[0]}
-                    alt={card.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    priority
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <CreditCard className="h-24 w-24 text-muted-foreground" />
-                  </div>
-                )}
+    <div className="container mx-auto px-4 py-8">
+      <div className="grid md:grid-cols-2 gap-8 mb-12">
+        {/* Left Column - Image */}
+        <div>
+          <div className="aspect-video bg-muted rounded-lg overflow-hidden">
+            {images[0] ? (
+              <img
+                src={images[0]}
+                alt={card.title}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <CreditCard className="h-24 w-24 text-muted-foreground" />
               </div>
-            </CardContent>
-          </Card>
+            )}
+          </div>
         </div>
 
-        {/* Details */}
+        {/* Right Column - Details */}
         <div className="space-y-6">
           <div>
-            <h1 className="text-4xl font-bold mb-4">{card.title}</h1>
-            <div className="flex flex-wrap gap-2 mb-4">
-              <Badge variant="secondary">{card.cardType}</Badge>
-              {card.region && (
-                <Badge variant="outline">{card.region}</Badge>
-              )}
-              {card.denomination && (
-                <Badge variant="outline">
-                  {card.currency || "$"}{card.denomination}
-                </Badge>
-              )}
-            </div>
+            <h1 className="text-3xl font-bold mb-2">{card.title}</h1>
+            {card.description && (
+              <p className="text-muted-foreground">{card.description}</p>
+            )}
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Цена</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                {hasDiscount ? (
-                  <div>
-                    <span className="text-4xl font-bold text-destructive">
-                      {formatCurrency(finalPrice)}
-                    </span>
-                    <span className="ml-3 text-xl line-through text-muted-foreground">
-                      {formatCurrency(card.price)}
-                    </span>
-                  </div>
-                ) : (
-                  <span className="text-4xl font-bold">
-                    {formatCurrency(finalPrice)}
+          {/* Price */}
+          <div className="flex items-center gap-4">
+            {card.discountPrice ? (
+              <>
+                <div className="flex items-center gap-2">
+                  <Badge variant="destructive" className="text-lg px-3 py-1">
+                    -{discount}%
+                  </Badge>
+                  <span className="text-2xl font-bold">${finalPrice.toFixed(2)}</span>
+                  <span className="text-lg text-muted-foreground line-through">
+                    ${card.price.toFixed(2)}
                   </span>
-                )}
-              </div>
-              {card.inStock ? (
-                <AddToCartButton cardId={card.id} className="w-full" />
-              ) : (
-                <Button className="w-full" size="lg" disabled>
-                  Нет в наличии
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-
-          {card.description && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Описание</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground whitespace-pre-line">
-                  {card.description}
-                </p>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Related Cards */}
-          {relatedCards.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Похожие карты</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4">
-                  {relatedCards.slice(0, 4).map((relatedCard) => (
-                    <a
-                      key={relatedCard.id}
-                      href={`/payment-cards/${relatedCard.slug}`}
-                      className="p-3 border rounded-lg hover:bg-accent transition-colors"
-                    >
-                      <p className="font-medium text-sm">{relatedCard.title}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatCurrency(relatedCard.discountPrice ?? relatedCard.price)}
-                      </p>
-                    </a>
-                  ))}
                 </div>
-              </CardContent>
-            </Card>
-          )}
+              </>
+            ) : (
+              <span className="text-2xl font-bold">${card.price.toFixed(2)}</span>
+            )}
+          </div>
+
+          {/* Card Details */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <CreditCard className="h-4 w-4 text-muted-foreground" />
+              <span className="font-semibold">Тип:</span>
+              <Badge variant="secondary">{card.cardType}</Badge>
+            </div>
+
+            {card.region && (
+              <div className="flex items-center gap-2">
+                <Globe className="h-4 w-4 text-muted-foreground" />
+                <span className="font-semibold">Регион:</span>
+                <Badge variant="outline">{card.region}</Badge>
+              </div>
+            )}
+
+            {card.denomination && (
+              <div className="flex items-center gap-2">
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+                <span className="font-semibold">Номинал:</span>
+                <span>${card.denomination}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Stock Status */}
+          <div>
+            {card.inStock ? (
+              <Badge variant="default" className="bg-green-600">
+                В наличии
+              </Badge>
+            ) : (
+              <Badge variant="destructive">
+                Нет в наличии
+              </Badge>
+            )}
+          </div>
+
+          {/* Add to Cart */}
+          {card.inStock && <AddToCartButton cardId={card.id} />}
         </div>
       </div>
-    </main>
+
+      {/* Additional Info */}
+      <div className="bg-muted/50 rounded-lg p-6">
+        <h2 className="text-xl font-bold mb-4">Информация</h2>
+        <div className="space-y-2 text-sm text-muted-foreground">
+          <p>• Цифровая доставка</p>
+          <p>• Мгновенная активация</p>
+          <p>• Гарантия подлинности</p>
+          <p>• Поддержка 24/7</p>
+        </div>
+      </div>
+    </div>
   )
 }

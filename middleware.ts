@@ -1,4 +1,6 @@
 import createMiddleware from 'next-intl/middleware';
+
+
 import { type NextRequest } from "next/server";
 import { defaultLocale, locales } from './i18n';
 
@@ -33,7 +35,6 @@ export default function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    "/admin/:path*",
     "/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)",
   ],
 }

@@ -1,21 +1,11 @@
-import { db } from '@/lib/db';
+import { mockGames } from '@/lib/mock-data';
 import { MetadataRoute } from 'next';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
-  let games: { slug: string; updatedAt: Date }[] = []
-  // Get all games for dynamic routes
-  try {
-    games = await db.game.findMany({
-      where: { inStock: true },
-      select: { slug: true, updatedAt: true },
-    })
-  } catch {
-    console.warn('Sitemap: Database not available during build, skipping game routes')
-  }
-
-  const gameRoutes = games.map((game) => ({
+  // Use mock data for game routes
+  const gameRoutes = mockGames.map((game) => ({
     url: `${baseUrl}/games/${game.slug}`,
     lastModified: game.updatedAt,
     changeFrequency: 'weekly' as const,
@@ -36,10 +26,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/cart`,
+      url: `${baseUrl}/payment-cards`,
       lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.7,
+      changeFrequency: 'daily',
+      priority: 0.8,
     },
     ...gameRoutes,
   ]

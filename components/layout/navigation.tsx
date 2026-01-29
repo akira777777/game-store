@@ -1,37 +1,21 @@
 "use client"
 
 import { SearchBar } from "@/components/layout/search-bar"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { LanguageSwitcher } from "@/components/ui/language-switcher"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
-import { CreditCard, Flame, Gamepad2, LogOut, Menu, Shield, ShoppingCart, Sparkles, User, X } from "lucide-react"
-import { signOut, useSession } from "next-auth/react"
+import { CreditCard, Flame, Gamepad2, Menu, ShoppingCart, Sparkles, X } from "lucide-react"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
 
 export function Navigation() {
-  const { data: session } = useSession()
   const t = useTranslations("nav")
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pathname = usePathname()
   const isGamesActive = pathname.includes("/games")
   const isCartActive = pathname.includes("/cart")
-  const userInitials = session?.user?.name
-    ?.split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase() || session?.user?.email?.[0].toUpperCase() || "?"
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80 shadow-sm" aria-label={t("mainNavigation")}>
@@ -104,69 +88,6 @@ export function Navigation() {
           <div className="flex items-center gap-2 md:gap-4">
             <LanguageSwitcher />
             <ThemeToggle />
-            {session ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="relative h-10 w-10 rounded-full"
-                    aria-label={t("userMenu")}
-                  >
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage src={session.user?.image ?? undefined} alt={session.user?.name || session.user?.email || t("user")} />
-                      <AvatarFallback className="bg-primary text-primary-foreground">
-                        {userInitials}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
-                  <DropdownMenuLabel className="font-normal">
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{session.user?.name || t("user")}</p>
-                      <p className="text-xs leading-none text-muted-foreground">
-                        {session.user?.email}
-                      </p>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/profile" className="flex items-center gap-2 cursor-pointer" onClick={() => setMobileMenuOpen(false)}>
-                      <User className="h-4 w-4" aria-hidden="true" />
-                      {t("profile")}
-                    </Link>
-                  </DropdownMenuItem>
-                  {session.user?.role === "ADMIN" && (
-                    <DropdownMenuItem asChild>
-                      <Link href="/admin" className="flex items-center gap-2 cursor-pointer" onClick={() => setMobileMenuOpen(false)}>
-                        <Shield className="h-4 w-4" aria-hidden="true" />
-                        {t("admin")}
-                      </Link>
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    className="cursor-pointer text-destructive focus:text-destructive"
-                    onClick={() => {
-                      signOut()
-                      setMobileMenuOpen(false)
-                    }}
-                  >
-                    <LogOut className="h-4 w-4 mr-2" aria-hidden="true" />
-                    {t("logout")}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <>
-                <Button asChild variant="ghost" className="hidden sm:flex">
-                  <Link href="/login">{t("login")}</Link>
-                </Button>
-                <Button asChild className="hidden sm:flex">
-                  <Link href="/register">{t("register")}</Link>
-                </Button>
-              </>
-            )}
 
             {/* Mobile Menu Button */}
             <Button
@@ -247,57 +168,6 @@ export function Navigation() {
                 <LanguageSwitcher />
                 <ThemeToggle />
               </div>
-              {session ? (
-                <>
-                  <div className="border-t my-2 pt-2">
-                    <Link
-                      href="/profile"
-                      className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-accent transition-colors"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <User className="h-4 w-4" aria-hidden="true" />
-                      {t("profile")}
-                    </Link>
-                    {session.user?.role === "ADMIN" && (
-                      <Link
-                        href="/admin"
-                        className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-accent transition-colors"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        <Shield className="h-4 w-4" aria-hidden="true" />
-                        {t("admin")}
-                      </Link>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => {
-                      signOut()
-                      setMobileMenuOpen(false)
-                    }}
-                    className="w-full flex items-center gap-2 px-4 py-2 rounded-md text-destructive hover:bg-destructive/10 transition-colors"
-                  >
-                    <LogOut className="h-4 w-4" aria-hidden="true" />
-                    {t("logout")}
-                  </button>
-                </>
-              ) : (
-                <div className="border-t my-2 pt-2 space-y-2">
-                  <Link
-                    href="/login"
-                    className="block px-4 py-2 rounded-md hover:bg-accent transition-colors text-center"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {t("login")}
-                  </Link>
-                  <Link
-                    href="/register"
-                    className="block px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-center"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {t("register")}
-                  </Link>
-                </div>
-              )}
             </div>
           </div>
         )}
