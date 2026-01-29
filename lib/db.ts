@@ -44,10 +44,8 @@ try {
     // SQLite configuration with adapter (required in Prisma 7 when using prisma.config.ts)
     // Extract file path from file:// URL
     const sqlitePath = dbUrlForPool.replace(/^file:/, "");
-    const sqlite = new Database(sqlitePath);
-
     // Create Prisma adapter for SQLite
-    const adapter = new PrismaBetterSqlite3(sqlite);
+    const adapter = new PrismaBetterSqlite3({ url: sqlitePath });
 
     db = globalForPrisma.prisma ??
       new PrismaClient({

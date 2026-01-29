@@ -34,9 +34,6 @@ const nextConfig = {
     ],
   },
 
-  // Optimize production builds
-  swcMinify: true,
-
   // Compress responses
   compress: true,
 
@@ -50,23 +47,10 @@ const nextConfig = {
   // Performance optimizations
   poweredByHeader: false,
 
-  // Optimize fonts
-  optimizeFonts: true,
 
   // Experimental optimizations
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
-  },
-
-  // i18n configuration - using next-intl instead of Next.js built-in i18n
-
-
-
-
-
-  // Enable ESLint during build to catch errors early
-  eslint: {
-    ignoreDuringBuilds: false,
   },
 };
 

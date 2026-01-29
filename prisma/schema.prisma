@@ -6,9 +6,7 @@ generator client {
 }
 
 datasource db {
-  // Use PostgreSQL for production, SQLite for development
-  // The actual provider is determined by the DATABASE_URL format
-  provider = "postgresql"
+  provider = "sqlite"
 }
 
 model User {
