@@ -34,6 +34,7 @@ class LLMWrapper:
         self.model = None
         self.tokenizer = None
         self.initialized = False
+        self.lock = asyncio.Lock()
         
     async def initialize(self):
         """Initialize the LLM model"""
@@ -131,14 +132,14 @@ class LLMWrapper:
         
         return f"{history_text}\nUSER: {prompt}\nASSISTANT:"
     
-    async def _generate_with_exllamav2(
-        self, 
-        prompt: str, 
-        max_tokens: int, 
-        temperature: float, 
+    def _generate_blocking(
+        self,
+        prompt: str,
+        max_tokens: int,
+        temperature: float,
         top_p: float
     ) -> str:
-        """Generate text using ExLlamaV2"""
+        """Blocking generation function to be run in executor"""
         from exllamav2.generator import ExLlamaV2StreamingGenerator
         
         # Create generator
@@ -163,8 +164,28 @@ class LLMWrapper:
             if eos:
                 break
             output += chunk
-        
+
         return output
+
+    async def _generate_with_exllamav2(
+        self,
+        prompt: str,
+        max_tokens: int,
+        temperature: float,
+        top_p: float
+    ) -> str:
+        """Generate text using ExLlamaV2"""
+        # Ensure thread safety with a lock since we are using shared resources
+        async with self.lock:
+            loop = asyncio.get_running_loop()
+            return await loop.run_in_executor(
+                None,
+                self._generate_blocking,
+                prompt,
+                max_tokens,
+                temperature,
+                top_p
+            )
     
     def _parse_tool_calls(self, response: str) -> Optional[List[Dict[str, Any]]]:
         """
