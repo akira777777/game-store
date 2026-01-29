@@ -136,9 +136,6 @@ model Genre {
   name  String @unique
   slug  String @unique
   games Game[]
-
-  @@index([name])
-  @@index([slug])
 }
 
 model Platform {
@@ -146,7 +143,4 @@ model Platform {
   name  String @unique
   slug  String @unique
   games Game[]
-
-  @@index([name])
-  @@index([slug])
 }
