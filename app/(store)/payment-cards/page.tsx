@@ -22,7 +22,7 @@ export default async function PaymentCardsPage({
     const limit = 12
     const skip = (page - 1) * limit
 
-    const whereConditions: any = {
+    const whereConditions: Record<string, unknown> = {
       inStock: true,
     }
 

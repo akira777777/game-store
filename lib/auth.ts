@@ -5,6 +5,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 
 // Dynamic import for bcryptjs to avoid Edge Runtime issues
 // bcryptjs will only be imported when authorize() is called, not during middleware/Edge bundling
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let bcrypt: any;
 
 // Role type for SQLite (stored as string)
@@ -28,7 +29,7 @@ if (!authSecret) {
   );
 }
 
-let authConfig: any;
+let authConfig: Parameters<typeof NextAuth>[0];
 try {
   authConfig = {
     // PrismaAdapter type compatibility issue - adapter is optional when using credentials
@@ -92,15 +93,17 @@ try {
       }),
     ],
     callbacks: {
-      async jwt({ token, user }: { token: any; user?: any }) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      async jwt({ token, user }: any) {
         if (user) {
-          token.id = user.id
+          token.id = user.id as string
           // User interface extends with role property via module declaration
-          token.role = user.role
+          token.role = user.role as Role
         }
         return token
       },
-      async session({ session, token }: { session: any; token: any }) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      async session({ session, token }: any) {
         if (session.user) {
           session.user.id = token.id as string
           session.user.role = (token.role as Role) || "CUSTOMER"
@@ -114,14 +117,14 @@ try {
       ? 'dev-secret-only-not-for-production-please-set-nexauth-secret-in-env'
       : undefined),
   };
-} catch (error: any) {
+} catch (error) {
   throw error;
 }
 
-let nextAuthResult: any;
+let nextAuthResult: ReturnType<typeof NextAuth>;
 try {
   nextAuthResult = NextAuth(authConfig);
-} catch (error: any) {
+} catch (error) {
   throw error;
 }
 

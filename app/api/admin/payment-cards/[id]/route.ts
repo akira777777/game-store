@@ -72,7 +72,7 @@ export async function PUT(
     const validatedData = paymentCardSchema.parse(body)
 
     // Convert images to JSON string if array
-    const updateData: any = { ...validatedData }
+    const updateData: Record<string, unknown> = { ...validatedData }
     if (validatedData.images !== undefined) {
       updateData.images = Array.isArray(validatedData.images)
         ? JSON.stringify(validatedData.images)

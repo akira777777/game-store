@@ -34,7 +34,7 @@ export default function LoginPage() {
         router.push("/")
         router.refresh()
       }
-    } catch (error) {
+    } catch {
       setError("Произошла ошибка при входе")
     } finally {
       setIsLoading(false)

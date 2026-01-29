@@ -6,7 +6,6 @@ import { AlertCircle, Home, RefreshCw } from "lucide-react"
 import Link from "next/link"
 
 export default function GlobalError({
-  error: _error,
   reset,
 }: {
   error: Error & { digest?: string }

@@ -36,7 +36,7 @@ export default function RegisterPage() {
       }
 
       router.push("/login")
-    } catch (error) {
+    } catch {
       setError("Произошла ошибка при регистрации")
     } finally {
       setIsLoading(false)

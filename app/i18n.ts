@@ -7,7 +7,7 @@ export type Locale = (typeof locales)[number];
 
 export const defaultLocale: Locale = 'ru';
 
-export default getRequestConfig(async ({ locale }): Promise<{ locale: string; messages: any }> => {
+export default getRequestConfig(async ({ locale }): Promise<{ locale: string; messages: Record<string, unknown> }> => {
   // Validate that the incoming `locale` parameter is valid
   if (!locales.includes(locale as Locale)) {
     console.error(`[i18n] Invalid locale: ${locale}`);
@@ -20,8 +20,8 @@ export default getRequestConfig(async ({ locale }): Promise<{ locale: string; me
       locale: locale as string,
       messages,
     };
-  } catch (error) {
-    console.error(`[i18n] Failed to load messages for locale ${locale}:`, error);
-    throw error;
+  } catch {
+    console.error(`[i18n] Failed to load messages for locale ${locale}`);
+    throw new Error(`Failed to load messages for locale ${locale}`);
   }
 });

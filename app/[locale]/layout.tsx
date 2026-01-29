@@ -1,7 +1,7 @@
 import { Footer } from '@/components/layout/footer';
 import { Navigation } from '@/components/layout/navigation';
 import { ScrollToTop } from '@/components/ui/scroll-to-top';
-import { locales } from '@/i18n';
+import { locales, type Locale } from '@/i18n';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -19,7 +19,7 @@ export default async function LocaleLayout({
 }) {
   const { locale } = await params;
 
-  if (!locales.includes(locale as any)) {
+  if (!locales.includes(locale as Locale)) {
     notFound();
   }
 

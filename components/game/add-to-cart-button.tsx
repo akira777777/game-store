@@ -35,7 +35,7 @@ export function AddToCartButton({ gameId }: AddToCartButtonProps) {
         const data = await response.json()
         alert(data.error || "Ошибка при добавлении в корзину")
       }
-    } catch (error) {
+    } catch {
       alert("Произошла ошибка")
     } finally {
       setIsAdding(false)

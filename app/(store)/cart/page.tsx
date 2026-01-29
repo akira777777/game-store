@@ -60,7 +60,7 @@ export default function CartPage() {
       const response = await fetch("/api/cart")
       const data = await response.json()
       setItems(data.items || [])
-    } catch (error) {
+    } catch {
       // Error handled silently - UI will show empty cart
     } finally {
       setIsLoading(false)
@@ -86,7 +86,7 @@ export default function CartPage() {
       if (response.ok) {
         fetchCart()
       }
-    } catch (error) {
+    } catch {
       // Error handled silently - cart state will not update
     }
   }
@@ -108,7 +108,7 @@ export default function CartPage() {
       if (response.ok) {
         fetchCart()
       }
-    } catch (error) {
+    } catch {
       // Error handled silently - item will not be removed
     }
   }

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { db } from "@/lib/db"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
+import type { Prisma } from "@prisma/client"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 3600 // Revalidate every hour
@@ -33,7 +34,7 @@ export default async function GamesPage({
     const skip = (page - 1) * limit
 
     // Build where clause for PostgreSQL JSON queries
-    const whereConditions: any = {
+    const whereConditions: Prisma.GameWhereInput = {
       inStock: true,
     }
 
@@ -81,7 +82,7 @@ export default async function GamesPage({
 
     if (minPrice !== null || maxPrice !== null) {
       // Price filtering: (discountPrice IS NOT NULL AND discountPrice >= min) OR (discountPrice IS NULL AND price >= min)
-      const priceFilters: any[] = []
+      const priceFilters: Prisma.GameWhereInput[] = []
 
       if (minPrice !== null) {
         priceFilters.push({
@@ -113,13 +114,15 @@ export default async function GamesPage({
 
       // Add price filters to AND array (Prisma will AND these with any existing OR conditions)
       if (priceFilters.length > 0) {
-        whereConditions.AND = [...(whereConditions.AND || []), ...priceFilters]
+        const existingAND = whereConditions.AND;
+        const andArray = Array.isArray(existingAND) ? existingAND : existingAND ? [existingAND] : [];
+        whereConditions.AND = [...andArray, ...priceFilters]
       }
     }
 
     // Determine sort order
     const sortByParam = searchParams.sort || searchParams.sortBy || "newest"
-    let orderBy: any = { createdAt: "desc" }
+    let orderBy: Record<string, "desc" | "asc"> = { createdAt: "desc" }
 
     if (sortByParam === "newest") {
       orderBy = { createdAt: "desc" }

@@ -11,7 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       where: { inStock: true },
       select: { slug: true, updatedAt: true },
     })
-  } catch (error) {
+  } catch {
     console.warn('Sitemap: Database not available during build, skipping game routes')
   }
 

@@ -2,9 +2,9 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
 import { stripe } from "@/lib/stripe"
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 
-export async function POST(_request: NextRequest) {
+export async function POST() {
   try {
     const session = await auth()
 

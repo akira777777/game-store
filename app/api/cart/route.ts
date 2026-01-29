@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     const session = await auth()
 

@@ -73,7 +73,7 @@ export default async function AdminOrdersPage() {
                     <p className="text-2xl font-bold">
                       ${Number(order.total).toFixed(2)}
                     </p>
-                    <Badge variant={statusColors[order.status] as any}>
+                    <Badge variant={statusColors[order.status] as "secondary" | "default" | "destructive"}>
                       {statusLabels[order.status]}
                     </Badge>
                   </div>

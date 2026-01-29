@@ -19,7 +19,7 @@ const paymentCardSchema = z.object({
   stockQuantity: z.number().int().optional(),
 })
 
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     const session = await auth()
 

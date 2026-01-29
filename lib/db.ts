@@ -61,7 +61,7 @@ try {
       `Got: ${databaseUrl.substring(0, 20)}...`
     );
   }
-} catch (error: any) {
+} catch (error) {
   throw error;
 }
 
@@ -82,9 +82,9 @@ if (typeof process !== 'undefined') {
     if (pool) {
       try {
         await pool.end()
-      } catch (error: any) {
+      } catch (error) {
         // Ignore errors if pool is already ended
-        if (!error?.message?.includes('end on pool more than once')) {
+        if (!(error instanceof Error && error.message?.includes('end on pool more than once'))) {
           console.error('Error closing database pool:', error)
         }
       }
