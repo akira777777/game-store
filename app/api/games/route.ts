@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
       const isSQLite = databaseUrl.startsWith('file:')
       const searchCondition = isSQLite
         ? { contains: search }
-        : { contains: search, mode: 'insensitive' as const }
+        : { contains: search }
       
       whereConditions.OR = [
         {

@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
       const isSQLite = databaseUrl.startsWith('file:')
       const searchCondition = isSQLite
         ? { contains: search }
-        : { contains: search, mode: 'insensitive' as const }
+        : { contains: search }
       
       // Merge with existing OR conditions if price filter is applied
       const searchOrCondition = [

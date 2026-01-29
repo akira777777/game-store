@@ -40,7 +40,7 @@ export default async function PaymentCardsPage({
       const searchTerm = params.search.trim()
       const searchCondition = isSQLite
         ? { contains: searchTerm }
-        : { contains: searchTerm, mode: 'insensitive' as const }
+        : { contains: searchTerm }
       
       whereConditions.OR = [
         {

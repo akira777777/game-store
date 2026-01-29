@@ -56,7 +56,7 @@ export function buildGameWhereConditions(
     const isSQLite = databaseUrl.startsWith('file:')
     const searchCondition = isSQLite
       ? { contains: params.search.trim() }
-      : { contains: params.search.trim(), mode: 'insensitive' as const }
+      : { contains: params.search.trim() }
     
     whereConditions.OR = [
       {

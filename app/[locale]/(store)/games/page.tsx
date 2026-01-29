@@ -64,13 +64,11 @@ export default async function GamesPage({
         {
           title: {
             contains: params.search.trim(),
-            mode: 'insensitive',
           },
         },
         {
           description: {
             contains: params.search.trim(),
-            mode: 'insensitive',
           },
         },
       ]

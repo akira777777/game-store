@@ -14,6 +14,7 @@ if (!process.env.DATABASE_URL) {
 
 // Определяем тип базы данных по DATABASE_URL
 const databaseUrl = process.env.DATABASE_URL.trim();
+console.log('DEBUG: databaseUrl is', databaseUrl);
 const isPostgreSQL = databaseUrl.startsWith('postgresql://') || databaseUrl.startsWith('postgres://');
 const isSQLite = databaseUrl.startsWith('file:');
 
