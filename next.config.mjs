@@ -34,11 +34,26 @@ const nextConfig = {
     ],
   },
 
+  // Optimize production builds
+  swcMinify: true,
+
   // Compress responses
   compress: true,
 
   // Enable React strict mode for better error detection
   reactStrictMode: true,
+
+
+  // Reduce bundle size for Cloudflare Pages
+  modularizeImports: {
+    'lucide-react': {
+      transform: 'lucide-react/{{member}}',
+    },
+    '@radix-ui/react-icons': {
+      transform: '@radix-ui/react-icons/{{member}}',
+    },
+  },
+
 
 
   // Trailing slash for GitHub Pages compatibility
@@ -47,10 +62,23 @@ const nextConfig = {
   // Performance optimizations
   poweredByHeader: false,
 
+  // Optimize fonts
+  optimizeFonts: true,
 
   // Experimental optimizations
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+  },
+
+  // i18n configuration - using next-intl instead of Next.js built-in i18n
+
+
+
+
+
+  // Enable ESLint during build to catch errors early
+  eslint: {
+    ignoreDuringBuilds: false,
   },
 };
 
