@@ -8,7 +8,10 @@ import Link from "next/link"
 import { memo, useMemo } from "react"
 
 interface GameCardProps {
-  game: Game
+  game: Game & {
+    genres?: string | string[]
+    platforms?: string | string[]
+  }
 }
 
 function GameCardComponent({ game }: GameCardProps) {
@@ -126,5 +129,5 @@ export const GameCard = memo(GameCardComponent, (prevProps, nextProps) => {
     prevProps.game.images === nextProps.game.images &&
     prevProps.game.title === nextProps.game.title &&
     prevProps.game.description === nextProps.game.description &&
-    prevProps.game.genres === nextProps.game.genres
+    JSON.stringify(prevProps.game.genres) === JSON.stringify(nextProps.game.genres)
 })

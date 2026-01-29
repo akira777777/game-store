@@ -1,7 +1,7 @@
 // Utility functions for working with JSON-stored arrays in the database
 // These functions provide type-safe operations and handle edge cases
 
-export function parseJsonArray<T = string>(value: string | null | undefined): T[] {
+export function parseJsonArray<T = string>(value: string | T[] | null | undefined): T[] {
   if (!value) return []
   if (typeof value !== 'string') {
     return Array.isArray(value) ? value : []

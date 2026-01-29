@@ -16,35 +16,53 @@ export default async function GamePage({
 }: {
   params: { slug: string }
 }) {
-  const game = await db.game.findUnique({
+  const gameRaw = await db.game.findUnique({
     where: { slug: params.slug },
+    include: {
+      genreItems: true,
+      platformItems: true,
+    },
   })
 
-  if (!game) {
+  if (!gameRaw) {
     notFound()
   }
+
+  const genres = gameRaw.genreItems.map(g => g.name)
+  const platforms = gameRaw.platformItems.map(p => p.name)
+  const game = { ...gameRaw, genres, platforms }
 
   const finalPrice = game.discountPrice || game.price
   const hasDiscount = !!game.discountPrice
   const images = parseJsonArrayOrString(game.images)
-  const genres = parseJsonArrayOrString(game.genres)
-  const platforms = parseJsonArrayOrString(game.platforms)
 
   // Find related games (same genre, exclude current game)
   // Use the first genre to find related games
-  const relatedGames = genres.length > 0
+  const relatedGamesRaw = genres.length > 0
     ? await db.game.findMany({
         where: {
           id: { not: game.id },
           inStock: true,
-          genres: {
-            contains: `"${genres[0]}"`,
-          },
+          genreItems: {
+            some: {
+              name: genres[0]
+            }
+          }
         },
         take: 6,
         orderBy: { createdAt: "desc" },
+        include: {
+          genreItems: true,
+          platformItems: true,
+        },
       })
     : []
+
+  const relatedGames = relatedGamesRaw.map(g => ({
+    ...g,
+    genres: g.genreItems.map(gx => gx.name),
+    platforms: g.platformItems.map(px => px.name)
+  }))
 
   return (
     <main className="container mx-auto px-4 py-8" role="main">

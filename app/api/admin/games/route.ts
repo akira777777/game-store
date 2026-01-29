@@ -1,8 +1,19 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
+import { normalizeJsonArray } from "@/lib/game-utils"
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
+
+function slugify(text: string) {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-')
+}
 
 const gameSchema = z.object({
   title: z.string().min(1),
@@ -49,21 +60,36 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const { genres: genresRaw, platforms: platformsRaw, images, releaseDate, ...otherData } = validatedData
+
+    const genres = normalizeJsonArray(genresRaw)
+    const platforms = normalizeJsonArray(platformsRaw)
+
+    const genreConnect = genres.map(name => ({
+      where: { name },
+      create: { name, slug: slugify(name) }
+    }))
+
+    const platformConnect = platforms.map(name => ({
+      where: { name },
+      create: { name, slug: slugify(name) }
+    }))
+
     const game = await db.game.create({
       data: {
-        ...validatedData,
-        images: Array.isArray(validatedData.images)
-          ? JSON.stringify(validatedData.images)
-          : (typeof validatedData.images === 'string' ? validatedData.images : '[]'),
-        platforms: Array.isArray(validatedData.platforms)
-          ? JSON.stringify(validatedData.platforms)
-          : validatedData.platforms,
-        genres: Array.isArray(validatedData.genres)
-          ? JSON.stringify(validatedData.genres)
-          : validatedData.genres,
-        releaseDate: validatedData.releaseDate
-          ? new Date(validatedData.releaseDate)
+        ...otherData,
+        images: Array.isArray(images)
+          ? JSON.stringify(images)
+          : (typeof images === 'string' ? images : '[]'),
+        releaseDate: releaseDate
+          ? new Date(releaseDate)
           : null,
+        genreItems: {
+          connectOrCreate: genreConnect
+        },
+        platformItems: {
+          connectOrCreate: platformConnect
+        }
       },
     })
 

@@ -9,7 +9,10 @@ import Link from "next/link"
 import { useState } from "react"
 
 interface GamesListProps {
-  games: Game[]
+  games: (Game & {
+    genres?: string | string[]
+    platforms?: string | string[]
+  })[]
   total: number
 }
 

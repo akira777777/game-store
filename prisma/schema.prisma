@@ -35,8 +35,10 @@ model Game {
   releaseDate   DateTime?
   developer     String?
   publisher     String?
-  platforms     String // JSON массив Platform
-  genres        String // JSON массив Genre
+
+  platformItems Platform[]
+  genreItems    Genre[]
+
   featured      Boolean     @default(false)
   inStock       Boolean     @default(true)
   stockQuantity Int         @default(0)
@@ -127,4 +129,18 @@ model OrderItem {
   order         Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
   game          Game?        @relation(fields: [gameId], references: [id])
   paymentCard   PaymentCard? @relation(fields: [paymentCardId], references: [id])
+}
+
+model Genre {
+  id    String @id @default(cuid())
+  name  String @unique
+  slug  String @unique
+  games Game[]
+}
+
+model Platform {
+  id    String @id @default(cuid())
+  name  String @unique
+  slug  String @unique
+  games Game[]
 }

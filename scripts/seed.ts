@@ -940,11 +940,45 @@ async function main() {
     },
   ]
 
+  // Helper for slug generation
+  const slugify = (text: string) => text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-')
+
   for (const game of games) {
+    const genreNames = JSON.parse(game.genres) as string[]
+    const platformNames = JSON.parse(game.platforms) as string[]
+
+    const genreConnect = genreNames.map(name => ({
+      where: { name },
+      create: { name, slug: slugify(name) }
+    }))
+
+    const platformConnect = platformNames.map(name => ({
+      where: { name },
+      create: { name, slug: slugify(name) }
+    }))
+
+    // Construct data with relations (excluding legacy string fields)
+    const { genres, platforms, ...gameWithoutLegacyFields } = game;
+    const gameData = {
+      ...gameWithoutLegacyFields,
+      genreItems: {
+        connectOrCreate: genreConnect
+      },
+      platformItems: {
+        connectOrCreate: platformConnect
+      }
+    }
+
     await db.game.upsert({
       where: { slug: game.slug },
-      update: game,
-      create: game,
+      update: gameData,
+      create: gameData,
     })
     console.log(`Created/updated game: ${game.title}`)
   }

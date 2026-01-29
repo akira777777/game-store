@@ -40,17 +40,27 @@ export async function GET(request: NextRequest) {
       inStock: true,
     }
 
-    // Filter by genre using PostgreSQL JSON contains
+    // Filter by genre using relations
     if (genre) {
-      whereConditions.genres = {
-        contains: `"${genre}"`,
+      whereConditions.genreItems = {
+        some: {
+          OR: [
+            { name: { equals: genre } },
+            { slug: { equals: genre.toLowerCase() } }
+          ]
+        }
       }
     }
 
-    // Filter by platform using PostgreSQL JSON contains
+    // Filter by platform using relations
     if (platform) {
-      whereConditions.platforms = {
-        contains: `"${platform}"`,
+      whereConditions.platformItems = {
+        some: {
+          OR: [
+            { name: { equals: platform } },
+            { slug: { equals: platform.toLowerCase() } }
+          ]
+        }
       }
     }
 
@@ -60,13 +70,11 @@ export async function GET(request: NextRequest) {
         {
           title: {
             contains: search,
-            mode: 'insensitive',
           },
         },
         {
           description: {
             contains: search,
-            mode: 'insensitive',
           },
         },
       ]
@@ -105,9 +113,13 @@ export async function GET(request: NextRequest) {
     }
 
     // Execute query with filters applied at database level
-    const [games, total] = await Promise.all([
+    const [gamesRaw, total] = await Promise.all([
       db.game.findMany({
         where: whereConditions,
+        include: {
+          genreItems: true,
+          platformItems: true,
+        },
         orderBy: {
           [sortBy]: order,
         },
@@ -118,6 +130,12 @@ export async function GET(request: NextRequest) {
         where: whereConditions,
       }),
     ])
+
+    const games = gamesRaw.map(game => ({
+      ...game,
+      genres: game.genreItems.map(g => g.name),
+      platforms: game.platformItems.map(p => p.name),
+    }))
 
     const response = NextResponse.json({
       games,

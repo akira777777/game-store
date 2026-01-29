@@ -171,7 +171,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ item: cartItem })
     }
 
-    return NextResponse.json({ item: cartItem })
+    return NextResponse.json(
+      { error: "Invalid request parameters" },
+      { status: 400 }
+    )
   } catch (error) {
     console.error("Error adding to cart:", error)
     return NextResponse.json(
@@ -338,7 +341,10 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ item: cartItem })
     }
 
-    return NextResponse.json({ item: cartItem })
+    return NextResponse.json(
+      { error: "Invalid request parameters" },
+      { status: 400 }
+    )
   } catch (error) {
     console.error("Error updating cart:", error)
     return NextResponse.json(

@@ -36,17 +36,27 @@ export function buildGameWhereConditions(
     whereConditions.featured = true
   }
 
-  // Filter by genre using PostgreSQL JSON contains
+  // Filter by genre using relations
   if (params.genre?.trim()) {
-    whereConditions.genres = {
-      contains: `"${params.genre.trim()}"`,
+    whereConditions.genreItems = {
+      some: {
+        OR: [
+          { name: { equals: params.genre.trim() } },
+          { slug: { equals: params.genre.trim().toLowerCase() } }
+        ]
+      }
     }
   }
 
-  // Filter by platform using PostgreSQL JSON contains
+  // Filter by platform using relations
   if (params.platform?.trim()) {
-    whereConditions.platforms = {
-      contains: `"${params.platform.trim()}"`,
+    whereConditions.platformItems = {
+      some: {
+        OR: [
+          { name: { equals: params.platform.trim() } },
+          { slug: { equals: params.platform.trim().toLowerCase() } }
+        ]
+      }
     }
   }
 
@@ -56,13 +66,11 @@ export function buildGameWhereConditions(
       {
         title: {
           contains: params.search.trim(),
-          mode: 'insensitive',
         },
       },
       {
         description: {
           contains: params.search.trim(),
-          mode: 'insensitive',
         },
       },
     ]
