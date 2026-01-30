@@ -1,0 +1,199 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  role      String   @default("CUSTOMER")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cartItems     CartItem[]
+  orders        Order[]
+  wishlistItems WishlistItem[]
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Game {
+  id            String    @id @default(cuid())
+  title         String
+  slug          String    @unique
+  description   String
+  price         Float
+  discountPrice Float?
+  images        String
+  releaseDate   DateTime?
+  developer     String?
+  publisher     String?
+  platforms     String
+  genres        String
+  featured      Boolean   @default(false)
+  inStock       Boolean   @default(true)
+  stockQuantity Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  cartItems     CartItem[]
+  orderItems    OrderItem[]
+  wishlistItems WishlistItem[]
+
+  @@index([inStock])
+  @@index([featured])
+  @@index([createdAt])
+  @@index([title])
+  @@index([price])
+  @@index([discountPrice])
+  @@index([inStock, featured])
+  @@index([inStock, createdAt])
+}
+
+model PaymentCard {
+  id            String    @id @default(cuid())
+  title         String
+  slug          String    @unique
+  description   String?
+  cardType      String
+  region        String?
+  currency      String?
+  denomination  Float?
+  price         Float
+  discountPrice Float?
+  images        String
+  featured      Boolean   @default(false)
+  inStock       Boolean   @default(true)
+  stockQuantity Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+
+  @@index([inStock])
+  @@index([featured])
+  @@index([createdAt])
+}
+
+model CartItem {
+  id            String        @id @default(cuid())
+  userId        String
+  gameId        String?
+  paymentCardId String?
+  quantity      Int
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game        Game?        @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  paymentCard PaymentCard? @relation(fields: [paymentCardId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  gameId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, gameId])
+  @@index([userId])
+}
+
+model PromoCode {
+  id             String    @id @default(cuid())
+  code           String    @unique
+  discountType   String
+  discountValue  Float
+  minPurchase    Float?
+  maxDiscount    Float?
+  validFrom      DateTime
+  validUntil     DateTime
+  usageLimit     Int?
+  usedCount      Int       @default(0)
+  isActive       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  orders Order[]
+}
+
+model Order {
+  id          String   @id @default(cuid())
+  userId      String
+  status      String   @default("PENDING")
+  totalAmount Float
+  promoCodeId String?
+  discount    Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  promoCode PromoCode? @relation(fields: [promoCodeId], references: [id])
+  items     OrderItem[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id            String  @id @default(cuid())
+  orderId       String
+  gameId        String?
+  paymentCardId String?
+  quantity      Int
+  price         Float
+
+  order       Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  game        Game?        @relation(fields: [gameId], references: [id])
+  paymentCard PaymentCard? @relation(fields: [paymentCardId], references: [id])
+}

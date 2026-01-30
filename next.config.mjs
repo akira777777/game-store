@@ -43,19 +43,6 @@ const nextConfig = {
   // Enable React strict mode for better error detection
   reactStrictMode: true,
 
-
-  // Reduce bundle size for Cloudflare Pages
-  modularizeImports: {
-    'lucide-react': {
-      transform: 'lucide-react/{{member}}',
-    },
-    '@radix-ui/react-icons': {
-      transform: '@radix-ui/react-icons/{{member}}',
-    },
-  },
-
-
-
   // Trailing slash for GitHub Pages compatibility
   trailingSlash: isGithubPages,
 
